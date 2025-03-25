@@ -1,11 +1,11 @@
 1.	Créer la base de données
 -	Créer un certain nombre d’objets
--	Créer un certain nombre de services 
+-	Créer un certain nombre de services
 2.	Créer la page d’accueil (la page sur laquelle on tombe quand on arrive sur le site) :
 -	Possibilité de voir certaines infos
--	Recherche d’information avec filtre 
+-	Recherche d’information avec filtre
 -	Bouton d’inscription/connexion
-3.	Faire un formulaire d’inscription 
+3.	Faire un formulaire d’inscription
 -	Envoie d’un mail de confirmation
 -	Vérification que la personne appartient à la maison
 4.	Formulaire de connexion
@@ -13,13 +13,13 @@
 5.	Faire une page de profil
 -	Créer un formulaire pour que l’utilisateur puisse modifier son profil
 6.	Faire en sorte que l’utilisateur puissent consulter le profil d’autres utilisateurs
-7.	Créer la page d’accueil du site (une fois qu’on est connecté) 
+7.	Créer la page d’accueil du site (une fois qu’on est connecté)
 -	Possibilité de rechercher consulter les objets/services
 -	Créer un moteur de recherche
 8.	Mettre en place le système de niveau et de points (4 niveaux : débutant, intermédiaire, avancé et expert)
 -	Définir combien de points pour passer de niveau
 -	Définir combien de points rapporte la connexion etc…
--	Compter les connexions (et le nombre d’actions de l’utilisateur) 
+-	Compter les connexions (et le nombre d’actions de l’utilisateur)
 9.	Création du module de gestion (pour les utilisateurs de niveau avancé et expert)
  	
 a.	Gestion des objets connectés :
@@ -28,7 +28,7 @@ a.	Gestion des objets connectés :
 -	Création de boutons (ou autre) pour contrôler l’état des objets (ex : allumer/éteindre les lumières)
   
 b.	Configuration des services (à partir de là j’ai juste recopié ce qu’il y avait dans le sujet du projet)
--	Associer des objets connectés à des pièces ou zones spécifiques 
+-	Associer des objets connectés à des pièces ou zones spécifiques
 -	Configurer les paramètres d'utilisation des objets connectés (par ex. température cible pour un thermostat, horaire de fonctionnement pour une lumière)
   
 c.	Surveillance et optimisation des ressources

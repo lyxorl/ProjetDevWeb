@@ -17,3 +17,6 @@ CREATE TABLE User(
     CONSTRAINT  PRIMARY KEY (Prenom,Nom),
 	FOREIGN KEY fk_Resident(Prenom) REFERENCES Resident(Prenom), 
 	FOREIGN KEY fk_Resident(Nom) REFERENCES Resident(Nom));
+
+INSERT INTO Resident VALUES (1, 'TestA', 'TestA');
+INSERT INTO Resident VALUES (2, 'TestB', 'TestB');

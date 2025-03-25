@@ -5,12 +5,21 @@ include('db.php');
 try {
     // Préparer la requête SQL avec un paramètre
     $stmt = $pdo->prepare("SELECT * FROM Resident WHERE Nom = :nom");
-    $stmt->bindParam(':nom', $nom, PDO::PARAM_STR);
+    $stmt = $pdo->prepare("SELECT * FROM Resident WHERE Nom = :nom");
+    $stmt->bindParam(':nom', $nom_c, PDO::PARAM_STR);
+     // Définir la valeur du paramètre
+    $nom_c = 'TestC'; // Exemple de nom à rechercher
+    $nom = 'TestC';
+    $prenom = 'TestC';
     
-    // Définir la valeur du paramètre
-    $nom = 'TestA'; // Exemple de nom à rechercher
+    $stmt2 = $pdo->prepare("INSERT INTO Resident (Nom, Prenom) VALUES (:nom, :prenom)");
+
+    // Lier les paramètres aux valeurs
+    $stmt2->bindParam(':nom', $nom);
+    $stmt2->bindParam(':prenom', $prenom);
     
     // Exécuter la requête
+    $stmt2->execute();
     $stmt->execute();
     
     // Récupérer les résultats
@@ -29,4 +38,5 @@ try {
 } catch (PDOException $e) {
     echo "Erreur : " . $e->getMessage();
 }
+
 ?>

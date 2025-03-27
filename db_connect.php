@@ -3,7 +3,7 @@
 $host = 'localhost';     // Adresse du serveur MySQL
 $db   = 'projet'; // Nom de votre base de données
 $user = 'root';          // Nom d'utilisateur MySQL
-$pass = 'Cypri124$';              // Mot de passe MySQL
+$pass = 'MOT_DE_PASSE_DE_LA_BASE';              // Mot de passe MySQL
 $charset = 'utf8mb4';    // Encodage des caractères
 
 // Chaîne de connexion (DSN)

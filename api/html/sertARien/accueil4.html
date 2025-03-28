@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html ng-app="objetsApp">
+<head>
+    <meta charset="utf-8">
+    <title>Inventaire des Matériels</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 20px; 
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .search-box { 
+            padding: 12px 15px; 
+            width: 100%; 
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+            box-sizing: border-box;
+        }
+        .search-box:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td { 
+            padding: 15px; 
+            text-align: left; 
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th { 
+            background-color: #3498db;
+            color: white;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover { background-color: #f0f8ff; }
+        .pagination { 
+            margin-top: 25px; 
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+        }
+        .pagination button { 
+            padding: 8px 16px; 
+            margin: 0 5px; 
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .pagination button:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+        .pagination button:disabled { 
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .pagination-info { 
+            margin: 0 15px; 
+            color: #7f8c8d;
+        }
+        .status-active { 
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .status-inactive { 
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .status-maintenance { 
+            color: #f39c12;
+            font-weight: bold;
+        }
+        .sort-icon { margin-left: 8px; }
+        .loading { 
+            text-align: center; 
+            padding: 30px; 
+            color: #3498db;
+        }
+        .description-cell {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .filtres-container {
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+        .filtre-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .filtre-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .filtre-group select, 
+        .filtre-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .btn-reset {
+            padding: 8px 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            align-self: end;
+            margin-bottom: 1px;
+        }
+        .btn-reset:hover {
+            background: #c0392b;
+        }
+        .active-filter {
+            background-color: #3498db;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body ng-controller="ObjetsController">
+    <div class="container">
+        <h1><i class="fas fa-laptop"></i> Inventaire des Matériels</h1>
+        
+        <!-- Barre de recherche avancée -->
+        <div class="filtres-container">
+            <!-- Filtre Lieu -->
+            <div class="filtre-group">
+                <label for="lieu">Lieu</label>
+                <select id="lieu" ng-model="filters.lieu" ng-options="lieu for lieu in filtres.lieux">
+                    <option value="">Tous les lieux</option>
+                </select>
+                <span ng-if="filters.lieu" class="active-filter">
+                    {{filters.lieu}} <i class="fas fa-times" ng-click="filters.lieu=''"></i>
+                </span>
+            </div>
+            
+            <!-- Filtre Type -->
+            <div class="filtre-group">
+                <label for="type">Type</label>
+                <select id="type" ng-model="filters.type" ng-options="type for type in filtres.types">
+                    <option value="">Tous les types</option>
+                </select>
+                <span ng-if="filters.type" class="active-filter">
+                    {{filters.type}} <i class="fas fa-times" ng-click="filters.type=''"></i>
+                </span>
+            </div>
+            
+            <!-- Filtre État -->
+            <div class="filtre-group">
+                <label for="etat">État</label>
+                <select id="etat" ng-model="filters.etat" ng-options="etat for etat in filtres.etats">
+                    <option value="">Tous les états</option>
+                </select>
+                <span ng-if="filters.etat" class="active-filter">
+                    {{filters.etat}} <i class="fas fa-times" ng-click="filters.etat=''"></i>
+                </span>
+            </div>
+            
+            <!-- Filtre Mots-clés -->
+            <div class="filtre-group">
+                <label for="motsCles">Recherche texte</label>
+                <input id="motsCles" type="text" ng-model="filters.motsCles" placeholder="Nom, description ou mots-clés...">
+                <span ng-if="filters.motsCles" class="active-filter">
+                    {{filters.motsCles}} <i class="fas fa-times" ng-click="filters.motsCles=''"></i>
+                </span>
+            </div>
+            
+            <!-- Bouton Réinitialiser -->
+            <button class="btn-reset" ng-click="resetFilters()">
+                <i class="fas fa-times"></i> Réinitialiser
+            </button>
+        </div>
+
+        <!-- Message de chargement -->
+        <div class="loading" ng-show="loading">
+            <i class="fas fa-spinner fa-spin fa-2x"></i><br>
+            Chargement de l'inventaire...
+        </div>
+
+        <!-- Tableau des objets -->
+        <table ng-hide="loading">
+            <thead>
+                <tr>
+                    <th ng-click="sortBy('nom')">
+                        Nom 
+                        <i class="fas sort-icon" 
+                           ng-class="{'fa-sort': sortField != 'nom', 
+                                     'fa-sort-up': sortField == 'nom' && !reverse, 
+                                     'fa-sort-down': sortField == 'nom' && reverse}"></i>
+                    </th>
+                    <th ng-click="sortBy('description')">
+                        Description
+                        <i class="fas sort-icon" 
+                           ng-class="{'fa-sort': sortField != 'description', 
+                                     'fa-sort-up': sortField == 'description' && !reverse, 
+                                     'fa-sort-down': sortField == 'description' && reverse}"></i>
+                    </th>
+                    <th ng-click="sortBy('type')">
+                        Type
+                        <i class="fas sort-icon" 
+                           ng-class="{'fa-sort': sortField != 'type', 
+                                     'fa-sort-up': sortField == 'type' && !reverse, 
+                                     'fa-sort-down': sortField == 'type' && reverse}"></i>
+                    </th>
+                    <th ng-click="sortBy('etat')">
+                        État 
+                        <i class="fas sort-icon" 
+                           ng-class="{'fa-sort': sortField != 'etat', 
+                                     'fa-sort-up': sortField == 'etat' && !reverse, 
+                                     'fa-sort-down': sortField == 'etat' && reverse}"></i>
+                    </th>
+                    <th ng-click="sortBy('lieu')">
+                        Lieu 
+                        <i class="fas sort-icon" 
+                           ng-class="{'fa-sort': sortField != 'lieu', 
+                                     'fa-sort-up': sortField == 'lieu' && !reverse, 
+                                     'fa-sort-down': sortField == 'lieu' && reverse}"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="objet in filteredObjets = (objets | filter:customFilter | orderBy:sortField:reverse) | startFrom:currentPage*pageSize | limitTo:pageSize">
+                    <td><strong>{{ objet.nom }}</strong></td>
+                    <td class="description-cell" title="{{ objet.description }}">{{ objet.description }}</td>
+                    <td>{{ objet.type }}</td>
+                    <td>
+                        <span ng-class="{
+                            'status-active': objet.etat === 'Fonctionnel',
+                            'status-inactive': objet.etat === 'Hors service',
+                            'status-maintenance': objet.etat === 'En maintenance'
+                        }">
+                            <i class="fas fa-circle" style="font-size: 0.7em;"></i> {{ objet.etat }}
+                        </span>
+                    </td>
+                    <td>{{ objet.lieu }}</td>
+                </tr>
+                <tr ng-if="filteredObjets.length === 0">
+                    <td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">
+                        <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                        Aucun matériel ne correspond à vos critères de recherche
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination" ng-hide="loading || filteredObjets.length <= pageSize">
+            <button ng-disabled="currentPage == 0" ng-click="currentPage = currentPage - 1">
+                <i class="fas fa-chevron-left"></i> Précédent
+            </button>
+            <span class="pagination-info">Page {{ currentPage + 1 }} sur {{ numberOfPages() }}</span>
+            <button ng-disabled="currentPage >= filteredObjets.length/pageSize - 1" ng-click="currentPage = currentPage + 1">
+                Suivant <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('objetsApp', []);
+
+        app.controller('ObjetsController', ['$scope', '$http', function($scope, $http) {
+            // Initialisation
+            $scope.objets = [];
+            $scope.filtres = {
+                lieux: [],
+                types: [],
+                etats: []
+            };
+            $scope.filters = {
+                lieu: '',
+                type: '',
+                etat: '',
+                motsCles: ''
+            };
+            $scope.currentPage = 0;
+            $scope.pageSize = 10;
+            $scope.sortField = 'nom';
+            $scope.reverse = false;
+            $scope.loading = true;
+
+            // Chargement des données
+            $http.get('api/materiels.php')
+                .then(function(response) {
+                    $scope.objets = response.data.materiels;
+                    $scope.filtres = response.data.filtres;
+                    $scope.loading = false;
+                })
+                .catch(function(error) {
+                    console.error('Erreur lors du chargement des données:', error);
+                    $scope.loading = false;
+                });
+
+            // Réinitialisation des filtres
+            $scope.resetFilters = function() {
+                $scope.filters = {
+                    lieu: '',
+                    type: '',
+                    etat: '',
+                    motsCles: ''
+                };
+                $scope.currentPage = 0;
+            };
+
+            // Filtre personnalisé
+            $scope.customFilter = function(objet) {
+                return (
+                    (!$scope.filters.lieu || objet.lieu === $scope.filters.lieu) &&
+                    (!$scope.filters.type || objet.type === $scope.filters.type) &&
+                    (!$scope.filters.etat || objet.etat === $scope.filters.etat) &&
+                    (!$scope.filters.motsCles || 
+                     (objet.mots_cles && objet.mots_cles.toLowerCase().includes($scope.filters.motsCles.toLowerCase())) ||
+                     (objet.nom && objet.nom.toLowerCase().includes($scope.filters.motsCles.toLowerCase())) ||
+                     (objet.description && objet.description.toLowerCase().includes($scope.filters.motsCles.toLowerCase()))
+                    )
+                );
+            };
+
+            // Tri des colonnes
+            $scope.sortBy = function(field) {
+                $scope.reverse = ($scope.sortField === field) ? !$scope.reverse : false;
+                $scope.sortField = field;
+            };
+
+            // Calcul du nombre de pages
+            $scope.numberOfPages = function() {
+                return Math.ceil($scope.filteredObjets.length / $scope.pageSize);
+            };
+        }]);
+
+        // Filtre pour la pagination
+        app.filter('startFrom', function() {
+            return function(input, start) {
+                if (!input) return [];
+                start = +start;
+                return input.slice(start);
+            };
+        });
+    </script>
+</body>
+</html>

@@ -58,14 +58,6 @@ try {
 
 */
 
-
-
-
-
-
-
-
-
             //if (password_verify($password, $user['mdp'])) {
             if (hash('sha256', $password) === $user['mdp']) {
                 if ($user['validite']) {

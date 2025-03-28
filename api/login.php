@@ -27,7 +27,7 @@ try {
 
         if ($user) {
 
-
+/*
 // Debug 3 : Tester password_verify manuellement
     $testPassword = 'admin123'; // Remplace par celui que tu tapes
     //if (password_verify($testPassword, $user['mdp'])) {
@@ -56,7 +56,7 @@ try {
     $hashed = password_hash($password, PASSWORD_DEFAULT);
     file_put_contents('debug.log', "Nouveau hash pour ce mot de passe : $hashed\n", FILE_APPEND);
 
-
+*/
 
 
 

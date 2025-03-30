@@ -139,6 +139,13 @@
                                          'fa-sort-up': sortField == 'lieu' && !reverse, 
                                          'fa-sort-down': sortField == 'lieu' && reverse}"></i>
                         </th>
+                        <th ng-click="sortBy('temperature')">
+                            Température 
+                            <i class="fas sort-icon" 
+                               ng-class="{'fa-sort': sortField != 'temperature', 
+                                         'fa-sort-up': sortField == 'temperature' && !reverse, 
+                                         'fa-sort-down': sortField == 'temperature' && reverse}"></i>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -156,6 +163,8 @@
                             </span>
                         </td>
                         <td>{{ objet.lieu }}</td>
+                        <td>{{ objet.temperature != null ? (objet.temperature + '°C') : 'N/A' }}</td>
+
                     </tr>
                     <tr ng-if="filteredObjets.length === 0">
                         <td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">

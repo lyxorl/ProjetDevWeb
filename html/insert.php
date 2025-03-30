@@ -2,7 +2,7 @@
 
 try {
     // Connexion sécurisée à la base de données
-    $pdo = new PDO("mysql:host=localhost;dbname=projet", "root", "Cypri124$", [
+    $pdo = new PDO("mysql:host=localhost;dbname=projet", "root", "VOTRE_MOT_DE_PASSE", [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
 

@@ -29,6 +29,9 @@ try{
             'success' => false,
             'message' => 'Aucun objet trouvé avec cet ID'
         ]);
+
+
+        
     }
 } catch(PDOException $e) {
     file_put_contents('debug.log', "PDO Error", FILE_APPEND);

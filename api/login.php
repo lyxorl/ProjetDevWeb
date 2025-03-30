@@ -27,39 +27,8 @@ try {
 
         if ($user) {
 
-/*
-// Debug 3 : Tester password_verify manuellement
-    $testPassword = 'admin123'; // Remplace par celui que tu tapes
-    //if (password_verify($testPassword, $user['mdp'])) {
-    if (hash('sha256', $password) === $user['mdp']) {
-        file_put_contents('debug.log', "Password OK avec password_verify()\n", FILE_APPEND);
-    } else {
-        file_put_contents('debug.log', "Password NON OK avec password_verify()\n", FILE_APPEND);
-    }
-
-    // Debug 4 : Afficher les données récupérées de la BDD
-    file_put_contents('debug.log', "Utilisateur : " . print_r($user, true), FILE_APPEND);
-
-    // Debug 5 : Trim sur les champs reçus
-    $pseudo = trim($data['pseudo']);
-    $password = trim($data['password']);
-    file_put_contents('debug.log', "Pseudo: $pseudo | Password: $password\n", FILE_APPEND);
-
-    // Debug 6 : Comparaison en clair pour test (⚠️ juste pour débogage)
-    if ($password === $user['mdp']) {
-        file_put_contents('debug.log', "Comparaison en clair OK\n", FILE_APPEND);
-    } else {
-        file_put_contents('debug.log', "Comparaison en clair FAIL\n", FILE_APPEND);
-    }
-
-    // Debug 7 : Rehash du mot de passe pour voir le format
-    $hashed = password_hash($password, PASSWORD_DEFAULT);
-    file_put_contents('debug.log', "Nouveau hash pour ce mot de passe : $hashed\n", FILE_APPEND);
-
-*/
-
-            //if (password_verify($password, $user['mdp'])) {
-            if (hash('sha256', $password) === $user['mdp']) {
+            if (password_verify($password, $user['mdp'])) {
+           // if (hash('sha256', $password) === $user['mdp']) {
                 if ($user['validite']) {
                     $response = [
                         'success' => true,

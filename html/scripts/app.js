@@ -215,6 +215,7 @@ function getWeather(lat, lon) {
             $scope.loading = false;
         })
         .catch(function(error) {
+            
             console.error('Erreur inventaire:', error);
             $scope.loading = false;
         });

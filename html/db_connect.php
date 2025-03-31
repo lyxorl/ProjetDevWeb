@@ -2,8 +2,8 @@
 // Configuration de la connexion MySQL
 $host = 'localhost';     // Adresse du serveur MySQL
 $db   = 'projet';       // Nom de votre base de données
-$user = 'root';         // Nom d'utilisateur MySQL
-$pass = 'VOTRE_MOT_DE_PASSE';    // Mot de passe MySQL
+$user = 'nouvel_utilisateur';         // Nom d'utilisateur MySQL
+$pass = 'votre_mot_de_passe';    // Mot de passe MySQL
 $charset = 'utf8mb4';   // Encodage des caractères
 
 // Chaîne de connexion (DSN)

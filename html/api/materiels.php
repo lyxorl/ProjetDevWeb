@@ -11,7 +11,17 @@ try {
     $data = [];
     
     // Données des matériels
-    $stmt = $pdo->query("SELECT nom, description, etat, lieu, type, mots_cles, temperature FROM Objets_connectes");
+    $stmt = $pdo->query("SELECT  id_objet,  
+    nom, 
+    description, 
+    etat, 
+    type, 
+    lieu, 
+    temperature, 
+    consigne, 
+    lim_haute, 
+    lim_basse , 
+    mots_cles FROM Objets_connectes");
     $data['materiels'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Options pour les filtres

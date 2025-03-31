@@ -21,7 +21,7 @@ try {
         $pseudo = $data['pseudo'] ?? '';
         $password = $data['password'] ?? '';
 
-        $stmt = $pdo->prepare("SELECT pseudo, mdp, validite FROM Users WHERE pseudo = ?");
+        $stmt = $pdo->prepare("SELECT pseudo, mdp, validite, rang FROM Users WHERE pseudo = ?");
         $stmt->execute([$pseudo]);
         $user = $stmt->fetch();
 
@@ -30,9 +30,13 @@ try {
             if (password_verify($password, $user['mdp'])) {
            // if (hash('sha256', $password) === $user['mdp']) {
                 if ($user['validite']) {
+                    setcookie('user_pseudo', $user['pseudo'], time() + 3600, "/");
+        			setcookie('user_rang', $user['rang'], time() + 3600, "/");
                     $response = [
                         'success' => true,
-                        'message' => 'Connexion réussie'
+                        'message' => 'Connexion réussie',
+                        'pseudo' => $user['pseudo'],
+            			'rang' => $user['rang']
                     ];
                 } else {
                     $response['message'] = 'Compte non validé par l\'administrateur';

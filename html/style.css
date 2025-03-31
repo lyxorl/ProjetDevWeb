@@ -7,6 +7,177 @@ body {
     padding: 0;
 }
 
+/* Style pour le header utilisateur */
+.user-header {
+    display: flex;
+    /*align-items: center;
+    flex-wrap: wrap;
+    */
+    gap: 10px;
+    flex-direction: column;
+    
+}
+
+.user-header span {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.rang-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.rang-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.rang-selector select {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background: white;
+    
+}
+
+/*config pour le bouton visualiser */
+
+/* Style de la colonne Actions */
+.actions-cell {
+    width: 120px;
+    text-align: center;
+}
+
+/* Bouton Visualiser de base */
+.visualiser-btn {
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.3s;
+}
+
+/* Couleurs selon le niveau */
+.btn-simple { background-color: #3498db; }
+.btn-complexe { background-color: #9b59b6; }
+.btn-admin { background-color: #e74c3c; }
+
+.visualiser-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.visualiser-btn i {
+    margin-right: 5px;
+}
+
+/*fin visualiser*/
+
+/*pour le modal*/
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-btn {
+    float: right;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+[ng-cloak] {
+    display: none !important;
+}
+/* Style du bouton */
+.visualiser-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.modal-table th, .modal-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.modal-table th {
+    width: 30%;
+    color: #7f8c8d;
+    font-weight: normal;
+}
+
+.modal-table tr:last-child th,
+.modal-table tr:last-child td {
+    border-bottom: none;
+}
+/*fin modal*/
+
+
+
+
+
+.logout-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+}
+
+.rang-menu select {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background: white;
+}
+
+/*-------------*/
+
 .header {
     position: fixed;
     top: 10px;

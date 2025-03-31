@@ -144,45 +144,41 @@ function($scope, $http, $window, $interval, $timeout) {
         $window.location.href = 'inscription.html';
     };
 
-    // Météo
-    const apiKey = '0042905619163fc9e31183aef7b25ae5';
-    
-    function getWeather(lat, lon) {
-        $http.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`)
-            .then(function(response) {
-                $scope.weatherData = {
-                    city: response.data.name,
-                    iconUrl: `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`,
-                    temperature: Math.round(response.data.main.temp),
-                    description: response.data.weather[0].description,
-                    windSpeed: response.data.wind.speed,
-                    humidity: response.data.main.humidity
-                };
-            })
-            .catch(function() {
-                $scope.weatherData = {
-                    city: "Localisation indisponible",
-                    temperature: "--",
-                    description: "Service météo indisponible"
-                };
-            });
-    }
+   // Météo
+const apiKey = '0042905619163fc9e31183aef7b25ae5';
 
-    $scope.refreshWeather = function() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    getWeather(position.coords.latitude, position.coords.longitude);
-                },
-                function() {
-                    getWeather(48.8566, 2.3522); // Paris par défaut
-                },
-                { enableHighAccuracy: true, timeout: 10000 }
-            );
-        } else {
-            getWeather(48.8566, 2.3522);
-        }
-    };
+function getWeather(lat, lon) {
+    $http.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`)
+        .then(function(response) {
+            $scope.weatherData = {
+                city: response.data.name,
+                iconUrl: `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`,
+                temperature: Math.round(response.data.main.temp),
+                description: response.data.weather[0].description,
+                windSpeed: response.data.wind.speed,
+                humidity: response.data.main.humidity
+            };
+        })
+        .catch(function() {
+            $scope.weatherData = {
+                city: "Localisation indisponible",
+                temperature: "--",
+                description: "Service météo indisponible"
+            };
+        });
+}
+
+		// Version avec Cergy comme lieu fixe
+		$scope.refreshWeather = function() {
+		    // Coordonnées GPS de Cergy, France
+		    const fixedLat = 49.0363;  // Latitude de Cergy
+		    const fixedLon = 2.0761;   // Longitude de Cergy
+		    
+		    getWeather(fixedLat, fixedLon);
+		};
+
+		// Appeler refreshWeather au chargement
+		$scope.refreshWeather();
 
     // Inventaire
     $scope.resetFilters = function() {

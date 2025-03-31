@@ -1,48 +1,150 @@
-// scripts/app.js
 angular.module('maisonConnecteeApp', [])
-.controller('MainController', ['$scope', '$http', '$window', '$interval', 
-function($scope, $http, $window, $interval) {
+.controller('MainController', ['$scope', '$http', '$window', '$interval', '$timeout', 
+function($scope, $http, $window, $interval, $timeout) {
     
-    // Gestion du popup de connexion
-    $scope.showLoginPopup = false;
-    $scope.user = {
-        pseudo: '',
-        password: ''
+    // Niveaux d'accès
+    $scope.accessLevels = {
+        simple: 1,
+        complexe: 2,
+        admin: 3
     };
-    $scope.loginError = '';
+
+    // Initialisations
+    $scope.showLoginPopup = false;
+    $scope.showAppareilModal = false;
+    $scope.isLoggedIn = false;
+    $scope.selectedAppareil = null;
+    $scope.selectedRang = 'simple';
+    $scope.currentAccessLevel = 1;
+    $scope.availableRangs = ['simple'];
     
+    $scope.user = { pseudo: '', password: '' };
+    $scope.loginError = '';
+    $scope.weatherData = null;
+    $scope.objets = [];
+    $scope.filtres = { lieux: [], types: [], etats: [] };
+    $scope.filters = { lieu: '', type: '', etat: '', motsCles: '' };
+    $scope.currentPage = 0;
+    $scope.pageSize = 10;
+    $scope.sortField = 'nom';
+    $scope.reverse = false;
+    $scope.loading = true;
+
+    // Fonction pour lire les cookies
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // Met à jour les rangs disponibles
+    $scope.updateAvailableRangs = function() {
+        if (!$scope.currentUser) {
+            $scope.availableRangs = ['simple'];
+            return;
+        }
+
+        const userRang = $scope.currentUser.rang;
+        $scope.availableRangs = ['simple'];
+
+        if (userRang === 'complexe' || userRang === 'admin') {
+            $scope.availableRangs.push('complexe');
+        }
+        if (userRang === 'admin') {
+            $scope.availableRangs.push('admin');
+        }
+    };
+
+    // Met à jour le niveau d'accès
+    $scope.updateAccessLevel = function() {
+    	   console.log('Rang sélectionné:', $scope.selectedRang);
+        //$scope.currentAccessLevel = $scope.accessLevels[$scope.selectedRang] || 1;
+        //console.log('Niveau mis à jour:', $scope.selectedRang, $scope.currentAccessLevel);
+        $scope.$applyAsync(); // Force la mise à jour de la vue
+        $timeout(function() {
+        	});
+    };
+
+    // Vérification initiale des cookies
+    function checkAuth() {
+        const pseudo = getCookie('user_pseudo');
+        const rang = getCookie('user_rang');
+        
+        if (pseudo && rang) {
+            $scope.isLoggedIn = true;
+            $scope.currentUser = { pseudo, rang };
+            $scope.selectedRang = rang;
+            $scope.updateAvailableRangs();
+            //$scope.updateAccessLevel();
+            $scope.showLoginPopup = false;
+        } else {
+            $scope.isLoggedIn = false;
+            $scope.currentUser = null;
+            $scope.selectedRang = 'simple';
+            $scope.updateAvailableRangs();
+            //$scope.updateAccessLevel();
+            $scope.showLoginPopup = false;
+        }
+        $scope.updateAccessLevel();
+    }
+
+    // Logout
+    $scope.logout = function() {
+        $http.post('api/logout.php')
+            .finally(function() {
+                $scope.isLoggedIn = false;
+                $scope.currentUser = null;
+                checkAuth(); // Rafraîchit l'état
+            });
+    };
+
+    // Gestion modals
+    $scope.openAppareilModal = function(objet) {
+        if (!$scope.isLoggedIn) return;
+        $scope.selectedAppareil = objet;
+        $scope.showAppareilModal = true;
+    };
+
+    $scope.closeModal = function() {
+        $scope.showAppareilModal = false;
+        $scope.selectedAppareil = null;
+    };
+
+    // Gestion connexion
     $scope.openLogin = function() {
         $scope.showLoginPopup = true;
+        $scope.loginError = '';
+        $scope.user = { pseudo: '', password: '' };
     };
-    
+
     $scope.closeLogin = function() {
         $scope.showLoginPopup = false;
         $scope.loginError = '';
+        $scope.user = { pseudo: '', password: '' };
     };
-    
+
     $scope.login = function() {
         $scope.loginError = '';
         $http.post('api/login.php', $scope.user)
             .then(function(response) {
                 if (response.data.success) {
-                    $scope.closeLogin();
-                    $window.location.href = 'dashboard.html';
+                    $scope.showLoginPopup = false;
+                    checkAuth();
                 } else {
                     $scope.loginError = response.data.message || 'Identifiants incorrects';
                 }
             })
-            .catch(function(error) {
+            .catch(function() {
                 $scope.loginError = 'Erreur de connexion au serveur';
-            });
+            	});
     };
-    
+
     // Redirection inscription
     $scope.redirectToInscription = function() {
         $window.location.href = 'inscription.html';
     };
-    
-    // Gestion météo
-    $scope.weatherData = null;
+
+    // Météo
     const apiKey = '0042905619163fc9e31183aef7b25ae5';
     
     function getWeather(lat, lon) {
@@ -72,52 +174,44 @@ function($scope, $http, $window, $interval) {
                 function(position) {
                     getWeather(position.coords.latitude, position.coords.longitude);
                 },
-                function(error) {
-                    console.warn("Erreur géolocalisation:", error);
+                function() {
                     getWeather(48.8566, 2.3522); // Paris par défaut
                 },
-                { 
-                    enableHighAccuracy: true, 
-                    timeout: 10000,
-                    maximumAge: 600000 // 10 minutes de cache
-                }
+                { enableHighAccuracy: true, timeout: 10000 }
             );
         } else {
             getWeather(48.8566, 2.3522);
         }
     };
 
-    // Appel initial et rafraîchissement périodique (toutes les 30 minutes)
-    $scope.refreshWeather();
-    var weatherInterval = $interval($scope.refreshWeather, 1800000);
-    
-    // Nettoyage quand le contrôleur est détruit
-    $scope.$on('$destroy', function() {
-        if (weatherInterval) {
-            $interval.cancel(weatherInterval);
-        }
-    });
-
-    // Gestion de l'inventaire
-    $scope.objets = [];
-    $scope.filtres = {
-        lieux: [],
-        types: [],
-        etats: []
+    // Inventaire
+    $scope.resetFilters = function() {
+        $scope.filters = { lieu: '', type: '', etat: '', motsCles: '' };
+        $scope.currentPage = 0;
     };
-    $scope.filters = {
-        lieu: '',
-        type: '',
-        etat: '',
-        motsCles: ''
-    };
-    $scope.currentPage = 0;
-    $scope.pageSize = 10;
-    $scope.sortField = 'nom';
-    $scope.reverse = false;
-    $scope.loading = true;
 
-    // Chargement des données de l'inventaire
+    $scope.customFilter = function(objet) {
+    return (
+        (!$scope.filters.lieu || objet.lieu === $scope.filters.lieu) &&
+        (!$scope.filters.type || objet.type === $scope.filters.type) &&
+        (!$scope.filters.etat || objet.etat === $scope.filters.etat) &&
+        (!$scope.filters.motsCles || 
+            (objet.mots_cles && objet.mots_cles.toLowerCase().includes($scope.filters.motsCles.toLowerCase())) ||
+            (objet.nom && objet.nom.toLowerCase().includes($scope.filters.motsCles.toLowerCase())) ||
+            (objet.description && objet.description.toLowerCase().includes($scope.filters.motsCles.toLowerCase()))
+    ));
+	};
+
+    $scope.sortBy = function(field) {
+        $scope.reverse = ($scope.sortField === field) ? !$scope.reverse : false;
+        $scope.sortField = field;
+    };
+
+    $scope.numberOfPages = function() {
+        return Math.ceil($scope.filteredObjets.length / $scope.pageSize);
+    };
+
+    // Initialisation
     $http.get('api/materiels.php')
         .then(function(response) {
             $scope.objets = response.data.materiels;
@@ -129,40 +223,14 @@ function($scope, $http, $window, $interval) {
             $scope.loading = false;
         });
 
-    // Réinitialisation des filtres
-    $scope.resetFilters = function() {
-        $scope.filters = {
-            lieu: '',
-            type: '',
-            etat: '',
-            motsCles: ''
-        };
-        $scope.currentPage = 0;
-    };
+    $scope.refreshWeather();
+    var weatherInterval = $interval($scope.refreshWeather, 1800000);
+    checkAuth();
+    $interval(checkAuth, 300000);
 
-    // Filtre personnalisé
-    $scope.customFilter = function(objet) {
-        return (
-            (!$scope.filters.lieu || objet.lieu === $scope.filters.lieu) &&
-            (!$scope.filters.type || objet.type === $scope.filters.type) &&
-            (!$scope.filters.etat || objet.etat === $scope.filters.etat) &&
-            (!$scope.filters.motsCles || 
-             (objet.mots_cles && objet.mots_cles.toLowerCase().includes($scope.filters.motsCles.toLowerCase())) ||
-             (objet.nom && objet.nom.toLowerCase().includes($scope.filters.motsCles.toLowerCase())) ||
-             (objet.description && objet.description.toLowerCase().includes($scope.filters.motsCles.toLowerCase())))
-        );
-    };
-
-    // Tri des colonnes
-    $scope.sortBy = function(field) {
-        $scope.reverse = ($scope.sortField === field) ? !$scope.reverse : false;
-        $scope.sortField = field;
-    };
-
-    // Calcul du nombre de pages
-    $scope.numberOfPages = function() {
-        return Math.ceil($scope.filteredObjets.length / $scope.pageSize);
-    };
+    $scope.$on('$destroy', function() {
+        $interval.cancel(weatherInterval);
+    });
 }])
 
 .filter('startFrom', function() {
@@ -172,3 +240,5 @@ function($scope, $http, $window, $interval) {
         return input.slice(start);
     };
 });
+
+

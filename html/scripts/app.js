@@ -5,7 +5,8 @@ function($scope, $http, $window, $interval, $timeout) {
 
 
 $scope.showLoginPopup = false;
-
+$scope.showAppareilPopup = false;
+$scope.popupPosition = { top: 0, left: 0 };
 
   
     // Initialisations
@@ -278,9 +279,33 @@ function getWeather(lat, lon) {
         });
 
        
+// --- POPUP VISUALISER MATERIEL
+
+	$scope.openAppareilPopup = function(objet, event) {
+	    if (!$scope.isLoggedIn) return;
+	    
+	    $scope.selectedAppareil = objet;
+	    $scope.showAppareilPopup = true;
+	    
+	    // Positionnement près du bouton cliqué
+	    /*if (event) {
+		   $scope.popupPosition = {
+		       top: event.clientY + 'px',
+		       left: event.clientX + 'px'
+		   };
+	    } else {
+		   // Position par défaut au centre
+		   $scope.popupPosition = {
+		       top: '50%',
+		       left: '50%'
+		   };
+	    }*/
+	};
     
-    
-    
+    $scope.closePopup = function() {
+	    $scope.showAppareilPopup = false;
+	    $scope.selectedAppareil = null;
+	};
     
 }])
 

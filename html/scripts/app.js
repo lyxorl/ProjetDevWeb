@@ -261,12 +261,14 @@ function($scope, $http, $window, $interval, $timeout) {
 
     $scope.updateProfile = function() {
         // faire la recup de l'user
-        $http.put('/api/user/profile', { pseudo: 'admin'}).then(function(response) {
+        $http.put('/api/modifyuser.php', { pseudo: 'admin'}).then(function(response) {
             $scope.message = "Profil mis à jour avec succès";
         }, function(error) {
             console.error("Erreur lors de la mise à jour du profil", error);
             $scope.message = "Erreur lors de la mise à jour du profil";
         });
+
+        //$scope.showModifUser = false; ferme la page lors de la mis a jour
     };
 
     $scope.openModifProfile = function(){

@@ -109,6 +109,9 @@ try {
                         $response['message'] = 'Erreur lors du deplacement de l image';
                     }
                 } 
+                else {
+                    $response['message'] = 'format d image invalide';
+                }
             }
 
             $stmt2 = $pdo->prepare("INSERT INTO Users (pseudo, age, genre, type, photo, nom, prenom, mdp, mail) VALUES (:pseudo, :age, :genre, :type, :photo, :nom, :prenom, :mdp, :mail)");

@@ -9,13 +9,11 @@ angular.module('maisonConnecteeApp', [])
         $scope.openInscript = function() {
             $scope.showInscriptPopup = true;
             $scope.InscriptMsg = '';
-            $scope.creation = { pseudo: '', date: '', genre: '', image: '', type: '', nom: '', prenom: '', adresse: '', mdp: '' };
         };
 
         $scope.closeInscript = function() {
             $scope.showInscriptPopup = false;
             $scope.InscriptMsg = '';  
-            $scope.creation = { pseudo: '', date: '', genre: '', image: '', type: '', nom: '', prenom: '', adresse: '', mdp: '' };
         };
 
         $scope.inscript = function() {

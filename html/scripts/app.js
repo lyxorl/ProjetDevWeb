@@ -361,18 +361,56 @@ function getWeather(lat, lon) {
 
 
 
-	
 
-
-
-
-
-	
     
     $scope.closePopup = function() {
 	    $scope.showAppareilPopup = false;
 	    $scope.selectedAppareil = null;
 	};
+	
+//------- SUPPRIMER MATERIEL ----
+
+	// Fonction de confirmation de suppression
+	$scope.confirmDelete = function() {
+	    if (confirm("Êtes-vous sûr de vouloir supprimer définitivement ce matériel ?")) {
+		   $scope.deleteMaterial();
+	    }
+	};
+
+	// Fonction de suppression effective
+	$scope.deleteMaterial = function() {
+	    if (!$scope.selectedAppareil || !$scope.selectedAppareil.id_objet) {
+		   console.error("Aucun matériel sélectionné ou ID manquant");
+		   return;
+	    }
+	    
+	    $http.post('api/delete_material.php', {
+		   id_objet: $scope.selectedAppareil.id_objet
+	    }).then(function(response) {
+	    		console.log("Réponse serveur:", response.data);
+		   if (response.data.success) {
+		       // Supprime de la liste locale
+		       $scope.objets = $scope.objets.filter(function(obj) {
+		           return obj.id_objet !== $scope.selectedAppareil.id_objet;
+		       });
+		       
+		       // Ferme le popup
+		       $scope.closePopup();
+		       alert("Matériel supprimé avec succès");
+		   } else {
+		       alert("Erreur lors de la suppression : " + (response.data.message || 'Erreur inconnue'));
+		   }
+	    }).catch(function(error) {
+		   console.error("Erreur complète:", error);
+		   if (error.data) {
+		       console.error("Détails erreur:", error.data);
+		   }
+        	   alert("Erreur serveur lors de la suppression. Voir la console pour plus de détails.");
+    });
+};
+	
+	
+	
     
 }])
 

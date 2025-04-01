@@ -1,5 +1,5 @@
 angular.module('maisonConnecteeApp', [])
-.controller('MainController', ['$scope', '$http', '$window', '$interval', '$timeout', 
+.controller('MainController', ['$scope', '$http', '$window', '$interval', '$timeout',
 function($scope, $http, $window, $interval, $timeout) {
     
     // Niveaux d'accès
@@ -145,28 +145,28 @@ function($scope, $http, $window, $interval, $timeout) {
     };
 
    // Météo
-const apiKey = '0042905619163fc9e31183aef7b25ae5';
+    const apiKey = '0042905619163fc9e31183aef7b25ae5';
 
-function getWeather(lat, lon) {
-    $http.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`)
-        .then(function(response) {
-            $scope.weatherData = {
-                city: response.data.name,
-                iconUrl: `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`,
-                temperature: Math.round(response.data.main.temp),
-                description: response.data.weather[0].description,
-                windSpeed: response.data.wind.speed,
-                humidity: response.data.main.humidity
-            };
-        })
-        .catch(function() {
-            $scope.weatherData = {
-                city: "Localisation indisponible",
-                temperature: "--",
-                description: "Service météo indisponible"
-            };
-        });
-}
+    function getWeather(lat, lon) {
+        $http.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&lang=fr&appid=${apiKey}`)
+            .then(function(response) {
+                $scope.weatherData = {
+                    city: response.data.name,
+                    iconUrl: `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`,
+                    temperature: Math.round(response.data.main.temp),
+                    description: response.data.weather[0].description,
+                    windSpeed: response.data.wind.speed,
+                    humidity: response.data.main.humidity
+                };
+            })
+            .catch(function() {
+                $scope.weatherData = {
+                    city: "Localisation indisponible",
+                    temperature: "--",
+                    description: "Service météo indisponible"
+                };
+            });
+    }
 
 		// Version avec Cergy comme lieu fixe
 		$scope.refreshWeather = function() {
@@ -228,6 +228,27 @@ function getWeather(lat, lon) {
     $scope.$on('$destroy', function() {
         $interval.cancel(weatherInterval);
     });
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var pseudo = urlParams.get('pseudo');
+
+    if ($scope.isLoggedIn) {
+        $http.post('api/getuser.php', { pseudo: 'admin'}).then(function(response){
+            if (response.data.success) {
+                console.log("Euh");
+                console.log('Data:', response.data);
+                $scope.user = response.data.data;
+            } else {
+                alert(response.data.message);
+                $window.location.href = 'index.html';
+            }
+        }, function(error) {
+            console.error("Erreur lors du chargement du profil :", error);
+            alert("Erreur lors de la récupération des informations du profile");
+            $window.location.href = 'index.html';
+        });
+    }
+
 }])
 
 .filter('startFrom', function() {

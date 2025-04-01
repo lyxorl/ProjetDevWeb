@@ -216,6 +216,25 @@
                 </button>
             </div>
         </div>
+
+        <!-- Session profile -->
+        <div ng-if="isLoggedIn" class="profile-section">
+            <h2>Profil de {{ user.nom }} {{ user.prenom }}</h2>
+            <img ng-src="{{ user.photo || 'default-avatar.png' }}" alt="Photo de profil">
+            <p><strong>Pseudo:</strong> {{ user.pseudo }}</p>
+            <p><strong>Âge:</strong> {{ user.age }} ans</p>
+            <p><strong>Genre:</strong> {{ user.genre }}</p>
+            <p><strong>Type:</strong> {{ user.type }}</p>
+            <p><strong>Email:</strong> {{ user.mail }}</p>
+            <p><strong>Rang:</strong> {{ user.rang }}</p>
+            <p><strong>Points:</strong> {{ user.nb_point }}</p>
+            <p><strong>Compte validé:</strong> {{ user.validite ? 'Oui' : 'Non' }}</p>
+
+            <a href="modif_profil.html">
+                <button>Modifier profil</button>
+            </a>
+        </div>
+
     </div>
 
     <!-- Popup de connexion -->

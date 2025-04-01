@@ -108,6 +108,9 @@ $data = json_decode($json, true);
                     }
                 } 
             }
+            else{
+                $stock = "Users_img/Base.png";
+            }
 
             $stmt2 = $pdo->prepare("INSERT INTO Users (pseudo, age, genre, type, photo, nom, prenom, mdp, mail) VALUES (:pseudo, :age, :genre, :type, :photo, :nom, :prenom, :mdp, :mail)");
 

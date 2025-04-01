@@ -19,11 +19,11 @@
     </div>
 </div>
 
-    <div class="popup-overlay" ng-show="showInscriptPopup" ng-click="closeInscript()">
-        <div class="inscript-popup" ng-click="$event.stopPropagation()">
-            <button class="popup-close-btn" ng-click="closeInscript()">
-                <i class="fas fa-times"></i>
-            </button>
+<div class="popup-overlay" ng-show="showInscriptPopup" ng-click="closeInscript()">
+    <div class="inscript-popup" ng-click="$event.stopPropagation()">
+        <button class="popup-close-btn" ng-click="closeInscript()">
+            <i class="fas fa-times"></i>
+        </button>
             <h2><i class="fas fa-key"></i> Connexion</h2>
             <form ng-submit="inscript()">
                 <table class="centertable">
@@ -54,7 +54,7 @@
                         <i class="fas fa-sign-in-alt"></i> Envoyer
                     </button>
                     <div class="error-message" ng-if="InscriptMsg">
-                        <i class="fas fa-exclamation-circle"></i> {{ loginError }}
+                        <i class="fas fa-exclamation-circle"></i> {{ InscriptMsg }}
                     </div></td></tr>
                 </table>
             </form>

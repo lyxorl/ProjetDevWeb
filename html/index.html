@@ -248,8 +248,7 @@
 
 <!-- Popup d'appareil -->
 <div class="popup-overlay" ng-show="showAppareilPopup" ng-click="closePopup()">
-    <div class="appareil-popup" ng-click="$event.stopPropagation()" 
-         ng-style="popupPosition">
+    <div class="appareil-popup" ng-click="$event.stopPropagation()">
         <button class="popup-close-btn" ng-click="closePopup()">
             <i class="fas fa-times"></i>
         </button>
@@ -262,38 +261,65 @@
                     <tr>
                         <th>Nom</th>
                         <td>{{selectedAppareil.nom}}</td>
+                        <td class="action-cell"></td>
                     </tr>
                     <tr>
                         <th>Description</th>
                         <td>{{selectedAppareil.description}}</td>
+                        <td class="action-cell"></td>
                     </tr>
                     <tr>
                         <th>État</th>
                         <td>{{selectedAppareil.etat}}</td>
+                        <td class="action-cell" ng-if="selectedRang === 'complexe' || selectedRang === 'admin'">
+					    <div class="toggle-container">
+						   <div class="toggle-slider" 
+							   ng-class="{'active': selectedAppareil.etat === 'actif', 'inactive': selectedAppareil.etat === 'inactif'}" 
+							   ng-click="toggleEtat()">
+							  <div class="toggle-knob"></div>
+							  <span class="toggle-label">{{selectedAppareil.etat === 'actif' ? 'ON' : 'OFF'}}</span>
+						   </div>
+					    </div>
+					</td>
                     </tr>
                     <tr>
                         <th>Type</th>
                         <td>{{selectedAppareil.type}}</td>
+                        <td class="action-cell"></td>
                     </tr>
                     <tr>
                         <th>Lieu</th>
                         <td>{{selectedAppareil.lieu}}</td>
+                        <td class="action-cell"></td>
                     </tr>
                     <tr ng-if="selectedAppareil.temperature !== null">
                         <th>Température</th>
                         <td>{{selectedAppareil.temperature}}°C</td>
+                        <td class="action-cell"></td>
                     </tr>
                     <tr ng-if="selectedAppareil.consigne !== null">
                         <th>Consigne</th>
                         <td>{{selectedAppareil.consigne}}°C</td>
+                        <td class="action-cell">
+                            <div class="consigne-control">
+                                <input type="number" ng-model="selectedAppareil.newConsigne" 
+                   ng-init="selectedAppareil.newConsigne = selectedAppareil.temperature"
+                   class="consigne-input" step="0.5">
+                                <button class="btn-validate" ng-click="updateConsigne()">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                     <tr ng-if="selectedRang === 'complexe' || selectedRang === 'admin'">
                         <th>Limite haute</th>
                         <td>{{selectedAppareil.lim_haute}}°C</td>
+                        <td class="action-cell"></td>
                     </tr>
                     <tr ng-if="selectedRang === 'complexe' || selectedRang === 'admin'">
                         <th>Limite basse</th>
                         <td>{{selectedAppareil.lim_basse}}°C</td>
+                        <td class="action-cell"></td>
                     </tr>
                 </tbody>
             </table>

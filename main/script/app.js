@@ -15,13 +15,6 @@ angular.module('maisonConnecteeApp', [])
             $scope.showInscriptPopup = false;
             $scope.InscriptMsg = '';  
         };
-
-        $scope.inscript = function() {
-            // Add your signup logic here (e.g., send data to server)
-            console.log($scope.creation);
-            // You could also validate the form here before submission
-        };
-
         $scope.inscript= function() {
             $scope.InscriptMsg = '';
             $http.post('api/Send_Inscription.php',$scope.creation)

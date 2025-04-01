@@ -61,8 +61,8 @@
 
     } else {    
 
-        $typesAdresse = ["hotmail.com","laposte.net","gmail.com"];
-        $temp = explode("@", $adresse);
+
+        $regex = '/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/'; 
 
         $stmt = $pdo->prepare("SELECT * FROM Users WHERE mail = :mail");
         $stmt->bindParam(':mail', $adresse, PDO::PARAM_STR);
@@ -70,7 +70,7 @@
 
         $stmt->execute();
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if (!in_array($temp[1], $typesAdresse)){
+        if (!(preg_match($regex, $email))){
             echo "<h4> Adresse mail invalide, veuillez en choisir un autre ou vous connecter </h1>";
             echo "<a href='Inscription.php'>Page Inscription</a>";
         }

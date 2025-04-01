@@ -193,7 +193,7 @@
                         <td>{{ objet.lieu }}</td>
                         <td>{{ objet.temperature != null ? (objet.temperature + '°C') : 'N/A' }}</td>
 					<td ng-if="isLoggedIn" class="actions-cell"> <!-- Visible seulement si connecté -->
-						  <button ng-click="openAppareilModal(objet)" class="visualiser-btn">
+						  <button ng-click="openAppareilPopup(objet, $event)" class="visualiser-btn">
 							 <i class="fas fa-eye"></i> Visualiser
 						  </button>
 					</td>
@@ -221,9 +221,9 @@
     </div>
 
     <!-- Popup de connexion -->
-    <div class="login-overlay" ng-show="showLoginPopup" ng-click="closeLogin()">
+    <div class="popup-overlay" ng-show="showLoginPopup" ng-click="closeLogin()">
         <div class="login-popup" ng-click="$event.stopPropagation()">
-            <button class="close-btn" ng-click="closeLogin()">
+            <button class="popup-close-btn" ng-click="closeLogin()">
                 <i class="fas fa-times"></i>
             </button>
             <h2><i class="fas fa-key"></i> Connexion</h2>
@@ -246,17 +246,18 @@
         </div>
     </div>
 
-<!-- Modal Structure -->
-<div class="modal-overlay" ng-show="showAppareilModal" ng-click="closeModal()">
-    <div class="modal-content" ng-click="$event.stopPropagation()">
-        <button class="close-btn" ng-click="closeModal()">
+<!-- Popup d'appareil -->
+<div class="popup-overlay" ng-show="showAppareilPopup" ng-click="closePopup()">
+    <div class="appareil-popup" ng-click="$event.stopPropagation()" 
+         ng-style="popupPosition">
+        <button class="popup-close-btn" ng-click="closePopup()">
             <i class="fas fa-times"></i>
         </button>
         
         <h2>{{selectedAppareil.nom}}</h2>
         
-        <div class="modal-body">
-            <table class="modal-table">
+        <div class="popup-body">
+            <table class="popup-table">
                 <tbody>
                     <tr>
                         <th>Nom</th>
@@ -286,13 +287,10 @@
                         <th>Consigne</th>
                         <td>{{selectedAppareil.consigne}}°C</td>
                     </tr>
-                    <!-- Niveau complexe+ -->
-                   <!-- <tr ng-if="currentAccessLevel >= 2 && selectedAppareil.lim_haute !== null">-->
                     <tr ng-if="selectedRang === 'complexe' || selectedRang === 'admin'">
                         <th>Limite haute</th>
                         <td>{{selectedAppareil.lim_haute}}°C</td>
                     </tr>
-                    <!--<tr ng-if="currentAccessLevel >= 2 && selectedAppareil.lim_basse !== null">-->
                     <tr ng-if="selectedRang === 'complexe' || selectedRang === 'admin'">
                         <th>Limite basse</th>
                         <td>{{selectedAppareil.lim_basse}}°C</td>

@@ -50,7 +50,12 @@
                     <tr><td>Prenom :<input type ="text" name="prenom" ng-model="creation.prenom" required> </td></tr>
                     <tr><td>Adresse mail :<input type ="text" name="adresse" ng-model="creation.adresse" required> </td></tr>
                     <tr><td>Mot de passe :<input type ="password" name="mdp" ng-model="creation.mdp" required> </td></tr>
-                    <tr><td><button class="button" type="submit" name="submit" value="Submit">Envoyer</button> </td></tr>
+                    <tr><td><button type="submit" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    </button>
+                    <div class="error-message" ng-if="loginError">
+                        <i class="fas fa-exclamation-circle"></i> {{ loginError }}
+                    </div></td></tr>
                 </table>
             </form>
         </div>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html ng-app="maisonConnecteeApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Maison Connectée</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body ng-controller="MainController">
+	<!-- En-tête avec boutons -->
+    <!-- Remplacez toute la section header par : -->
+<div class="header">
+    <!-- Non connecté -->
+    <div ng-if="!isLoggedIn">
+        <button ng-click="openInscript()">
+            <i class="fas fa-user-plus"></i> S'inscrire
+        </button>
+    </div>
+</div>
+
+    <div class="popup-overlay" ng-show="showInscriptPopup" ng-click="closeInscript()">
+        <div class="inscript-popup" ng-click="$event.stopPropagation()">
+            <button class="popup-close-btn" ng-click="closeInscript()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2><i class="fas fa-key"></i> Connexion</h2>
+            <form ng-submit="inscript()">
+                <table class="centertable">
+                    <tr><td><h3>Rubrique publique : </h3></td></tr>
+            
+                    <tr><td>Pseudonyme : <input type ="text" name="pseudo" ng-model="creation.pseudo" required> </td></tr>
+                    <tr><td>Date de naissance: <input type ="date" name="date" ng-model="creation.date" required> </td></tr>
+                    <tr><td >Genre :<select name="genre" ng-model="creation.genre" required>
+                        <option value='M'>M</option>";
+                        <option value='F'>F</option>";
+                        <option value='Autre'>Autre</option>";
+
+                    </select></td></tr>
+                    <tr><td><input class="buttona"type="file" name="img" accept="image/*" ng-model="creation.image" required></td></tr>
+                    <tr><td >Role/Fonction :<select name="type" ng-model="creation.type" required>
+                        <option value='parent'>parent</option>";
+                        <option value='enfant'>enfant</option>";
+                        <option value='invité'>invité</option>";
+                    </select></td></tr>
+            
+                    <tr><td><h3>Rubrique personelle :</h3></td></tr>
+            
+                    <tr><td>Nom :<input type ="text" name="nom" ng-model="creation.nom" required> </td></tr>
+                    <tr><td>Prenom :<input type ="text" name="prenom" ng-model="creation.prenom" required> </td></tr>
+                    <tr><td>Adresse mail :<input type ="text" name="adresse" ng-model="creation.adresse" required> </td></tr>
+                    <tr><td>Mot de passe :<input type ="password" name="mdp" ng-model="creation.mdp" required> </td></tr>
+                    <tr><td><button class="button" type="submit" name="submit" value="Submit">Envoyer</button> </td></tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+</body>

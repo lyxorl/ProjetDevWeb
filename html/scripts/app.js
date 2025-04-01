@@ -86,6 +86,7 @@ function($scope, $http, $window, $interval, $timeout) {
             $scope.showLoginPopup = false;
         }
         $scope.updateAccessLevel();
+        affichageProfile();
     }
 
     // Logout
@@ -229,24 +230,26 @@ function($scope, $http, $window, $interval, $timeout) {
         $interval.cancel(weatherInterval);
     });
 
-    var urlParams = new URLSearchParams(window.location.search);
-    var pseudo = urlParams.get('pseudo');
+    function affichageProfile(){
+        var urlParams = new URLSearchParams(window.location.search);
+        var pseudo = urlParams.get('pseudo');
 
-    if ($scope.isLoggedIn) {
-        $http.post('api/getuser.php', { pseudo: 'admin'}).then(function(response){
-            if (response.data.success) {
-                console.log("Euh");
-                console.log('Data:', response.data);
-                $scope.user = response.data.data;
-            } else {
-                alert(response.data.message);
+        if ($scope.isLoggedIn) {
+            $http.post('api/getuser.php', { pseudo: 'admin'}).then(function(response){
+                if (response.data.success) {
+                    console.log("Euh");
+                    console.log('Data:', response.data);
+                    $scope.user = response.data.data;
+                } else {
+                    alert(response.data.message);
+                    $window.location.href = 'index.html';
+                }
+            }, function(error) {
+                console.error("Erreur lors du chargement du profil :", error);
+                alert("Erreur lors de la récupération des informations du profile");
                 $window.location.href = 'index.html';
-            }
-        }, function(error) {
-            console.error("Erreur lors du chargement du profil :", error);
-            alert("Erreur lors de la récupération des informations du profile");
-            $window.location.href = 'index.html';
-        });
+            });
+        }
     }
 
 }])

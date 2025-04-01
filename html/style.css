@@ -521,6 +521,154 @@ tr:hover { background-color: #f0f8ff; }
 .appareil-popup-table tr:last-child td {
     border-bottom: none;
 }
+/* ---- modif popup */
+/* Styles pour le tableau du popup */
+.popup-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.popup-table th {
+    text-align: left;
+    padding: 10px;
+    width: 30%;
+    color: #555;
+}
+
+.popup-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.action-cell {
+    width: 200px;
+    padding-left: 20px !important;
+    text-align: right;
+}
+
+/* Toggle switch pour l'état */
+.toggle-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.toggle-slider {
+     width: 80px;
+    height: 30px;
+    background: #e74c3c; /* Rouge pour inactif */
+    border-radius: 15px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.toggle-slider.active {
+    background: #2ecc71;
+}
+
+.toggle-slider.inactive {
+    background: #e74c3c; /* Rouge pour inactif */
+}
+
+.toggle-knob {
+    width: 26px;
+    height: 26px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s;
+}
+
+.toggle-slider.active .toggle-knob {
+    left: calc(100% - 28px);
+}
+
+.toggle-label {
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 50%;
+    margin-left: -10px;
+    text-transform: uppercase;
+}
+
+/* Contrôle de consigne */
+.consigne-control {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+    width: 100%;
+}
+
+.consigne-input {
+    width: 70px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.btn-validate {
+    background: #3498db;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.btn-validate:hover {
+    background: #2980b9;
+}
+
+/* ----- bouton supprimer popup matériel */
+
+/* Styles pour le footer du popup */
+.popup-footer {
+    margin-top: 25px;
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+/* Style du bouton Supprimer */
+.btn-delete {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-delete:active {
+    transform: translateY(0);
+}
+
+/* --------------------*/
+
+/* *** fin modif*/
 .form-group {
     /* Styles spécifiques au formulaire de login */
 }

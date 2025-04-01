@@ -281,26 +281,93 @@ function getWeather(lat, lon) {
        
 // --- POPUP VISUALISER MATERIEL
 
-	$scope.openAppareilPopup = function(objet, event) {
+	$scope.openAppareilPopup = function(objet) {
 	    if (!$scope.isLoggedIn) return;
 	    
-	    $scope.selectedAppareil = objet;
+	    $scope.selectedAppareil = angular.copy(objet);
+	    $scope.selectedAppareil.newEtat = objet.etat;
 	    $scope.showAppareilPopup = true;
 	    
-	    // Positionnement près du bouton cliqué
-	    /*if (event) {
-		   $scope.popupPosition = {
-		       top: event.clientY + 'px',
-		       left: event.clientX + 'px'
-		   };
-	    } else {
-		   // Position par défaut au centre
-		   $scope.popupPosition = {
-		       top: '50%',
-		       left: '50%'
-		   };
-	    }*/
+	    $http.get('api/materiels.php').then(function(response) {
+		    console.log("Données reçues:", response.data);
+		    // Doit montrer id_objet comme chaîne (ex: "a1b2c3", pas 123)
+		});
+	    
+	    
 	};
+	
+// ---- pour modifier dans popup
+
+	$scope.toggleEtat = function() {
+	    if (!$scope.selectedAppareil || !$scope.selectedAppareil.id_objet) {
+		   console.error("ID objet manquant ou invalide");
+		   return;
+	    }
+
+	    var nouvelEtat = $scope.selectedAppareil.etat === 'actif' ? 'inactif' : 'actif';
+	    
+	    $http.post('api/update_etat.php', {
+		   id_objet: $scope.selectedAppareil.id_objet,  // On envoie tel quel sans conversion
+		   etat: nouvelEtat
+	    }).then(function(response) {
+		   if (response.data.success) {
+		       $scope.selectedAppareil.etat = nouvelEtat;
+		       updateListeObjets($scope.selectedAppareil.id_objet, nouvelEtat);
+		   } else {
+		       console.error("Erreur serveur:", response.data.message);
+		   }
+	    }).catch(function(error) {
+		   console.error("Erreur HTTP:", error);
+	    });
+	};
+
+	
+	function updateListeObjets(id_objet, nouvelEtat) {
+	    angular.forEach($scope.objets, function(obj) {
+		   if (obj.id_objet === id_objet) {  // Comparaison directe des chaînes
+		       obj.etat = nouvelEtat;
+		   }
+	    });
+	}
+
+	
+
+	$scope.updateConsigne = function() {
+	    if ($scope.selectedAppareil.newConsigne === null || 
+		   $scope.selectedAppareil.newConsigne === undefined) return;
+	    
+	    $http.post('api/update_consigne.php', {
+		   id_objet: $scope.selectedAppareil.id_objet,
+		   consigne: $scope.selectedAppareil.newConsigne
+	    }).then(function(response) {
+		   if (response.data.success) {
+		       // Met à jour la valeur affichée
+		       $scope.selectedAppareil.consigne = $scope.selectedAppareil.newConsigne;
+		       
+		       // Met à jour dans la liste principale
+		       var index = $scope.objets.findIndex(o => o.id_objet === $scope.selectedAppareil.id_objet);
+		       if (index !== -1) {
+		           $scope.objets[index].consigne = $scope.selectedAppareil.newConsigne;
+		       }
+		       
+		       // Affiche un message de succès
+		       alert("Consigne mise à jour avec succès !");
+		   }
+	    }).catch(function(error) {
+		   console.error("Erreur:", error);
+		   alert("Erreur lors de la mise à jour de la consigne");
+	    });
+	};
+
+
+
+	
+
+
+
+
+
+	
     
     $scope.closePopup = function() {
 	    $scope.showAppareilPopup = false;

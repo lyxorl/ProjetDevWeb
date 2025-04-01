@@ -35,12 +35,14 @@
 		   <span class="rang-label">Choix du profil :</span>
 		   <select ng-model="selectedRang" 
 			   ng-change="updateAccessLevel()"
-			   ng-options="rang as rang for rang in availableRangs">
+			   ng-options="rang as rang for rang in availableRangs track by rang"
+			   ng-value="selectedRang">
 			</select>
 		    
 	    </div>
 	</div>
 </div>
+
 
     <!-- Contenu principal -->
     <div class="main-container">

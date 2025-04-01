@@ -341,12 +341,10 @@ tr:hover { background-color: #f0f8ff; }
 /* Profile section*/
 
 .profile-section {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 80px 20px 20px;
-    background: white;
-    border-radius: 15px;
+    margin-top: 25px;
     padding: 25px;
+    background: rgb(25, 115, 34);
+    border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 

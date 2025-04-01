@@ -30,6 +30,8 @@ function($scope, $http, $window, $interval, $timeout) {
     $scope.reverse = false;
     $scope.loading = true;
 
+    $scope.userslist = [];
+
     $scope.showModifUser = false;
 
     // Fonction pour lire les cookies
@@ -194,7 +196,7 @@ function($scope, $http, $window, $interval, $timeout) {
         (!$scope.filters.lieu || objet.lieu === $scope.filters.lieu) &&
         (!$scope.filters.type || objet.type === $scope.filters.type) &&
         (!$scope.filters.etat || objet.etat === $scope.filters.etat) &&
-        (!$scope.filters.motsCles || 
+        (!$scope.filters.motsCles ||
             (objet.mots_cles && objet.mots_cles.toLowerCase().includes($scope.filters.motsCles.toLowerCase())) ||
             (objet.nom && objet.nom.toLowerCase().includes($scope.filters.motsCles.toLowerCase())) ||
             (objet.description && objet.description.toLowerCase().includes($scope.filters.motsCles.toLowerCase()))
@@ -238,7 +240,7 @@ function($scope, $http, $window, $interval, $timeout) {
 
         if ($scope.isLoggedIn) {
             // faire la recup de l'utilisateur
-            $http.post('api/getuser.php', { pseudo: 'admin'}).then(function(response){
+            $http.post('api/getuser.php', {pseudo : 'admin'}).then(function(response){
                 if (response.data.success) {
                     $scope.user = response.data.data;
                 } else {
@@ -272,6 +274,16 @@ function($scope, $http, $window, $interval, $timeout) {
     $scope.openModifProfile = function(){
         $scope.showModifUser = true;
     }
+
+    $http.get('api/users.php')
+        .then(function(response) {
+            $scope.userslist = response.data.users;
+        })
+        .catch(function(error) {
+            
+            console.error('Erreur lors de la recuperation des users:', error);
+            $scope.loading = false;
+        });
 
 }])
 

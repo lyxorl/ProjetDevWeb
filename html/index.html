@@ -130,44 +130,44 @@
                     <tr>
                         <th ng-click="sortBy('nom')">
                             Nom 
-                            <i class="fas sort-icon" 
-                               ng-class="{'fa-sort': sortField != 'nom', 
-                                         'fa-sort-up': sortField == 'nom' && !reverse, 
+                            <i class="fas sort-icon"
+                               ng-class="{'fa-sort': sortField != 'nom',
+                                         'fa-sort-up': sortField == 'nom' && !reverse,
                                          'fa-sort-down': sortField == 'nom' && reverse}"></i>
                         </th>
                         <th ng-click="sortBy('description')">
                             Description
-                            <i class="fas sort-icon" 
-                               ng-class="{'fa-sort': sortField != 'description', 
-                                         'fa-sort-up': sortField == 'description' && !reverse, 
+                            <i class="fas sort-icon"
+                               ng-class="{'fa-sort': sortField != 'description',
+                                         'fa-sort-up': sortField == 'description' && !reverse,
                                          'fa-sort-down': sortField == 'description' && reverse}"></i>
                         </th>
                         <th ng-click="sortBy('type')">
                             Type
-                            <i class="fas sort-icon" 
-                               ng-class="{'fa-sort': sortField != 'type', 
-                                         'fa-sort-up': sortField == 'type' && !reverse, 
+                            <i class="fas sort-icon"
+                               ng-class="{'fa-sort': sortField != 'type',
+                                         'fa-sort-up': sortField == 'type' && !reverse,
                                          'fa-sort-down': sortField == 'type' && reverse}"></i>
                         </th>
                         <th ng-click="sortBy('etat')">
-                            État 
-                            <i class="fas sort-icon" 
-                                ng-class="{'fa-sort': sortField != 'etat', 
-                                        'fa-sort-up': sortField == 'etat' && !reverse, 
+                            État
+                            <i class="fas sort-icon"
+                                ng-class="{'fa-sort': sortField != 'etat',
+                                        'fa-sort-up': sortField == 'etat' && !reverse,
                                         'fa-sort-down': sortField == 'etat' && reverse}"></i>
                         </th>
                         <th ng-click="sortBy('lieu')">
-                            Lieu 
+                            Lieu
                             <i class="fas sort-icon"
-                               ng-class="{'fa-sort': sortField != 'lieu', 
-                                        'fa-sort-up': sortField == 'lieu' && !reverse, 
+                               ng-class="{'fa-sort': sortField != 'lieu',
+                                        'fa-sort-up': sortField == 'lieu' && !reverse,
                                         'fa-sort-down': sortField == 'lieu' && reverse}"></i>
                         </th>
                         <th ng-click="sortBy('temperature')">
                             Température
                             <i class="fas sort-icon"
-                               ng-class="{'fa-sort': sortField != 'temperature', 
-                                         'fa-sort-up': sortField == 'temperature' && !reverse, 
+                               ng-class="{'fa-sort': sortField != 'temperature',
+                                         'fa-sort-up': sortField == 'temperature' && !reverse,
                                          'fa-sort-down': sortField == 'temperature' && reverse}"></i>
                         </th>
                         					   <!-- Nouvelle colonne Actions -->
@@ -233,6 +233,35 @@
             <button ng-click="openModifProfile()">Modifier profil</button>
         </div>
 
+        <div ng-if="selectedRang === 'admin'">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pseudo</th>
+                        <th>Nom</th>
+                        <th>Prenom</th>
+                        <th>Rang</th>
+                        <th>Validite</th>
+                        <th>Mail</th>
+                        <th>Visualiser</th>
+                    </tr>
+                </thead>
+                    <tr ng-repeat="user in userslist">
+                        <td><strong>{{ user.pseudo }}</strong></td>
+                        <td><strong>{{ user.nom }}</strong></td>
+                        <td><strong>{{ user.prenom }}</strong></td>
+                        <td><strong>{{ user.rang }}</strong></td>
+                        <td><strong>{{ user.validite }}</strong></td>
+                        <td><strong>{{ user.mail }}</strong></td>
+                    </tr>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+
     </div>
 
     <!-- Popup de connexion -->
@@ -263,7 +292,7 @@
 
 <!-- Modal Structure -->
 
- <!-- Affichage du bloc pour les objets/items-->
+<!-- Affichage du bloc pour les objets/items-->
 <div class="modal-overlay" ng-show="showAppareilModal" ng-click="closeModal()">
     <div class="modal-content" ng-click="$event.stopPropagation()">
         <button class="close-btn" ng-click="closeModal()">

@@ -28,6 +28,7 @@ angular.module('maisonConnecteeApp', [])
                 })
                 .catch(function() {
                     $scope.InscriptMsg = 'Erreur de connexion au serveur';
+                    
                 });
         };
     });

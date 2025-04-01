@@ -14,7 +14,7 @@ header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
-require_once '../db.php';
+require_once 'db.php';
 
 file_put_contents('debug.log', print_r($_POST, true)); // Log des données reçues
 
@@ -27,11 +27,13 @@ $data = json_decode($json, true);
         'message' => 'Erreur inconnue'
     ];
 
+
     //stockage des variables
     $x = time();
     $inscript = date("d/m/Y", $x );
 
-
+try {
+   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pseudo= $data['pseudo'];
     $pseudo = trim($pseudo);
     $genre = $data['genre'];
@@ -139,8 +141,15 @@ $data = json_decode($json, true);
     }
 
     
+} else {
+    $response['message'] = 'Méthode non autorisée';
+}
+} catch (PDOException $e) {
+$response['message'] = 'Erreur base de données';
+file_put_contents('debug.log', $e->getMessage(), FILE_APPEND);
+}
 
-    
+echo json_encode($response);
 ?>
 
 </body>

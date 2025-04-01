@@ -2,13 +2,12 @@ angular.module('maisonConnecteeApp', [])
 .controller('MainController', ['$scope', '$http', '$window', '$interval', '$timeout', 
 function($scope, $http, $window, $interval, $timeout) {
     
-    // Niveaux d'accès
-    $scope.accessLevels = {
-        simple: 1,
-        complexe: 2,
-        admin: 3
-    };
 
+
+$scope.showLoginPopup = false;
+
+
+  
     // Initialisations
     $scope.showLoginPopup = false;
     $scope.showAppareilModal = false;
@@ -30,14 +29,27 @@ function($scope, $http, $window, $interval, $timeout) {
     $scope.reverse = false;
     $scope.loading = true;
 
-    // Fonction pour lire les cookies
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
+    
+// ----- GESTION DU MENU DÉROULANT POUR LES NIVEAUX
 
-    // Met à jour les rangs disponibles
+	// Niveaux d'accès
+	    $scope.accessLevels = {
+		   simple: 1,
+		   complexe: 2,
+		   admin: 3
+	    };
+//---------------
+		// Nouvelle fonction pour gérer le rang
+	function getSelectedRang() {
+	    return localStorage.getItem('selected_rang') || 'simple';
+	}
+
+	function setSelectedRang(rang) {
+	    localStorage.setItem('selected_rang', rang);
+	    console.log('Rang sauvegardé:', rang);
+	}
+//----------------
+    // RANG DISPONIBLES 
     $scope.updateAvailableRangs = function() {
         if (!$scope.currentUser) {
             $scope.availableRangs = ['simple'];
@@ -55,45 +67,75 @@ function($scope, $http, $window, $interval, $timeout) {
         }
     };
 
-    // Met à jour le niveau d'accès
+    
+    // MAJ RANG SUITE AU CHOIX
     $scope.updateAccessLevel = function() {
-    	   console.log('Rang sélectionné:', $scope.selectedRang);
-        //$scope.currentAccessLevel = $scope.accessLevels[$scope.selectedRang] || 1;
-        //console.log('Niveau mis à jour:', $scope.selectedRang, $scope.currentAccessLevel);
-        $scope.$applyAsync(); // Force la mise à jour de la vue
-        $timeout(function() {
-        	});
-    };
+	    // Récupère la valeur DIRECTEMENT depuis le DOM
+	    const selectElement = document.querySelector('[ng-model="selectedRang"]');
+	    const domValue = selectElement ? selectElement.value : $scope.selectedRang;
+	    
+	    // Nettoie la valeur si c'est un objet String
+	    const cleanValue = domValue && domValue.toString().replace('string:', '');
+	    
+	    // Validation finale
+	    if (!cleanValue || !$scope.availableRangs.includes(cleanValue)) {
+		   console.warn('Valeur invalide, réinitialisation à simple');
+		   $scope.selectedRang = 'simple';
+	    } else {
+		   $scope.selectedRang = cleanValue;
+	    }
+	    
+	    // Sauvegarde
+	    localStorage.setItem('selected_rang', $scope.selectedRang);
+	    $scope.currentAccessLevel = $scope.accessLevels[$scope.selectedRang];
+	    
+	    console.log('Mise à jour FINALE - DOM:', domValue, 
+		          'Scope:', $scope.selectedRang, 
+		          'Niveau:', $scope.currentAccessLevel);
+	    
+	    // Force la cohérence DOM/Scope
+	    $timeout(() => {
+		   if (selectElement) {
+		       selectElement.value = $scope.selectedRang;
+		   }
+	    });
+	};
+    
+    
 
-    // Vérification initiale des cookies
+    // GESTION INITIALE DES VALEURS
     function checkAuth() {
-        const pseudo = getCookie('user_pseudo');
-        const rang = getCookie('user_rang');
-        
-        if (pseudo && rang) {
-            $scope.isLoggedIn = true;
-            $scope.currentUser = { pseudo, rang };
-            $scope.selectedRang = rang;
-            $scope.updateAvailableRangs();
-            //$scope.updateAccessLevel();
-            $scope.showLoginPopup = false;
-        } else {
-            $scope.isLoggedIn = false;
-            $scope.currentUser = null;
-            $scope.selectedRang = 'simple';
-            $scope.updateAvailableRangs();
-            //$scope.updateAccessLevel();
-            $scope.showLoginPopup = false;
-        }
-        $scope.updateAccessLevel();
-    }
+	    const pseudo = localStorage.getItem('user_pseudo');
+	    const rang = localStorage.getItem('user_rang');
+	    
+	    if (pseudo && rang) {
+		   $scope.isLoggedIn = true;
+		   $scope.currentUser = { pseudo, rang };
+		   
+		   // Récupère et nettoie la valeur
+		   let selectedRang = localStorage.getItem('selected_rang') || rang;
+		   selectedRang = selectedRang.toString().replace('string:', '');
+		   
+		   if (!$scope.availableRangs.includes(selectedRang)) {
+		       selectedRang = 'simple';
+		   }
+		   
+		   $scope.selectedRang = selectedRang;
+		   $scope.updateAvailableRangs();
+		   
+		   console.log('Connexion - Rang final:', $scope.selectedRang);
+	    }
+	}
+	
 
     // Logout
     $scope.logout = function() {
         $http.post('api/logout.php')
             .finally(function() {
+                 localStorage.removeItem('user_pseudo');
+        		localStorage.removeItem('user_rang');               
                 $scope.isLoggedIn = false;
-                $scope.currentUser = null;
+                //$scope.currentUser = null;
                 checkAuth(); // Rafraîchit l'état
             });
     };
@@ -110,7 +152,8 @@ function($scope, $http, $window, $interval, $timeout) {
         $scope.selectedAppareil = null;
     };
 
-    // Gestion connexion
+// ----- GESTION CONNEXION
+
     $scope.openLogin = function() {
         $scope.showLoginPopup = true;
         $scope.loginError = '';
@@ -129,6 +172,8 @@ function($scope, $http, $window, $interval, $timeout) {
             .then(function(response) {
                 if (response.data.success) {
                     $scope.showLoginPopup = false;
+                    localStorage.setItem('user_pseudo', response.data.pseudo);
+                	localStorage.setItem('user_rang', response.data.rang);
                     checkAuth();
                 } else {
                     $scope.loginError = response.data.message || 'Identifiants incorrects';
@@ -139,12 +184,13 @@ function($scope, $http, $window, $interval, $timeout) {
             	});
     };
 
-    // Redirection inscription
+// ----- GESTION INSCRIPTION
     $scope.redirectToInscription = function() {
         $window.location.href = 'inscription.html';
     };
 
-   // Météo
+// ------ Météo
+
 const apiKey = '0042905619163fc9e31183aef7b25ae5';
 
 function getWeather(lat, lon) {
@@ -178,9 +224,21 @@ function getWeather(lat, lon) {
 		};
 
 		// Appeler refreshWeather au chargement
+		
 		$scope.refreshWeather();
+    var weatherInterval = $interval($scope.refreshWeather, 1800000);
+    checkAuth();
+    $interval(checkAuth, 300000);
 
-    // Inventaire
+    $scope.$on('$destroy', function() {
+        $interval.cancel(weatherInterval);
+    });
+
+
+
+
+// GESTION INVENTAIRE MATERIEL
+
     $scope.resetFilters = function() {
         $scope.filters = { lieu: '', type: '', etat: '', motsCles: '' };
         $scope.currentPage = 0;
@@ -219,15 +277,14 @@ function getWeather(lat, lon) {
             $scope.loading = false;
         });
 
-    $scope.refreshWeather();
-    var weatherInterval = $interval($scope.refreshWeather, 1800000);
-    checkAuth();
-    $interval(checkAuth, 300000);
-
-    $scope.$on('$destroy', function() {
-        $interval.cancel(weatherInterval);
-    });
+       
+    
+    
+    
+    
 }])
+
+// --- FIN NE PAS TOUCHER APRES
 
 .filter('startFrom', function() {
     return function(input, start) {

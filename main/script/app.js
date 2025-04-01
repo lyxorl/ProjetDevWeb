@@ -1,16 +1,16 @@
 angular.module('maisonConnecteeApp', [])
-    .controller('MainController', function($scope, $http) {
+    .controller('MainController', function($scope, $http){
         $scope.showInscriptPopup = false;
         $scope.InscriptMsg = '';
         $scope.creation = { pseudo: '', date: '', genre: '', image: '', type: '', nom: '', prenom: '', adresse: '', mdp: '' };
-        $scope.reverse = false;
-        $scope.loading = true;
+        $scope.isLoggedIn= false;
+
 
         $scope.openInscript = function() {
             $scope.showInscriptPopup = true;
             $scope.InscriptMsg = '';
         };
-        
+
         $scope.closeInscript = function() {
             $scope.showInscriptPopup = false;
             $scope.InscriptMsg = '';  

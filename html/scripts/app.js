@@ -240,8 +240,6 @@ function($scope, $http, $window, $interval, $timeout) {
             // faire la recup de l'utilisateur
             $http.post('api/getuser.php', { pseudo: 'admin'}).then(function(response){
                 if (response.data.success) {
-                    console.log("Euh");
-                    console.log('Data:', response.data);
                     $scope.user = response.data.data;
                 } else {
                     alert(response.data.message);
@@ -261,14 +259,14 @@ function($scope, $http, $window, $interval, $timeout) {
 
     $scope.updateProfile = function() {
         // faire la recup de l'user
-        $http.put('/api/modifyuser.php', { pseudo: 'admin'}).then(function(response) {
+        $http.post('api/modifyuser.php', $scope.user).then(function(response) {
             $scope.message = "Profil mis à jour avec succès";
         }, function(error) {
             console.error("Erreur lors de la mise à jour du profil", error);
             $scope.message = "Erreur lors de la mise à jour du profil";
         });
 
-        //$scope.showModifUser = false; ferme la page lors de la mis a jour
+        $scope.showModifUser = false; //ferme la page lors de la mis a jour
     };
 
     $scope.openModifProfile = function(){

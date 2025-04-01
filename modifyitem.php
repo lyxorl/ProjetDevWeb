@@ -10,7 +10,7 @@ file_put_contents('debug.log', print_r($_POST, true));
 $data = json_decode(file_get_contents("php://input"));
 
 try{
-    $stmt = $conn->prepare("UPDATE objets_connectes
+    $stmt = $conn->prepare("UPDATE Objets_connectes
                             SET nom = :nom,
                                 description = :description,
                                 etat = :etat,

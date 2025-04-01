@@ -15,6 +15,7 @@ angular.module('maisonConnecteeApp', [])
             $scope.showInscriptPopup = false;
             $scope.InscriptMsg = '';  
         };
+
         $scope.inscript= function() {
             $scope.InscriptMsg = '';
             $http.post('api/Send_Inscription.php',$scope.creation)

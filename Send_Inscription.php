@@ -123,7 +123,6 @@
             $stmt2->bindParam(':mdp', $hashmdp);
             
 
-       
             $stmt2->execute();
             echo "Demande d'inscription reussite";
             

@@ -152,20 +152,20 @@
                         <th ng-click="sortBy('etat')">
                             État 
                             <i class="fas sort-icon" 
-                               ng-class="{'fa-sort': sortField != 'etat', 
-                                         'fa-sort-up': sortField == 'etat' && !reverse, 
-                                         'fa-sort-down': sortField == 'etat' && reverse}"></i>
+                                ng-class="{'fa-sort': sortField != 'etat', 
+                                        'fa-sort-up': sortField == 'etat' && !reverse, 
+                                        'fa-sort-down': sortField == 'etat' && reverse}"></i>
                         </th>
                         <th ng-click="sortBy('lieu')">
                             Lieu 
-                            <i class="fas sort-icon" 
+                            <i class="fas sort-icon"
                                ng-class="{'fa-sort': sortField != 'lieu', 
-                                         'fa-sort-up': sortField == 'lieu' && !reverse, 
-                                         'fa-sort-down': sortField == 'lieu' && reverse}"></i>
+                                        'fa-sort-up': sortField == 'lieu' && !reverse, 
+                                        'fa-sort-down': sortField == 'lieu' && reverse}"></i>
                         </th>
                         <th ng-click="sortBy('temperature')">
-                            Température 
-                            <i class="fas sort-icon" 
+                            Température
+                            <i class="fas sort-icon"
                                ng-class="{'fa-sort': sortField != 'temperature', 
                                          'fa-sort-up': sortField == 'temperature' && !reverse, 
                                          'fa-sort-down': sortField == 'temperature' && reverse}"></i>
@@ -191,9 +191,9 @@
                         <td>{{ objet.lieu }}</td>
                         <td>{{ objet.temperature != null ? (objet.temperature + '°C') : 'N/A' }}</td>
 					<td ng-if="isLoggedIn" class="actions-cell"> <!-- Visible seulement si connecté -->
-						  <button ng-click="openAppareilModal(objet)" class="visualiser-btn">
-							 <i class="fas fa-eye"></i> Visualiser
-						  </button>
+					    <button ng-click="openAppareilModal(objet)" class="visualiser-btn">
+							<i class="fas fa-eye"></i> Visualiser
+						</button>
 					</td>
                     </tr>
                     <tr ng-if="filteredObjets.length === 0">
@@ -230,9 +230,7 @@
             <p><strong>Points:</strong> {{ user.nb_point }}</p>
             <p><strong>Compte validé:</strong> {{ user.validite ? 'Oui' : 'Non' }}</p>
 
-            <a href="modif_profil.html">
-                <button>Modifier profil</button>
-            </a>
+            <button ng-click="openModifProfile()">Modifier profil</button>
         </div>
 
     </div>
@@ -264,6 +262,7 @@
     </div>
 
 <!-- Modal Structure -->
+
  <!-- Affichage du bloc pour les objets/items-->
 <div class="modal-overlay" ng-show="showAppareilModal" ng-click="closeModal()">
     <div class="modal-content" ng-click="$event.stopPropagation()">
@@ -305,7 +304,7 @@
                         <td>{{selectedAppareil.consigne}}°C</td>
                     </tr>
                     <!-- Niveau complexe+ -->
-                   <!-- <tr ng-if="currentAccessLevel >= 2 && selectedAppareil.lim_haute !== null">-->
+                    <!-- <tr ng-if="currentAccessLevel >= 2 && selectedAppareil.lim_haute !== null">-->
                     <tr ng-if="selectedRang === 'complexe' || selectedRang === 'admin'">
                         <th>Limite haute</th>
                         <td>{{selectedAppareil.lim_haute}}°C</td>
@@ -323,9 +322,49 @@
 
 <!-- Modal pour la modification de l'user -->
 
+<div class="modal-overlay" ng-show="showModifUser" ng-click="closeModifUser()">
+    <div class="modal-content">
+        <h2>Modifier votre profil</h2>
+        <form ng-submit="updateProfile()">
+            <label>Pseudo:</label>
+            <input type="text" ng-model="user.pseudo" disabled /><br>
+                
+            <label>Nom:</label>
+            <input type="text" ng-model="user.nom" required /><br>
+            
+            <label>Prénom:</label>
+            <input type="text" ng-model="user.prenom" required /><br>
+            
+            <label>Âge:</label>
+            <input type="number" ng-model="user.age" required /><br>
+            
+            <label>Genre:</label>
+            <select ng-model="user.genre">
+                <option value="Homme">Homme</option>
+                <option value="Femme">Femme</option>
+                <option value="Autre">Autre</option>
+            </select><br>
+                
+            <label>Type:</label>
+            <input type="text" ng-model="user.type" /><br>
+                
+            <label>Email:</label>
+            <input type="email" ng-model="user.mail" required /><br>
+                
+            <label>Mot de passe:</label>
+            <input type="password" ng-model="user.mdp" required /><br>
+            
+            <label>Photo de profil:</label>
+            <input type="text" ng-model="user.photo" placeholder="Lien vers l'image" /><br>
+            
+            <button type="submit">Mettre à jour</button>
+        </form>
+        <p>{{ message }}</p>
+    </div>
+
+</div>
 
 
-
-   <script src="scripts/app.js"></script>
+<script src="scripts/app.js"></script>
 </body>
 </html>

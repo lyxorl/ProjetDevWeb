@@ -30,6 +30,8 @@ function($scope, $http, $window, $interval, $timeout) {
     $scope.reverse = false;
     $scope.loading = true;
 
+    $scope.showModifUser = false;
+
     // Fonction pour lire les cookies
     function getCookie(name) {
         const value = `; ${document.cookie}`;
@@ -57,7 +59,7 @@ function($scope, $http, $window, $interval, $timeout) {
 
     // Met à jour le niveau d'accès
     $scope.updateAccessLevel = function() {
-    	   console.log('Rang sélectionné:', $scope.selectedRang);
+    	console.log('Rang sélectionné:', $scope.selectedRang);
         //$scope.currentAccessLevel = $scope.accessLevels[$scope.selectedRang] || 1;
         //console.log('Niveau mis à jour:', $scope.selectedRang, $scope.currentAccessLevel);
         $scope.$applyAsync(); // Force la mise à jour de la vue
@@ -235,6 +237,7 @@ function($scope, $http, $window, $interval, $timeout) {
         var pseudo = urlParams.get('pseudo');
 
         if ($scope.isLoggedIn) {
+            // faire la recup de l'utilisateur
             $http.post('api/getuser.php', { pseudo: 'admin'}).then(function(response){
                 if (response.data.success) {
                     console.log("Euh");
@@ -250,6 +253,24 @@ function($scope, $http, $window, $interval, $timeout) {
                 $window.location.href = 'index.html';
             });
         }
+    }
+
+    $scope.loadProfile = function() {
+        affichageProfile();
+    };
+
+    $scope.updateProfile = function() {
+        // faire la recup de l'user
+        $http.put('/api/user/profile', { pseudo: 'admin'}).then(function(response) {
+            $scope.message = "Profil mis à jour avec succès";
+        }, function(error) {
+            console.error("Erreur lors de la mise à jour du profil", error);
+            $scope.message = "Erreur lors de la mise à jour du profil";
+        });
+    };
+
+    $scope.openModifProfile = function(){
+        $scope.showModifUser = true;
     }
 
 }])

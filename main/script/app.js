@@ -23,7 +23,7 @@ angular.module('maisonConnecteeApp', [])
                     if (response.data.success) {
                         $scope.InscriptMsg = "Inscription réussie!";
                     } else {
-                        $scope.InscriptMsg = response.data.message || 'Echec de l\'inscription';
+                        $scope.InscriptMsg = response.data.message || 'Echec de l inscription';
                     }
                 })
                 .catch(function() {

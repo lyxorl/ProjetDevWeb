@@ -285,7 +285,9 @@ function getWeather(lat, lon) {
 	    if (!$scope.isLoggedIn) return;
 	    
 	    $scope.selectedAppareil = angular.copy(objet);
-	    $scope.selectedAppareil.newEtat = objet.etat;
+	    $scope.selectedAppareil.lim_basse = parseFloat(objet.lim_basse);
+	    $scope.selectedAppareil.lim_haute = parseFloat(objet.lim_haute);
+	    $scope.selectedAppareil.newConsigne = parseFloat(objet.consigne) || $scope.selectedAppareil.lim_basse;
 	    $scope.showAppareilPopup = true;
 	    
 	    $http.get('api/materiels.php').then(function(response) {
@@ -297,7 +299,7 @@ function getWeather(lat, lon) {
 	};
 	
 // ---- pour modifier dans popup
-
+     // ETAT
 	$scope.toggleEtat = function() {
 	    if (!$scope.selectedAppareil || !$scope.selectedAppareil.id_objet) {
 		   console.error("ID objet manquant ou invalide");
@@ -321,7 +323,7 @@ function getWeather(lat, lon) {
 	    });
 	};
 
-	
+	// MAJ DIRECTE
 	function updateListeObjets(id_objet, nouvelEtat) {
 	    angular.forEach($scope.objets, function(obj) {
 		   if (obj.id_objet === id_objet) {  // Comparaison directe des chaînes
@@ -330,34 +332,160 @@ function getWeather(lat, lon) {
 	    });
 	}
 
-	
 
+	//CONSIGNE
 	$scope.updateConsigne = function() {
-	    if ($scope.selectedAppareil.newConsigne === null || 
-		   $scope.selectedAppareil.newConsigne === undefined) return;
+	    // Récupération de la valeur
+	    const newConsigne = $scope.selectedAppareil.newConsigne;
+	     
+	     // Récupération des limites
+	    const limBasse = parseFloat($scope.selectedAppareil.lim_basse);
+	    const limHaute = parseFloat($scope.selectedAppareil.lim_haute);
 	    
+	    // Validation du type
+	    if (newConsigne === null || newConsigne === undefined || newConsigne === '') {
+		   alert(`Veuillez saisir un nombre entre ${limBasse}°C et ${limHaute}°C, il doit être un multiple de 0.5 (ex: 19, 19.5 ou 20)`);
+		   return;
+	    }
+	    
+	    // Conversion en nombre
+	    const numericValue = Number(newConsigne);
+	    	    
+	    // Envoi au serveur
 	    $http.post('api/update_consigne.php', {
 		   id_objet: $scope.selectedAppareil.id_objet,
-		   consigne: $scope.selectedAppareil.newConsigne
+		   consigne: numericValue
 	    }).then(function(response) {
 		   if (response.data.success) {
-		       // Met à jour la valeur affichée
-		       $scope.selectedAppareil.consigne = $scope.selectedAppareil.newConsigne;
-		       
-		       // Met à jour dans la liste principale
-		       var index = $scope.objets.findIndex(o => o.id_objet === $scope.selectedAppareil.id_objet);
-		       if (index !== -1) {
-		           $scope.objets[index].consigne = $scope.selectedAppareil.newConsigne;
-		       }
-		       
-		       // Affiche un message de succès
-		       alert("Consigne mise à jour avec succès !");
+		       $scope.selectedAppareil.consigne = numericValue;
+		       $scope.selectedAppareil.newConsigne = numericValue;
 		   }
 	    }).catch(function(error) {
 		   console.error("Erreur:", error);
-		   alert("Erreur lors de la mise à jour de la consigne");
+		   alert("Erreur serveur lors de la mise à jour");
 	    });
 	};
+	
+	//LIM BASSE
+
+	$scope.updateLimBasse = function() {
+	    // Récupération de la valeur
+	    const newLimBasse = $scope.selectedAppareil.newLimBasse;
+	    const currentLimHaute = parseFloat($scope.selectedAppareil.lim_haute);
+	    // Validation de base
+	    if (newLimBasse === null || newLimBasse === undefined || newLimBasse === '') {
+		   alert(`Veuillez saisir un nombre entre 16°C et ${currentLimHaute}°C, il doit être un multiple de 0.5 (ex: 19, 19.5 ou 20)`);
+		   return;
+	    }
+	    
+	    // Conversion en nombre
+	    const numericValue = Number(newLimBasse);
+	    
+	       
+	    // Validation par rapport à lim_haute
+	    
+	    if (numericValue > currentLimHaute) {
+		   alert("La limite basse doit être inférieure à la limite haute (" + currentLimHaute + ")");
+		   return;
+	    }
+	    
+	    // Envoi au serveur
+	    $http.post('api/update_limite_basse.php', {
+		   id_objet: $scope.selectedAppareil.id_objet,
+		   lim_basse: numericValue
+	    }).then(function(response) {
+		   if (response.data.success) {
+		       // Mise à jour de la limite basse
+		       $scope.selectedAppareil.lim_basse = numericValue;
+		       
+		       // Vérification si la consigne actuelle est inférieure à la nouvelle limite basse
+		       const currentConsigne = parseFloat($scope.selectedAppareil.consigne);
+		       if (currentConsigne < numericValue) {
+		           // Mise à jour de la consigne
+		           $scope.selectedAppareil.consigne = numericValue;
+		           $scope.selectedAppareil.newConsigne = numericValue;
+		           
+		           // Mise à jour en base de données
+		           $http.post('api/update_consigne.php', {
+		               id_objet: $scope.selectedAppareil.id_objet,
+		               consigne: numericValue
+		           }).then(function(response) {
+		               if (!response.data.success) {
+		                   console.error("Échec de la mise à jour de la consigne");
+		               }
+		           });
+		       }
+		       
+		       alert("Limite basse mise à jour avec succès");
+		   }
+	    }).catch(function(error) {
+		   console.error("Erreur:", error);
+		   alert("Erreur serveur lors de la mise à jour");
+	    });
+	};
+
+
+	//LIM HAUTE
+
+	$scope.updateLimHaute = function() {
+	    // Récupération de la valeur
+	    const newLimHaute = $scope.selectedAppareil.newLimHaute;
+	    const currentLimBasse = parseFloat($scope.selectedAppareil.lim_basse);
+	    // Validation de base
+	    if (newLimHaute === null || newLimHaute === undefined || newLimHaute === '') {
+		   alert(`Veuillez saisir un nombre entre ${currentLimBasse}°C et 27°C, il doit être un multiple de 0.5 (ex: 19, 19.5 ou 20)`);
+		   return;
+	    }
+	    
+	    // Conversion en nombre
+	    const numericValue = Number(newLimHaute);
+	    
+	       
+	    // Validation par rapport à lim_basse
+	    
+	    if (numericValue < currentLimBasse) {
+		   alert("La limite haute doit être supérieure à la limite basse (" + currentLimBasse + ")");
+		   return;
+	    }
+	    
+	    // Envoi au serveur
+	    $http.post('api/update_limite_haute.php', {
+		   id_objet: $scope.selectedAppareil.id_objet,
+		   lim_haute: numericValue
+	    }).then(function(response) {
+		   if (response.data.success) {
+		       // Mise à jour de la limite haute
+		       $scope.selectedAppareil.lim_haute = numericValue;
+		       
+		       // Vérification si la consigne actuelle est supérieure à la nouvelle limite haute
+		       const currentConsigne = parseFloat($scope.selectedAppareil.consigne);
+		       if (currentConsigne > numericValue) {
+		           // Mise à jour de la consigne
+		           $scope.selectedAppareil.consigne = numericValue;
+		           $scope.selectedAppareil.newConsigne = numericValue;
+		           
+		           // Mise à jour en base de données
+		           $http.post('api/update_consigne.php', {
+		               id_objet: $scope.selectedAppareil.id_objet,
+		               consigne: numericValue
+		           }).then(function(response) {
+		               if (!response.data.success) {
+		                   console.error("Échec de la mise à jour de la consigne");
+		               }
+		           });
+		       }
+		       
+		       alert("Limite haute mise à jour avec succès");
+		   }
+	    }).catch(function(error) {
+		   console.error("Erreur:", error);
+		   alert("Erreur serveur lors de la mise à jour");
+	    });
+	};
+
+
+
+
 
 
 

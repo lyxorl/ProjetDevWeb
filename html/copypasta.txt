@@ -137,6 +137,7 @@
             console.error('Erreur lors de la recuperation des users:', error);
             $scope.loading = false;
         });
+    }
 
 
 affichageProfile(); // in checkAuth function

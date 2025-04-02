@@ -28,8 +28,8 @@ try {
         if ($user) {
 
             if (password_verify($password, $user['mdp'])) {
-           // if (hash('sha256', $password) === $user['mdp']) {
-                if ($user['validite']) {
+           
+                if ($user['validite']===1) {
                     setcookie('user_pseudo', $user['pseudo'], time() + 3600, "/");
         			setcookie('user_rang', $user['rang'], time() + 3600, "/");
                     $response = [
@@ -38,8 +38,11 @@ try {
                         'pseudo' => $user['pseudo'],
             			'rang' => $user['rang']
                     ];
-                } else {
+                } elseif ($user['validite'] === 0){
                     $response['message'] = 'Compte non validé par l\'administrateur';
+                }
+                elseif (is_null($user['validite'])){
+                    $response['message'] = 'Adresse mail non validée';
                 }
             } else {
                 $response['message'] = 'Mot de passe incorrect';
@@ -52,7 +55,7 @@ try {
     }
 } catch (PDOException $e) {
     $response['message'] = 'Erreur base de données';
-    file_put_contents('debug.log', $e->getMessage(), FILE_APPEND);
+    //file_put_contents('debug.log', $e->getMessage(), FILE_APPEND);
 }
 
 echo json_encode($response);

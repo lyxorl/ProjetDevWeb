@@ -302,24 +302,57 @@
                         <td>{{selectedAppareil.consigne}}°C</td>
                         <td class="action-cell">
                             <div class="consigne-control">
-                                <input type="number" ng-model="selectedAppareil.newConsigne" 
-                   ng-init="selectedAppareil.newConsigne = selectedAppareil.temperature"
-                   class="consigne-input" step="0.5">
-                                <button class="btn-validate" ng-click="updateConsigne()">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                            </div>
+						    <input type="number"
+								  ng-model="selectedAppareil.newConsigne"
+								  min="{{selectedAppareil.lim_basse}}"
+								  max="{{selectedAppareil.lim_haute}}"
+								  step="0.5"
+								  required
+								  name="consigne"
+								  placeholder="Ex: 19.5">
+						    <button class="btn-validate" ng-click="updateConsigne()">
+							   <i class="fas fa-check"></i>
+						    </button>
+						</div>
                         </td>
                     </tr>
                     <tr ng-if="(selectedRang === 'complexe' || selectedRang === 'admin') && selectedAppareil.type === 'thermostat'">
                         <th>Limite haute</th>
                         <td>{{selectedAppareil.lim_haute}}°C</td>
-                        <td class="action-cell"></td>
+                        <td class="action-cell">
+                        		<div class="consigne-control">
+						    <input type="number"
+								  ng-model="selectedAppareil.newLimHaute"
+								  min="{{selectedAppareil.lim_basse}}"  
+								  max="27"
+								  step="0.5"
+								  required
+								  name="lim_haute"
+								  placeholder="Nouvelle limite haute">
+						    <button class="btn-validate" ng-click="updateLimHaute()">
+							   <i class="fas fa-check"></i>
+						    </button>
+						</div>
+                        </td>
                     </tr>
                     <tr ng-if="(selectedRang === 'complexe' || selectedRang === 'admin') && selectedAppareil.type === 'thermostat'">
                         <th>Limite basse</th>
                         <td>{{selectedAppareil.lim_basse}}°C</td>
-                        <td class="action-cell"></td>
+                        <td class="action-cell">
+                        		<div class="consigne-control">
+						    <input type="number"
+								  ng-model="selectedAppareil.newLimBasse"
+								  min="16"  
+								  max="{{selectedAppareil.lim_haute}}"
+								  step="0.5"
+								  required
+								  name="lim_basse"
+								  placeholder="Nouvelle limite basse">
+						    <button class="btn-validate" ng-click="updateLimBasse()">
+							   <i class="fas fa-check"></i>
+						    </button>
+						</div>
+                        </td>
                     </tr>
                 </tbody>
             </table>

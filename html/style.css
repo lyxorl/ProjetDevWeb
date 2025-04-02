@@ -631,6 +631,17 @@ tr:hover { background-color: #f0f8ff; }
     background: #2980b9;
 }
 
+.consigne-input:invalid {
+    border-color: #e74c3c;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
 /* ----- bouton supprimer popup matériel */
 
 /* Styles pour le footer du popup */

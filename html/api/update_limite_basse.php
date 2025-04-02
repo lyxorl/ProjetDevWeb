@@ -11,7 +11,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 // Validation renforcée
 if (!isset($data['id_objet']) || !is_string($data['id_objet']) || 
-    !isset($data['consigne']) || !is_numeric($data['consigne'])) {
+    !isset($data['lim_basse']) || !is_numeric($data['lim_basse'])) {
     http_response_code(400);
     die(json_encode([
         'success' => false,
@@ -21,18 +21,18 @@ if (!isset($data['id_objet']) || !is_string($data['id_objet']) ||
 }
 
 $id_objet = trim($data['id_objet']);
-$consigne = round(floatval($data['consigne']), 1); // Arrondir à 1 décimale
+$lim_basse = round(floatval($data['lim_basse']), 1); // Arrondir à 1 décimale
 
 try {
-    $stmt = $pdo->prepare("UPDATE Objets_connectes SET consigne = :consigne WHERE id_objet = :id_objet");
-    $stmt->bindParam(':consigne', $consigne, PDO::PARAM_STR);
+    $stmt = $pdo->prepare("UPDATE Objets_connectes SET lim_basse = :lim_basse WHERE id_objet = :id_objet");
+    $stmt->bindParam(':lim_basse', $lim_basse, PDO::PARAM_STR);
     $stmt->bindParam(':id_objet', $id_objet, PDO::PARAM_STR);
     $success = $stmt->execute();
     
     echo json_encode([
         'success' => $success,
         'rows_affected' => $stmt->rowCount(),
-        'new_consigne' => $consigne
+        'new_lim_basse' => $lim_basse
     ]);
 } catch (PDOException $e) {
     http_response_code(500);

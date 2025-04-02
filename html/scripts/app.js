@@ -30,10 +30,6 @@ $scope.popupPosition = { top: 0, left: 0 };
     $scope.reverse = false;
     $scope.loading = true;
 
-
-    $scope.userslist = [];
-    $scope.showModifUser = false;
-
     
 // ----- GESTION DU MENU DÉROULANT POUR LES NIVEAUX
 
@@ -487,56 +483,12 @@ function getWeather(lat, lon) {
 	    });
 	};
 
-    function affichageProfile(){
-        var urlParams = new URLSearchParams(window.location.search);
-        var pseudo = urlParams.get('pseudo');
 
-        if ($scope.isLoggedIn) {
-            // faire la recup de l'utilisateur
-            $http.post('api/getuser.php', {pseudo : 'admin'}).then(function(response){
-                if (response.data.success) {
-                    $scope.user = response.data.data;
-                } else {
-                    alert(response.data.message);
-                    $window.location.href = 'index.html';
-                }
-            }, function(error) {
-                console.error("Erreur lors du chargement du profil :", error);
-                alert("Erreur lors de la récupération des informations du profile");
-                $window.location.href = 'index.html';
-            });
-        }
-    }
 
-    $scope.loadProfile = function() {
-        affichageProfile();
-    };
 
-    $scope.updateProfile = function() {
-        // faire la recup de l'user
-        $http.post('api/modifyuser.php', $scope.user).then(function(response) {
-            $scope.message = "Profil mis à jour avec succès";
-        }, function(error) {
-            console.error("Erreur lors de la mise à jour du profil", error);
-            $scope.message = "Erreur lors de la mise à jour du profil";
-        });
 
-        $scope.showModifUser = false; //ferme la page lors de la mis a jour
-    };
 
-    $scope.openModifProfile = function(){
-        $scope.showModifUser = true;
-    }
 
-    $http.get('api/users.php')
-        .then(function(response) {
-            $scope.userslist = response.data.users;
-        })
-        .catch(function(error) {
-            
-            console.error('Erreur lors de la recuperation des users:', error);
-            $scope.loading = false;
-        });
 
     
     $scope.closePopup = function() {

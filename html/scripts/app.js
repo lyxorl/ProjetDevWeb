@@ -31,7 +31,7 @@ $scope.popupPosition = { top: 0, left: 0 };
     $scope.loading = true;
 
     $scope.userslist = [];
-    $scope.showModifUser = false;
+    $scope.popupShowModifUser = false;
 
     
 // ----- GESTION DU MENU DÉROULANT POUR LES NIVEAUX
@@ -521,12 +521,17 @@ function getWeather(lat, lon) {
             $scope.message = "Erreur lors de la mise à jour du profil";
         });
 
-        $scope.showModifUser = false; //ferme la page lors de la mis a jour
+        $scope.popupShowModifUser = false; //ferme la page lors de la mis a jour
     };
 
     $scope.openModifProfile = function(){
-        $scope.showModifUser = true;
+        $scope.popupShowModifUser = true;
     }
+
+	$scope.closeModifUser = function() { // chuis trop con ya un nom different entre user et profile
+		// faudrat que je fasse le menage
+		$scope.popupShowModifUser = false;
+    };
 
     $http.get('api/users.php')
         .then(function(response) {
@@ -537,9 +542,6 @@ function getWeather(lat, lon) {
             console.error('Erreur lors de la recuperation des users:', error);
             $scope.loading = false;
         });
-
-
-
 
 
     

@@ -232,7 +232,7 @@
             <p><strong>Points:</strong> {{ user.nb_point }}</p>
             <p><strong>Compte validé:</strong> {{ user.validite ? 'Oui' : 'Non' }}</p>
 
-            <button ng-click="openModifProfile()">Modifier profil</button>
+            <button ng-click="openModifProfile()" class="update-profile-button">Modifier profil</button>
         </div>
 
         <div ng-if="selectedRang === 'admin'">
@@ -412,9 +412,12 @@
     </div>
 </div>
 
-<div class="modal-overlay" ng-show="showModifUser" ng-click="closeModifUser()">
-    <div class="modal-content">
+<div class="popup-overlay" ng-show="popupShowModifUser" ng-click="closeModifUser()">
+    <div class="modifuser-popup">
         <h2>Modifier votre profil</h2>
+        <button class="popup-close-btn" ng-click="closeModifUser()">
+            <i class="fas fa-times"></i>
+        </button>
         <form ng-submit="updateProfile()">
             <label>Pseudo:</label>
             <input type="text" ng-model="user.pseudo" disabled /><br>
@@ -447,7 +450,7 @@
             <label>Photo de profil:</label>
             <input type="text" ng-model="user.photo" placeholder="Lien vers l'image" /><br>
             
-            <button type="submit">Mettre à jour</button>
+            <button type="submit" class="update-profile-button">Mettre à jour</button>
         </form>
         <p>{{ message }}</p>
     </div>

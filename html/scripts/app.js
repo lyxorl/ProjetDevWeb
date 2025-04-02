@@ -487,22 +487,29 @@ function getWeather(lat, lon) {
 	};
 
 
+	function getCookieValue(name) {
+		return document.cookie
+		  .split('; ')
+		  .find(cookie => cookie.startsWith(`${name}=`))
+		  ?.split('=')[1];
+	}
+
     function affichageProfile(){
         var urlParams = new URLSearchParams(window.location.search);
-        var pseudo = urlParams.get('pseudo');
+        var pseudostr = urlParams.get('pseudo');
 
         if ($scope.isLoggedIn) {
             // faire la recup de l'utilisateur
-            $http.post('api/getuser.php', $scope.user).then(function(response){
+            $http.post('api/getuser.php', {pseudo : getCookieValue('user_pseudo')}).then(function(response){
                 if (response.data.success) {
                     $scope.user = response.data.data;
                 } else {
-                    alert(response.data.message);
+                    alert(response.data);
                     $window.location.href = 'index.html';
                 }
             }, function(error) {
                 console.error("Erreur lors du chargement du profil :", error);
-                alert("Erreur lors de la récupération des informations du profile");
+                alert($scope.user);
                 $window.location.href = 'index.html';
             });
         }

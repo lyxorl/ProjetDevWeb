@@ -396,6 +396,14 @@ tr:hover { background-color: #f0f8ff; }
     border-top: 5px solid #4285f4;
 }
 
+.listeuser-section {
+    margin-top: 25px;
+    padding: 25px;
+    background: rgb(255, 255, 255);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
 @keyframes slideDown {
     from { transform: translateY(-50px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }

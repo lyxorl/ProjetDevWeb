@@ -221,6 +221,7 @@
 
         <!-- Session profile -->
         <div ng-if="isLoggedIn" class="profile-section">
+            <h2 class="inventory-title"><i class="fas fa-laptop"></i> Votre Profile</h2>
             <h2>Profil de {{ user.nom }} {{ user.prenom }}</h2>
             <img ng-src="{{ user.photo || 'default-avatar.png' }}" alt="Photo de profil">
             <p><strong>Pseudo:</strong> {{ user.pseudo }}</p>
@@ -235,31 +236,34 @@
             <button ng-click="openModifProfile()" class="update-profile-button">Modifier profil</button>
         </div>
 
-        <div ng-if="selectedRang === 'admin'">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Pseudo</th>
-                        <th>Nom</th>
-                        <th>Prenom</th>
-                        <th>Rang</th>
-                        <th>Validite</th>
-                        <th>Mail</th>
-                        <th>Visualiser</th>
-                    </tr>
-                </thead>
-                    <tr ng-repeat="user in userslist">
-                        <td><strong>{{ user.pseudo }}</strong></td>
-                        <td><strong>{{ user.nom }}</strong></td>
-                        <td><strong>{{ user.prenom }}</strong></td>
-                        <td><strong>{{ user.rang }}</strong></td>
-                        <td><strong>{{ user.validite }}</strong></td>
-                        <td><strong>{{ user.mail }}</strong></td>
-                    </tr>
-                <tbody>
+        <div class="listeuser-section" ng-if="selectedRang === 'admin' && isLoggedIn">
+            <div>
+                <h2 class="inventory-title"><i class="fas fa-laptop"></i> Listes des Utilisateurs</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pseudo</th>
+                            <th>Nom</th>
+                            <th>Prenom</th>
+                            <th>Rang</th>
+                            <th>Validite</th>
+                            <th>Mail</th>
+                            <th>Visualiser</th>
+                        </tr>
+                    </thead>
+                        <tr ng-repeat="user in userslist">
+                            <td><strong>{{ user.pseudo }}</strong></td>
+                            <td><strong>{{ user.nom }}</strong></td>
+                            <td><strong>{{ user.prenom }}</strong></td>
+                            <td><strong>{{ user.rang }}</strong></td>
+                            <td><strong>{{ user.validite }}</strong></td>
+                            <td><strong>{{ user.mail }}</strong></td>
+                        </tr>
+                    <tbody>
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
 
@@ -368,7 +372,7 @@
                         		<div class="consigne-control">
 						    <input type="number"
 								  ng-model="selectedAppareil.newLimHaute"
-								  min="{{selectedAppareil.lim_basse}}"  
+								  min="{{selectedAppareil.lim_basse}}"
 								  max="27"
 								  step="0.5"
 								  required

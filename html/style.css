@@ -10,9 +10,6 @@ body {
 /* Style pour le header utilisateur */
 .user-header {
     display: flex;
-    /*align-items: center;
-    flex-wrap: wrap;
-    */
     gap: 10px;
     flex-direction: column;
     
@@ -57,20 +54,7 @@ body {
     text-align: center;
 }
 
-/* Bouton Visualiser de base */
-.visualiser-btn {
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    color: white;
-    transition: all 0.3s;
-}
 
-/* Couleurs selon le niveau */
-.btn-simple { background-color: #3498db; }
-.btn-complexe { background-color: #9b59b6; }
-.btn-admin { background-color: #e74c3c; }
 
 .visualiser-btn:hover {
     transform: translateY(-2px);
@@ -83,37 +67,6 @@ body {
 
 /*fin visualiser*/
 
-/*pour le modal*/
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 5px;
-    width: 80%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.close-btn {
-    float: right;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
 
 [ng-cloak] {
     display: none !important;
@@ -126,34 +79,8 @@ body {
     padding: 5px 10px;
     border-radius: 3px;
     cursor: pointer;
+    transition: all 0.3s;
 }
-
-.modal-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-}
-
-.modal-table th, .modal-table td {
-    padding: 8px 12px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-}
-
-.modal-table th {
-    width: 30%;
-    color: #7f8c8d;
-    font-weight: normal;
-}
-
-.modal-table tr:last-child th,
-.modal-table tr:last-child td {
-    border-bottom: none;
-}
-/*fin modal*/
-
-
-
 
 
 .logout-btn {
@@ -209,7 +136,8 @@ body {
     padding: 80px 20px 20px;
 }
 
-/* Section Météo */
+/* ------METEO --------- */
+
 .weather-section {
     background: white;
     border-radius: 15px;
@@ -248,7 +176,7 @@ body {
     margin-top: 15px;
 }
 
-/* Section Inventaire */
+/* ------ MATERIEL ---------- */
 .inventory-section {
     background: white;
     border-radius: 15px;
@@ -410,8 +338,9 @@ tr:hover { background-color: #f0f8ff; }
     text-overflow: ellipsis;
 }
 
-/* Popup de connexion */
-.login-overlay {
+/* -------- POPUP --------- */
+
+.popup-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -446,7 +375,7 @@ tr:hover { background-color: #f0f8ff; }
     to { transform: translateY(0); opacity: 1; }
 }
 
-.close-btn {
+.popup-close-btn {
     position: absolute;
     top: 12px;
     right: 12px;
@@ -464,12 +393,12 @@ tr:hover { background-color: #f0f8ff; }
     transition: all 0.2s;
 }
 
-.close-btn:hover {
+.popup-close-btn:hover {
     background: #cc0000;
     transform: rotate(90deg);
 }
 
-.login-popup h2 {
+.popup h2 {
     color: #4285f4;
     text-align: center;
     margin-bottom: 1.2rem;
@@ -535,4 +464,232 @@ tr:hover { background-color: #f0f8ff; }
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-5px); }
     40%, 80% { transform: translateX(5px); }
+}
+
+/* ---- Styles spécifiques au popup d'appareil */
+.appareil-popup {
+    width: 600px; /* Légèrement plus large si nécessaire */
+    max-width: 90vw; /* Limite la largeur sur petits écrans */
+    background: white;
+    padding: 1.8rem;
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    animation: slideDown 0.4s;
+    border-top: 5px solid #4285f4;
+}
+
+.appareil-popup-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.appareil-popup-table th, 
+.appareil-popup-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.appareil-popup-table th {
+    width: 35%;
+    color: #555;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Popup d'appareil spécifique */
+
+
+.appareil-popup-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.appareil-popup-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.appareil-popup-table th, 
+.appareil-popup-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.appareil-popup-table th {
+    width: 35%;
+    color: #555;
+    font-weight: bold;
+    font-size: 0.9rem;
+    background-color: transparent;
+}
+
+.appareil-popup-table tr:last-child td {
+    border-bottom: none;
+}
+/* ---- modif popup */
+/* Styles pour le tableau du popup */
+.popup-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.popup-table th {
+    text-align: left;
+    padding: 10px;
+    width: 30%;
+    color: #555;
+}
+
+.popup-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.action-cell {
+    width: 200px;
+    padding-left: 20px !important;
+    text-align: right;
+}
+
+/* Toggle switch pour l'état */
+.toggle-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.toggle-slider {
+     width: 80px;
+    height: 30px;
+    background: #e74c3c; /* Rouge pour inactif */
+    border-radius: 15px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.toggle-slider.active {
+    background: #2ecc71;
+}
+
+.toggle-slider.inactive {
+    background: #e74c3c; /* Rouge pour inactif */
+}
+
+.toggle-knob {
+    width: 26px;
+    height: 26px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s;
+}
+
+.toggle-slider.active .toggle-knob {
+    left: calc(100% - 28px);
+}
+
+.toggle-label {
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 50%;
+    margin-left: -10px;
+    text-transform: uppercase;
+}
+
+/* Contrôle de consigne */
+.consigne-control {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+    width: 100%;
+}
+
+.consigne-input {
+    width: 70px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.btn-validate {
+    background: #3498db;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.btn-validate:hover {
+    background: #2980b9;
+}
+
+.consigne-input:invalid {
+    border-color: #e74c3c;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* ----- bouton supprimer popup matériel */
+
+/* Styles pour le footer du popup */
+.popup-footer {
+    margin-top: 25px;
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+/* Style du bouton Supprimer */
+.btn-delete {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-delete:active {
+    transform: translateY(0);
+}
+
+/* --------------------*/
+
+/* *** fin modif*/
+.form-group {
+    /* Styles spécifiques au formulaire de login */
 }

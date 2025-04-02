@@ -493,7 +493,7 @@ function getWeather(lat, lon) {
 
         if ($scope.isLoggedIn) {
             // faire la recup de l'utilisateur
-            $http.post('api/getuser.php', {pseudo : 'admin'}).then(function(response){
+            $http.post('api/getuser.php', $scope.user).then(function(response){
                 if (response.data.success) {
                     $scope.user = response.data.data;
                 } else {

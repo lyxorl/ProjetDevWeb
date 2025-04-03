@@ -219,49 +219,37 @@
             </div>
         </div>
 
-        <!-- Session profile -->
-        <div ng-if="isLoggedIn" class="profile-section">
-            <h2 class="inventory-title"><i class="fas fa-laptop"></i> Votre Profile</h2>
-            <h2>Profil de {{ user.nom }} {{ user.prenom }}</h2>
-            <img ng-src="{{ user.photo || 'default-avatar.png' }}" alt="Photo de profil">
-            <p><strong>Pseudo:</strong> {{ user.pseudo }}</p>
-            <p><strong>Âge:</strong> {{ user.age }} ans</p>
-            <p><strong>Genre:</strong> {{ user.genre }}</p>
-            <p><strong>Type:</strong> {{ user.type }}</p>
-            <p><strong>Email:</strong> {{ user.mail }}</p>
-            <p><strong>Rang:</strong> {{ user.rang }}</p>
-            <p><strong>Points:</strong> {{ user.nb_point }}</p>
-            <p><strong>Compte validé:</strong> {{ user.validite ? 'Oui' : 'Non' }}</p>
+        <!-- Session profile-->
 
-            <button ng-click="openModifProfile()" class="update-profile-button">Modifier profil</button>
-        </div>
-
-        <div class="listeuser-section" ng-if="selectedRang === 'admin' && isLoggedIn">
+        <div class="listeuser-section" ng-if="isLoggedIn">
             <div>
                 <h2 class="inventory-title"><i class="fas fa-laptop"></i> Listes des Utilisateurs</h2>
                 <table>
                     <thead>
                         <tr>
                             <th>Pseudo</th>
-                            <th>Nom</th>
-                            <th>Prenom</th>
-                            <th>Rang</th>
-                            <th>Validite</th>
-                            <th>Mail</th>
+                            <th>Age</th>
+                            <th>Genre</th>
+                            <th>Type</th>
                             <th>Visualiser</th>
                         </tr>
                     </thead>
                         <tr ng-repeat="user in userslist">
                             <td><strong>{{ user.pseudo }}</strong></td>
-                            <td><strong>{{ user.nom }}</strong></td>
-                            <td><strong>{{ user.prenom }}</strong></td>
-                            <td><strong>{{ user.rang }}</strong></td>
-                            <td><div class="toggle-slider"
+                            <td><strong>{{ user.age }} ans</strong></td>
+                            <td><strong>{{ user.genre }}</strong></td>
+                            <td><strong>{{ user.type }}</strong></td>
+                            <!-- <td><div class="toggle-slider"
                                 ng-class="{'active': user.validite === 1, 'inactive': user.validite === 0}" 
                                 ng-click="validateUser(user)">
                                <div class="toggle-knob"></div>
                                <span class="toggle-label">{{user.validite === 1 ? 'ON' : 'OFF'}}</span></td>
-                            <td><strong>{{ user.mail }}</strong></td>
+                            <td><strong>{{ user.mail }}</strong></td> -->
+                            <td ng-if="condVisualizeProfile(user.pseudo) || selectedRang === 'admin' " class="actions-cell"> <!-- Visible seulement si connecté -->
+                                <button ng-click="openModifProfile(user)" class="visualiser-btn"> <!-- nb-click-->
+                                   <i class="fas fa-eye"></i> Visualiser
+                                </button>
+                          </td>
                         </tr>
                     <tbody>
 
@@ -433,35 +421,35 @@
         </button>
         <form ng-submit="updateProfile()">
             <label>Pseudo:</label>
-            <input type="text" ng-model="user.pseudo" disabled /><br>
+            <input type="text" ng-model="selectedUser.pseudo" disabled /><br>
                 
             <label>Nom:</label>
-            <input type="text" ng-model="user.nom" required /><br>
+            <input type="text" ng-model="selectedUser.nom" required /><br>
             
             <label>Prénom:</label>
-            <input type="text" ng-model="user.prenom" required /><br>
+            <input type="text" ng-model="selectedUser.prenom" required /><br>
             
             <label>Âge:</label>
-            <input type="number" ng-model="user.age" required /><br>
+            <input type="number" ng-model="selectedUser.age" required /><br>
             
             <label>Genre:</label>
-            <select ng-model="user.genre">
+            <select ng-model="selectedUser.genre">
                 <option value="Homme">Homme</option>
                 <option value="Femme">Femme</option>
                 <option value="Autre">Autre</option>
             </select><br>
                 
             <label>Type:</label>
-            <input type="text" ng-model="user.type" /><br>
+            <input type="text" ng-model="selectedUser.type" /><br>
                 
             <label>Email:</label>
-            <input type="email" ng-model="user.mail" required /><br>
+            <input type="email" ng-model="selectedUser.mail" required /><br>
                 
             <label>Mot de passe:</label>
-            <input type="password" ng-model="user.mdp" required /><br>
+            <input type="password" ng-model="selectedUser.mdp" required /><br>
             
             <label>Photo de profil:</label>
-            <input type="text" ng-model="user.photo" placeholder="Lien vers l'image" /><br>
+            <input type="text" ng-model="selectedUser.photo" placeholder="Lien vers l'image" /><br>
             
             <button type="submit" class="update-profile-button">Mettre à jour</button>
         </form>

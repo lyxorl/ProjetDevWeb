@@ -8,7 +8,7 @@ require_once __DIR__ . '/../db_connect.php';
 
 try {
     $data = [
-        'users' => $pdo->query("SELECT pseudo, nom, prenom, rang, validite, mail FROM Users")->fetchAll(PDO::FETCH_ASSOC),
+        'users' => $pdo->query("SELECT pseudo, nom, prenom, rang, validite, age, genre, type, mail FROM Users")->fetchAll(PDO::FETCH_ASSOC),
         // travailler les filtres mais pas tout de suites
     ];
     echo json_encode($data, JSON_UNESCAPED_UNICODE);

@@ -45,7 +45,7 @@ $scope.popupPosition = { top: 0, left: 0 };
     $scope.selectedRang = 'simple';
     $scope.currentAccessLevel = 1;
     $scope.availableRangs = ['simple'];
-    
+    $scope.selectedUser = { pseudo: '', password: '' }
 	$scope.user = { pseudo: '', password: '' };
     $scope.loginError = '';
     $scope.weatherData = null;
@@ -90,6 +90,11 @@ $scope.popupPosition = { top: 0, left: 0 };
 	function setSelectedRang(rang) {
 	    localStorage.setItem('selected_rang', rang);
 	    console.log('Rang sauvegardé:', rang);
+	}
+
+
+	function test() {
+	    console.log($scope.user);
 	}
 //----------------
     // RANG DISPONIBLES 
@@ -561,8 +566,9 @@ function getWeather(lat, lon) {
         $scope.popupShowModifUser = false; //ferme la page lors de la mis a jour
     };
 
-    $scope.openModifProfile = function(){
-        $scope.popupShowModifUser = true;
+    $scope.openModifProfile = function(user){
+        $scope.selectedUser = user;
+		$scope.popupShowModifUser = true;
     }
 
 	$scope.closeModifUser = function() { // chuis trop con ya un nom different entre user et profile
@@ -590,6 +596,10 @@ function getWeather(lat, lon) {
             console.error("Erreur lors de la mise à jour du profil", error);
             $scope.message = "Erreur lors de la mise à jour du profil";
         });
+	}
+
+	$scope.condVisualizeProfile = function(user){
+		return user == localStorage.getItem('user_pseudo');
 	}
     
     $scope.closePopup = function() {

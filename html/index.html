@@ -256,7 +256,11 @@
                             <td><strong>{{ user.nom }}</strong></td>
                             <td><strong>{{ user.prenom }}</strong></td>
                             <td><strong>{{ user.rang }}</strong></td>
-                            <td><strong>{{ user.validite }}</strong></td>
+                            <td><div class="toggle-slider"
+                                ng-class="{'active': user.validite === 1, 'inactive': user.validite === 0}" 
+                                ng-click="validateUser(user)">
+                               <div class="toggle-knob"></div>
+                               <span class="toggle-label">{{user.validite === 1 ? 'ON' : 'OFF'}}</span></td>
                             <td><strong>{{ user.mail }}</strong></td>
                         </tr>
                     <tbody>
@@ -416,7 +420,7 @@
     </div>
 </div>
 
-<div class="popup-overlay" ng-show="popupShowModifUser" ng-click="closeModifUser()">
+<div class="popup-overlay" ng-show="popupShowModifUser">
     <div class="modifuser-popup">
         <h2>Modifier votre profil</h2>
         <button class="popup-close-btn" ng-click="closeModifUser()">

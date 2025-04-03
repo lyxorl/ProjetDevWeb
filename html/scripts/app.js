@@ -486,14 +486,6 @@ function getWeather(lat, lon) {
 	    });
 	};
 
-
-	function getCookieValue(name) {
-		return document.cookie
-		  .split('; ')
-		  .find(cookie => cookie.startsWith(`${name}=`))
-		  ?.split('=')[1];
-	}
-
     function affichageProfile(){
         var urlParams = new URLSearchParams(window.location.search);
         var pseudostr = urlParams.get('pseudo');
@@ -549,7 +541,17 @@ function getWeather(lat, lon) {
             $scope.loading = false;
         });
 
+	$scope.validateUser = function(userselect) {
+		console.log(userselect);
+		userselect.validite = 1;
+		$http.post('api/modifyuser_validite.php', userselect).then(function(response) {
 
+            $scope.message = "Profil mis à jour avec succès";
+        }, function(error) {
+            console.error("Erreur lors de la mise à jour du profil", error);
+            $scope.message = "Erreur lors de la mise à jour du profil";
+        });
+	}
     
     $scope.closePopup = function() {
 	    $scope.showAppareilPopup = false;

@@ -25,14 +25,11 @@ if (!$data) {
 }
 
 // Liste des champs obligatoires (selon votre table SQL)
-$requiredFields = ['pseudo', 'genre', 'type', 'nom', 'prenom', 'mdp', 'mail'];
+$requiredFields = ['pseudo', 'type', 'nom', 'prenom', 'mdp', 'mail'];
 
 foreach ($requiredFields as $field) {
     if (!isset($data[$field]) || $data[$field] === '') {
         $response['message'] = "Le champ '$field' est obligatoire";
-        http_response_code(400);
-        echo json_encode($response);
-        exit;
     }
 }
 

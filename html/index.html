@@ -334,6 +334,11 @@
 						   </div>
 					    </div>
 					</td>
+                    <td ng-if="isLoggedIn" class="actions-cell"> <!-- Visible seulement si connecté -->
+                        <button ng-click="openAppareilPopup(objet, $event)" class="visualiser-btn">
+                           <i class="fas fa-eye"></i> Visualiser
+                        </button>
+                    </td>
                     </tr>
                     <tr>
                         <th>Type</th>

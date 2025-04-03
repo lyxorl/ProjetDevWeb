@@ -18,7 +18,7 @@ $scope.popupPosition = { top: 0, left: 0 };
     $scope.currentAccessLevel = 1;
     $scope.availableRangs = ['simple'];
     
-    $scope.user = { pseudo: '', password: '' };
+	$scope.user = { pseudo: '', password: '' };
     $scope.loginError = '';
     $scope.weatherData = null;
     $scope.objets = [];
@@ -500,17 +500,16 @@ function getWeather(lat, lon) {
 
         if ($scope.isLoggedIn) {
             // faire la recup de l'utilisateur
-            $http.post('api/getuser.php', {pseudo : getCookieValue('user_pseudo')}).then(function(response){
+            $http.post('api/getuser.php', {pseudo : localStorage.getItem('user_pseudo')}).then(function(response){
                 if (response.data.success) {
                     $scope.user = response.data.data;
                 } else {
-                    alert(response.data);
-                    $window.location.href = 'index.html';
+					console.error("Erreur lors du chargement du profile :", error);
+                    //$window.location.href = 'index.html';
                 }
             }, function(error) {
-                console.error("Erreur lors du chargement du profil :", error);
-                alert($scope.user);
-                $window.location.href = 'index.html';
+                console.error("Erreur lors du chargement du profile :", error);
+                //$window.location.href = 'index.html';
             });
         }
     }

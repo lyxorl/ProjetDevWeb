@@ -415,42 +415,25 @@
 
 <div class="popup-overlay" ng-show="popupShowModifUser">
     <div class="modifuser-popup">
-        <h2>Modifier votre profil</h2>
+        <h2 id="id_profile_title">Votre profil</h2>
         <button class="popup-close-btn" ng-click="closeModifUser()">
             <i class="fas fa-times"></i>
         </button>
+        <p id="id_profile_pseudoprenom">{{selectedUser.pseudo}}<br>{{selectedUser.nom}} {{selectedUser.prenom}}</p>
+        <div id="id_profile_info">
+            <div id="id_profile_info-text">
+                <p>Âge: {{selectedUser.age}}<br>
+                Genre: {{selectedUser.genre}}<br>
+                type: {{selectedUser.type}}<br>
+                Mail: {{selectedUser.mail}}<br> </p>
+            </div>
+            <div id="id_profile_info-pp">
+                <img src="image.png" alt="Description de l'image">
+            </div>
+        </div>
         <form ng-submit="updateProfile()">
-            <label>Pseudo:</label>
-            <input type="text" ng-model="selectedUser.pseudo" disabled /><br>
-                
-            <label>Nom:</label>
-            <input type="text" ng-model="selectedUser.nom" required /><br>
-            
-            <label>Prénom:</label>
-            <input type="text" ng-model="selectedUser.prenom" required /><br>
-            
-            <label>Âge:</label>
-            <input type="number" ng-model="selectedUser.age" required /><br>
-            
-            <label>Genre:</label>
-            <select ng-model="selectedUser.genre">
-                <option value="Homme">Homme</option>
-                <option value="Femme">Femme</option>
-                <option value="Autre">Autre</option>
-            </select><br>
-                
-            <label>Type:</label>
-            <input type="text" ng-model="selectedUser.type" /><br>
-                
-            <label>Email:</label>
-            <input type="email" ng-model="selectedUser.mail" required /><br>
-                
             <label>Mot de passe:</label>
             <input type="password" ng-model="selectedUser.mdp" required /><br>
-            
-            <label>Photo de profil:</label>
-            <input type="text" ng-model="selectedUser.photo" placeholder="Lien vers l'image" /><br>
-            
             <button type="submit" class="update-profile-button">Mettre à jour</button>
         </form>
         <p>{{ message }}</p>

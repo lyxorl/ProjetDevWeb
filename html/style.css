@@ -680,6 +680,35 @@ tr:hover { background-color: #f0f8ff; }
     animation: shake 0.5s;
 }
 
+#id_profile_title {
+    text-align: center;
+}
+
+#id_profile_pseudoprenom {
+    text-align: center;
+}
+
+
+#id_profile_info {
+    display: flex; /* Active Flexbox */
+    align-items: center; /* Aligne verticalement les éléments */
+    gap: 20px; /* Espace entre le texte et l'image */
+}
+
+#id_profile_info-text {
+    flex: 1; /* Prend l'espace disponible */
+}
+
+#id_profile_info-pp {
+    flex: 1; /* Prend l'espace disponible */
+}
+
+#image-id_profile_info-pp img {
+    width: 100%; /* Image responsive */
+    max-width: 100%; /* Évite le débordement */
+    height: auto; /* Maintient le ratio */
+}
+
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-5px); }

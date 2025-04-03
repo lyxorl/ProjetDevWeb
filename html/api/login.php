@@ -38,8 +38,11 @@ try {
                         'pseudo' => $user['pseudo'],
             			'rang' => $user['rang']
                     ];
-                } else {
+                } elseif ($user['validite'] === 0){
                     $response['message'] = 'Compte non validé par l\'administrateur';
+                }
+                elseif (is_null($user['validite'])){
+                    $response['message'] = 'Adresse mail non validée';
                 }
             } else {
                 $response['message'] = 'Mot de passe incorrect';

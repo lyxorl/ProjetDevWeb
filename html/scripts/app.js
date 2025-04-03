@@ -1,4 +1,33 @@
 angular.module('maisonConnecteeApp', [])
+
+.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+            
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    var file = element[0].files[0];
+                    modelSetter(scope, file);
+                    
+                    if (file && file.type.match('image.*')) {
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            scope.imagePreviewUrl = e.target.result;
+                            scope.$apply();
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            });
+        }
+    };
+}])
+
+
+
 .controller('MainController', ['$scope', '$http', '$window', '$interval', '$timeout', 
 function($scope, $http, $window, $interval, $timeout) {
     
@@ -17,7 +46,6 @@ $scope.popupPosition = { top: 0, left: 0 };
     $scope.selectedRang = 'simple';
     $scope.currentAccessLevel = 1;
     $scope.availableRangs = ['simple'];
-    
     $scope.user = { pseudo: '', password: '' };
     $scope.loginError = '';
     $scope.weatherData = null;
@@ -29,6 +57,16 @@ $scope.popupPosition = { top: 0, left: 0 };
     $scope.sortField = 'nom';
     $scope.reverse = false;
     $scope.loading = true;
+    $scope.showInscriptionPopup = false;
+    $scope.inscriptionData = {
+	    genre: 'M',
+	    type: 'parent'
+	};
+	$scope.passwordStrength = 0;
+	$scope.passwordStrengthColor = '#eee';
+	$scope.imagePreviewUrl = null;
+	$scope.inscriptionMessage = '';
+	$scope.inscriptionMessageType = '';
 
     
 // ----- GESTION DU MENU DÉROULANT POUR LES NIVEAUX
@@ -153,7 +191,7 @@ $scope.popupPosition = { top: 0, left: 0 };
         $scope.selectedAppareil = null;
     };
 
-// ----- GESTION CONNEXION
+// ----- POPUP CONNEXION
 
     $scope.openLogin = function() {
         $scope.showLoginPopup = true;
@@ -537,8 +575,142 @@ function getWeather(lat, lon) {
     });
 };
 	
+// -------------- POPUP INSCRIPTION --------------
 	
-	
+    $scope.openInscriptionPopup = function() {
+	    $scope.showInscriptionPopup = true;
+	    $scope.inscriptionData = {
+		   genre: 'M',
+		   type: 'parent'
+	    };
+	    $scope.passwordStrength = 0;
+	    $scope.passwordStrengthColor = '#eee';
+	    $scope.imagePreviewUrl = null;
+	    $scope.inscriptionMessage = '';
+	};
+
+	$scope.closeInscriptionPopup = function() {
+	    $scope.showInscriptionPopup = false;
+	};
+
+	// Normalisation du prénom
+	$scope.normalizePrenom = function() {
+	    if ($scope.inscriptionData.prenom) {
+		   $scope.inscriptionData.prenom = $scope.inscriptionData.prenom
+		       .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+		       .replace(/[^a-zA-Z\- ]/g, "");
+	    }
+	};
+
+	// Force du mot de passe
+	$scope.updatePasswordStrength = function() {
+	    if (!$scope.inscriptionData.mdp) {
+		   $scope.passwordStrength = 0;
+		   return;
+	    }
+	    
+	    var strength = 0;
+	    var length = $scope.inscriptionData.mdp.length;
+	    
+	    strength += Math.min(length / 12 * 50, 50);
+	    
+	    if (/[A-Z]/.test($scope.inscriptionData.mdp)) strength += 10;
+	    if (/[0-9]/.test($scope.inscriptionData.mdp)) strength += 20;
+	    if (/[^A-Za-z0-9]/.test($scope.inscriptionData.mdp)) strength += 20;
+	    
+	    $scope.passwordStrength = Math.min(strength, 100);
+	    
+	    if ($scope.passwordStrength < 30) {
+		   $scope.passwordStrengthColor = '#ff0000';
+	    } else if ($scope.passwordStrength < 70) {
+		   $scope.passwordStrengthColor = '#ffcc00';
+	    } else {
+		   $scope.passwordStrengthColor = '#00cc00';
+	    }
+	};
+
+	// Soumission du formulaire
+	$scope.submitInscriptionForm = function() {
+	    // Vérification du formulaire
+	    if (!$scope.inscriptionData.pseudo || !$scope.inscriptionData.mdp || 
+	        !$scope.inscriptionData.mail || !$scope.inscriptionData.nom || 
+	        !$scope.inscriptionData.prenom) {
+	        $scope.inscriptionMessage = 'Tous les champs obligatoires doivent être remplis';
+	        $scope.inscriptionMessageType = 'error';
+	        return;
+	    }
+
+	    // Préparation des données
+	    var formData = new FormData();
+	    angular.forEach($scope.inscriptionData, function(value, key) {
+	        if (value !== undefined && value !== null) {
+	            formData.append(key, value);
+	        }
+	    });
+	    
+	    // Ajout de la photo si elle existe
+	    if ($scope.inscriptionData.photo) {
+		   formData.append('photo', $scope.inscriptionData.photo);
+	    }
+
+	    // Envoi au serveur
+	    $http.post('api/inscription.php', formData, {
+	        transformRequest: angular.identity,
+	        headers: {'Content-Type': undefined}
+	    }).then(function(response) {
+	        $scope.inscriptionMessage = response.data.message;
+	        $scope.inscriptionMessageType = response.data.success ? 'success' : 'error';
+	        
+	        if (response.data.success) {
+	            // Affiche un message plus complet
+	            $scope.inscriptionMessage = 'Inscription réussie ! Un email de validation a été envoyé à ' + 
+	                                        $scope.inscriptionData.mail + 
+	                                        '. Veuillez vérifier votre boîte mail.';
+	            
+	            
+	        }
+	    }).catch(function(error) {
+	        var errorMsg = 'Erreur lors de l\'inscription';
+	        if (error.data && error.data.message) {
+	            if (error.data.message.includes('pseudo')) {
+	                errorMsg = 'Ce pseudo est déjà utilisé';
+	            } else if (error.data.message.includes('mail')) {
+	                errorMsg = 'Cet email est déjà enregistré';
+	            } else {
+	                errorMsg = error.data.message;
+	            }
+	        }
+	        $scope.inscriptionMessage = errorMsg;
+	        $scope.inscriptionMessageType = 'error';
+	    });
+	};
+
+	// Ajout d'une fonction pour renvoyer l'email de validation
+	$scope.resendValidationEmail = function() {
+	    if (!$scope.inscriptionData.mail) {
+	        $scope.inscriptionMessage = 'Aucun email à renvoyer';
+	        $scope.inscriptionMessageType = 'error';
+	        return;
+	    }
+
+	    $http.post('api/resend_validation.php', { 
+	        mail: $scope.inscriptionData.mail 
+	    }).then(function(response) {
+	        $scope.inscriptionMessage = response.data.message;
+	        $scope.inscriptionMessageType = response.data.success ? 'success' : 'error';
+	    }).catch(function(error) {
+	        $scope.inscriptionMessage = 'Erreur lors de l\'envoi de l\'email';
+	        $scope.inscriptionMessageType = 'error';
+	    });
+	};
+    
+    
+    
+    
+    
+    
+    
+    
     
 }])
 

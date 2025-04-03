@@ -24,6 +24,7 @@ if (!$data) {
     exit;
 }
 
+
 // Liste des champs obligatoires (selon votre table SQL)
 $requiredFields = ['pseudo', 'type', 'nom', 'prenom', 'mdp', 'mail'];
 

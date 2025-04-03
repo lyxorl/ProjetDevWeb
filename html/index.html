@@ -17,7 +17,7 @@
         <button ng-click="openLogin()">
             <i class="fas fa-sign-in-alt"></i> Se connecter
         </button>
-        <button ng-click="redirectToInscription()">
+        <button ng-click="openInscriptionPopup()">
             <i class="fas fa-user-plus"></i> S'inscrire
         </button>
     </div>
@@ -367,8 +367,108 @@
     </div>
 </div>
 
+<!-- Popup d'inscription -->
+<div class="popup-overlay" ng-show="showInscriptionPopup" ng-click="closeInscriptionPopup()">
+    <div class="inscription-popup" ng-click="$event.stopPropagation()">
+        <button class="popup-close-btn" ng-click="closeInscriptionPopup()">
+            <i class="fas fa-times"></i>
+        </button>
+        <h2><i class="fas fa-user-plus"></i> Inscription Utilisateur</h2>
+        
+        <form name="userForm" ng-submit="submitInscriptionForm()" novalidate>
+            <!-- Section Identifiants -->
+            <div class="form-group">
+                <label for="pseudo">Pseudo *</label>
+                <input type="text" id="pseudo" name="pseudo" ng-model="inscriptionData.pseudo" 
+                       required ng-pattern="/^[a-zA-Z0-9_]{3,50}$/" ng-trim="true">
+                <span class="error" ng-show="userForm.pseudo.$error.required">Requis</span>
+                <span class="error" ng-show="userForm.pseudo.$error.pattern">3-50 caractères alphanumériques</span>
+            </div>
 
+            <div class="form-group">
+                <label for="mdp">Mot de passe *</label>
+                <input type="password" id="mdp" name="mdp" ng-model="inscriptionData.mdp" 
+                       required ng-minlength="8" ng-change="updatePasswordStrength()">
+                <div class="password-strength">
+                    <div class="password-strength-bar" ng-style="{'width': passwordStrength + '%', 'background-color': passwordStrengthColor}"></div>
+                </div>
+                <span class="error" ng-show="userForm.mdp.$error.required">Requis</span>
+                <span class="error" ng-show="userForm.mdp.$error.minlength">8 caractères minimum</span>
+            </div>
 
+            <!-- Section Informations personnelles -->
+            <div class="form-group">
+                <label for="nom">Nom *</label>
+                <input type="text" id="nom" name="nom" ng-model="inscriptionData.nom" required>
+            </div>
+
+            <div class="form-group">
+                <label for="prenom">Prénom *</label>
+                <input type="text" id="prenom" name="prenom" ng-model="inscriptionData.prenom" 
+                       required ng-change="normalizePrenom()">
+            </div>
+
+            <div class="form-group">
+                <label for="age">Âge</label>
+                <input type="number" id="age" name="age" ng-model="inscriptionData.age" 
+                       min="0" max="120">
+            </div>
+
+            <div class="form-group">
+                <label for="genre">Genre *</label>
+                <select id="genre" name="genre" ng-model="inscriptionData.genre" required>
+                    <option value="M">Masculin</option>
+                    <option value="F">Féminin</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="mail">Email *</label>
+                <input type="email" id="mail" name="mail" ng-model="inscriptionData.mail" required>
+                <span class="error" ng-show="userForm.mail.$error.email">Email invalide</span>
+            </div>
+
+            <div class="form-group">
+                <label for="type">Type de compte *</label>
+                <select id="type" name="type" ng-model="inscriptionData.type" required>
+                    <option value="parent">Parent</option>
+                    <option value="enfant">Enfant</option>
+                    <option value="invité">Invité</option>
+                </select>
+            </div>
+
+            <!-- Section Photo -->
+            <div class="form-group">
+                <label for="photo">Photo</label>
+                <input type="file" id="photo" name="photo" file-model="inscriptionData.photo" 
+                       accept="image/*" ngf-max-size="2MB">
+                <img id="imagePreview" ng-src="{{imagePreviewUrl}}" ng-show="imagePreviewUrl" 
+                     style="max-width: 200px; margin-top: 10px;"/>
+                <span class="error" ng-show="userForm.photo.$error.maxSize">Fichier trop volumineux (max 2MB)</span>
+            </div>
+
+            <button type="submit" ng-disabled="userForm.$invalid">S'inscrire</button>
+        </form>
+
+        <div ng-show="inscriptionMessage" style="margin-top: 20px; padding: 10px; 
+                    background-color: {{inscriptionMessageType === 'success' ? '#dff0d8' : '#f2dede' }};
+                    border: 1px solid {{inscriptionMessageType === 'success' ? '#d6e9c6' : '#ebccd1' }};
+                    color: {{inscriptionMessageType === 'success' ? '#3c763d' : '#a94442' }};">
+            {{inscriptionMessage}}
+        </div>
+        <div ng-if="inscriptionMessageType === 'success'" class="form-group">
+		    <p>Si vous n'avez pas reçu l'email :</p>
+		    <button ng-click="resendValidationEmail()" 
+				  class="login-btn">
+			   <i class="fas fa-redo"></i> Renvoyer l'email de validation
+		    </button>
+		    <small style="display: block; margin-top: 5px; color: #666;">
+			   Vérifiez aussi vos spams/courriers indésirables
+		    </small>
+	   </div>
+    </div>
+</div>
 
    <script src="scripts/app.js"></script>
 </body>

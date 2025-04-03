@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr" ng-app="maisonConnecteeApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation de compte - Maison Connectée</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    
+    <!-- Contenu principal stylisé comme vos autres pages -->
+    <div class="main-container">
+        <div class="weather-section">
+            <h1 class="welcome-title">
+                <i class="fas fa-check-circle"></i> Validation du compte
+            </h1>
+            
+            <div class="weather-card" id="validation-result">
+                <div class="loader" id="loader">
+                    <i class="fas fa-spinner fa-spin fa-3x" style="color: #3498db;"></i>
+                    <p style="margin-top: 15px;">Validation en cours...</p>
+                </div>
+                
+                <div id="result-message" style="display: none;">
+                    <h2 id="result-title" style="font-size: 1.8rem;"></h2>
+                    <p id="result-details" style="margin: 15px 0;"></p>
+                    <a href="/" class="login-btn" style="display: inline-block; margin-top: 20px;">
+                        <i class="fas fa-home"></i> Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Récupère les paramètres de l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const dataParam = urlParams.get('d');
+        const sigParam = urlParams.get('s');
+
+        // Éléments du DOM
+        const loader = document.getElementById('loader');
+        const resultMessage = document.getElementById('result-message');
+        const resultTitle = document.getElementById('result-title');
+        const resultDetails = document.getElementById('result-details');
+
+        // Fonction pour afficher le résultat
+        function showResult(success, message, details = '') {
+            loader.style.display = 'none';
+            resultMessage.style.display = 'block';
+            
+            if (success) {
+                resultTitle.innerHTML = `<i class="fas fa-check-circle success"></i> ${message}`;
+                resultTitle.className = 'success';
+            } else {
+                resultTitle.innerHTML = `<i class="fas fa-times-circle error"></i> ${message}`;
+                resultTitle.className = 'error';
+            }
+            
+            resultDetails.textContent = details;
+        }
+
+        // Appel à l'API de validation
+        if (dataParam && sigParam) {
+            fetch(`/api/validate_email.php?d=${encodeURIComponent(dataParam)}&s=${encodeURIComponent(sigParam)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showResult(
+                            true, 
+                            'Adresse email validée avec succès !',
+                            'Vous pourrez vous connecter à votre compte quand un administrateur aura validé votre compte.'
+                        );
+                    } else {
+                        showResult(
+                            false,
+                            'Erreur de validation',
+                            data.message || 'Le lien de validation est invalide ou a expiré.'
+                        );
+                    }
+                })
+                .catch(error => {
+                    showResult(
+                        false,
+                        'Erreur technique',
+                        'Une erreur est survenue lors de la validation. Veuillez réessayer plus tard.'
+                    );
+                    console.error('Erreur:', error);
+                });
+        } else {
+            showResult(
+                false,
+                'Lien invalide',
+                'Le lien de validation est incomplet ou malformé.'
+            );
+        }
+    </script>
+</body>
+</html>

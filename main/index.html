@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Maison Connectée</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
@@ -17,6 +18,9 @@
             <i class="fas fa-user-plus"></i> S'inscrire
         </button>
     </div>
+    <button ng-click="openRapport()">
+        <i class="fas fa-user-plus"></i> Creer rapport
+    </button>
 </div>
 
 <div class="popup-overlay" ng-show="showInscriptPopup" ng-click="closeInscript()">
@@ -37,7 +41,7 @@
                         <option value='Autre'>Autre</option>
 
                     </select></td></tr>
-                    <tr><td><input class="buttona"type="file" name="img" accept="image/*" ng-model="creation.image" required></td></tr>
+                    <tr><td><input class="button" type="file" name="img" accept="image/*" file-model="creation.image" required></td></tr>
                     <tr><td >Role/Fonction :<select name="type" ng-model="creation.type" required>
                         <option value='parent'>parent</option>
                         <option value='enfant'>enfant</option>
@@ -58,6 +62,19 @@
                     </div></td></tr>
                 </table>
             </form>
+        </div>
+    </div>
+
+    <div class="popup-overlay" ng-show="showRapportPopup" ng-click="closeRapport()">
+        <div class="rapport-popup" ng-click="$event.stopPropagation()">
+            <button class="popup-close-btn" ng-click="closeRapport()">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <button ng-click="creerRapport()">Rapport PDF</button>
+            <div class="error-message" ng-if="RapportMsg">
+                <i class="fas fa-exclamation-circle"></i> {{ RapportMsg }}
+            </div>
         </div>
     </div>
 

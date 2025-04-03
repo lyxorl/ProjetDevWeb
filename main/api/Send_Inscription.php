@@ -87,7 +87,7 @@ $data = json_decode($json, true);
 
         else{
             $types = ["image/jpeg","image/png","image/jpg"];
-            if(isset($_FILES['img'])){
+            if(isset($_FILES['image'])){
                 $img = $_FILES["img"];
                 if (in_array($img["type"], $types)) {
                     // Générer le nom du fichier

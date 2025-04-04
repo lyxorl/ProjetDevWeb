@@ -178,8 +178,9 @@ $scope.popupPosition = { top: 0, left: 0 };
     $scope.logout = function() {
         $http.post('api/logout.php')
             .finally(function() {
-                 localStorage.removeItem('user_pseudo');
+                localStorage.removeItem('user_pseudo');
         		localStorage.removeItem('user_rang');
+				localStorage.removeItem('selected_rang');
                 $scope.isLoggedIn = false;
                 //$scope.currentUser = null;
                 checkAuth(); // Rafraîchit l'état

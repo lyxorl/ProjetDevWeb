@@ -385,15 +385,15 @@
                         <td class="action-cell">
                         		<div class="consigne-control">
 						    <input type="number"
-								  ng-model="selectedAppareil.newLimBasse"
-								  min="16"  
-								  max="{{selectedAppareil.lim_haute}}"
-								  step="0.5"
-								  required
-								  name="lim_basse"
-								  placeholder="Nouvelle limite basse">
+								    ng-model="selectedAppareil.newLimBasse"
+								    min="16"  
+								    max="{{selectedAppareil.lim_haute}}"
+								    step="0.5"
+								    required
+								    name="lim_basse"
+								    placeholder="Nouvelle limite basse">
 						    <button class="btn-validate" ng-click="updateLimBasse()">
-							   <i class="fas fa-check"></i>
+							    <i class="fas fa-check"></i>
 						    </button>
 						</div>
                         </td>
@@ -429,17 +429,22 @@
                 <img src="image.png" alt="Description de l'image">
             </div>
         </div>
-        <h2>Modification</h2>
-        <form ng-submit="updatePassword(selectedUser)">
+        <h2>Modifications :</h2>
+        <form ng-submit="updateProfileInfo(selectedUser)" class="modif_profil">
             <label>Nom :</label>
-            <input ng-model="selectedUser.nom" /><br>
+            <input ng-model="selectedUser.nom" />
             <label>Prenom :</label>
-            <input ng-model="selectedUser.prenom" /><br>
+            <input ng-model="selectedUser.prenom" />
             <label>Genre :</label>
             <select ng-model="selectedUser.genre">
                 <option value="M">M</option>
                 <option value="F">F</option>
-                <option value="Autres">Autres</option><br>
+                <option value="Autres">Autres</option>
+            </select>
+            <label>Age :</label>
+            <input ng-model="selectedUser.age" type="number" min="1" max="120" step="1">
+            <label>Mail :</label>
+            <input ng-model="selectedUser.mail" />
             <label>Mot de passe :</label>
             <input type="password" ng-model="selectedUser.mdp" />
             <button type="submit" class="update-profile-button">Appliquer les modifications</button>
@@ -465,7 +470,7 @@
             <div class="form-group">
                 <label for="pseudo">Pseudo *</label>
                 <input type="text" id="pseudo" name="pseudo" ng-model="inscriptionData.pseudo" 
-                       required ng-pattern="/^[a-zA-Z0-9_]{3,50}$/" ng-trim="true">
+                        required ng-pattern="/^[a-zA-Z0-9_]{3,50}$/" ng-trim="true">
                 <span class="error" ng-show="userForm.pseudo.$error.required">Requis</span>
                 <span class="error" ng-show="userForm.pseudo.$error.pattern">3-50 caractères alphanumériques</span>
             </div>
@@ -473,7 +478,7 @@
             <div class="form-group">
                 <label for="mdp">Mot de passe *</label>
                 <input type="password" id="mdp" name="mdp" ng-model="inscriptionData.mdp" 
-                       required ng-minlength="8" ng-change="updatePasswordStrength()">
+                        required ng-minlength="8" ng-change="updatePasswordStrength()">
                 <div class="password-strength">
                     <div class="password-strength-bar" ng-style="{'width': passwordStrength + '%', 'background-color': passwordStrengthColor}"></div>
                 </div>
@@ -490,13 +495,13 @@
             <div class="form-group">
                 <label for="prenom">Prénom *</label>
                 <input type="text" id="prenom" name="prenom" ng-model="inscriptionData.prenom" 
-                       required ng-change="normalizePrenom()">
+                        required ng-change="normalizePrenom()">
             </div>
 
             <div class="form-group">
                 <label for="age">Âge</label>
                 <input type="number" id="age" name="age" ng-model="inscriptionData.age" 
-                       min="0" max="120">
+                        min="0" max="120">
             </div>
 
             <div class="form-group">
@@ -527,9 +532,9 @@
             <div class="form-group">
                 <label for="photo">Photo</label>
                 <input type="file" id="photo" name="photo" file-model="inscriptionData.photo" 
-                       accept="image/*" ngf-max-size="2MB">
+                        accept="image/*" ngf-max-size="2MB">
                 <img id="imagePreview" ng-src="{{imagePreviewUrl}}" ng-show="imagePreviewUrl" 
-                     style="max-width: 200px; margin-top: 10px;"/>
+                    style="max-width: 200px; margin-top: 10px;"/>
                 <span class="error" ng-show="userForm.photo.$error.maxSize">Fichier trop volumineux (max 2MB)</span>
             </div>
 
@@ -549,13 +554,13 @@
         <div ng-if="inscriptionMessageType === 'success'" class="form-group">
 		    <p>Si vous n'avez pas reçu l'email :</p>
 		    <button ng-click="resendValidationEmail()" 
-				  class="login-btn">
-			   <i class="fas fa-redo"></i> Renvoyer l'email de validation
+			    class="login-btn">
+			    <i class="fas fa-redo"></i> Renvoyer l'email de validation
 		    </button>
 		    <small style="display: block; margin-top: 5px; color: #666;">
-			   Vérifiez aussi vos spams/courriers indésirables
+			    Vérifiez aussi vos spams/courriers indésirables
 		    </small>
-	   </div>
+	    </div>
     </div>
 </div>
 

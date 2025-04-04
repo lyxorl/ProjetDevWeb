@@ -790,11 +790,12 @@ function getWeather(lat, lon) {
 	    });
 	};
     
-	$scope.updatePassword = function(user){
-		$http.post('api/modifyuser_password.php', user).then(function(response) {
+	$scope.updateProfileInfo = function(user){
+		console.log(user);
+		$http.post('api/modifyuser.php', user).then(function(response) {
 			$scope.popupShowModifUser = false;
         }, function(error) {
-            $scope.message = "Erreur lors de la mise à jour du mot de passe";
+            $scope.message = "Erreur lors de la mise à jour de l'utilisateur";
         });
 	}
     

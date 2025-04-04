@@ -72,6 +72,8 @@ $scope.popupPosition = { top: 0, left: 0 };
     $scope.userslist = [];
     $scope.popupShowModifUser = false;
 
+	localStorage.setItem('selected_rang', 'simple');
+
     
 // ----- GESTION DU MENU DÉROULANT POUR LES NIVEAUX
 
@@ -92,10 +94,6 @@ $scope.popupPosition = { top: 0, left: 0 };
 	    console.log('Rang sauvegardé:', rang);
 	}
 
-
-	function test() {
-	    console.log($scope.user);
-	}
 //----------------
     // RANG DISPONIBLES 
     $scope.updateAvailableRangs = function() {
@@ -181,7 +179,7 @@ $scope.popupPosition = { top: 0, left: 0 };
         $http.post('api/logout.php')
             .finally(function() {
                  localStorage.removeItem('user_pseudo');
-        		localStorage.removeItem('user_rang');               
+        		localStorage.removeItem('user_rang');
                 $scope.isLoggedIn = false;
                 //$scope.currentUser = null;
                 checkAuth(); // Rafraîchit l'état
@@ -587,8 +585,7 @@ function getWeather(lat, lon) {
         });
 
 	$scope.validateUser = function(userselect) {
-		console.log(userselect);
-		userselect.validite = 1;
+		userselect.validite = 1-userselect.validite;
 		$http.post('api/modifyuser_validite.php', userselect).then(function(response) {
 
             $scope.message = "Profil mis à jour avec succès";
@@ -612,39 +609,56 @@ function getWeather(lat, lon) {
 	// Fonction de confirmation de suppression
 	$scope.confirmDelete = function() {
 	    if (confirm("Êtes-vous sûr de vouloir supprimer définitivement ce matériel ?")) {
-		   $scope.deleteMaterial();
+		    $scope.deleteMaterial();
+	    }
+	};
+
+	$scope.confirmDeleteUser = function(user) {
+	    if (confirm("Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ?")) {
+		    $http.post('api/delete_user.php', user).then (function(response) {
+			if (response.data.success) {
+				$scope.userslist = $scope.userslist.filter(function(obj) {
+					return obj.pseudo !== user.pseudo;
+				});
+				$scope.closeModifUser();
+				alert("Utilisateur supprimé avec succès");
+			}
+		    },function(error) {
+            console.error("Erreur lors de la supression de l'user", error);
+            $scope.message = "Erreur lors de la supression de l'user";
+        });
 	    }
 	};
 
 	// Fonction de suppression effective
 	$scope.deleteMaterial = function() {
 	    if (!$scope.selectedAppareil || !$scope.selectedAppareil.id_objet) {
-		   console.error("Aucun matériel sélectionné ou ID manquant");
-		   return;
+		    console.error("Aucun matériel sélectionné ou ID manquant");
+		    return;
 	    }
 	    
 	    $http.post('api/delete_material.php', {
-		   id_objet: $scope.selectedAppareil.id_objet
+		    id_objet: $scope.selectedAppareil.id_objet
 	    }).then(function(response) {
 	    		console.log("Réponse serveur:", response.data);
-		   if (response.data.success) {
+		    if (response.data.success) {
 		       // Supprime de la liste locale
-		       $scope.objets = $scope.objets.filter(function(obj) {
-		           return obj.id_objet !== $scope.selectedAppareil.id_objet;
-		       });
-		       
+		        $scope.objets = $scope.objets.filter(function(obj) {
+		            return obj.id_objet !== $scope.selectedAppareil.id_objet;
+		        });
+		        
 		       // Ferme le popup
-		       $scope.closePopup();
-		       alert("Matériel supprimé avec succès");
-		   } else {
-		       alert("Erreur lors de la suppression : " + (response.data.message || 'Erreur inconnue'));
-		   }
+		        $scope.closePopup();
+		        alert("Matériel supprimé avec succès");
+		    } else {
+		        alert("Erreur lors de la suppression : " + (response.data.message || 'Erreur inconnue'));
+		    }
 	    }).catch(function(error) {
-		   console.error("Erreur complète:", error);
-		   if (error.data) {
-		       console.error("Détails erreur:", error.data);
-		   }
-        	   alert("Erreur serveur lors de la suppression. Voir la console pour plus de détails.");
+		    console.error("Erreur complète:", error);
+		    if (error.data) {
+		        console.error("Détails erreur:", error.data);
+		    }
+        	    alert("Erreur serveur lors de la suppression. Voir la console pour plus de détails.");
     });
 };
 	// -------------- POPUP INSCRIPTION --------------
@@ -736,7 +750,7 @@ function getWeather(lat, lon) {
 	        if (response.data.success) {
 	            // Affiche un message plus complet
 	            $scope.inscriptionMessage = 'Inscription réussie ! Un email de validation a été envoyé à ' + 
-	                                        $scope.inscriptionData.mail + 
+	                                        $scope.inscriptionData.mail +
 	                                        '. Veuillez vérifier votre boîte mail.';
 	            
 	            
@@ -765,8 +779,8 @@ function getWeather(lat, lon) {
 	        return;
 	    }
 
-	    $http.post('api/resend_validation.php', { 
-	        mail: $scope.inscriptionData.mail 
+	    $http.post('api/resend_validation.php', {
+	        mail: $scope.inscriptionData.mail
 	    }).then(function(response) {
 	        $scope.inscriptionMessage = response.data.message;
 	        $scope.inscriptionMessageType = response.data.success ? 'success' : 'error';
@@ -776,6 +790,13 @@ function getWeather(lat, lon) {
 	    });
 	};
     
+	$scope.updatePassword = function(user){
+		$http.post('api/modifyuser_password.php', user).then(function(response) {
+			$scope.popupShowModifUser = false;
+        }, function(error) {
+            $scope.message = "Erreur lors de la mise à jour du mot de passe";
+        });
+	}
     
 }])
 

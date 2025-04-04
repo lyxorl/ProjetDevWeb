@@ -127,7 +127,7 @@ try {
         }
     }
 	else{
-	$photoName = 'defaut.jpg';		
+	$photoName = 'defaut.jpg';
 	}
     
     // Hashage du mot de passe

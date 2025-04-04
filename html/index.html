@@ -231,6 +231,8 @@
                             <th>Age</th>
                             <th>Genre</th>
                             <th>Type</th>
+                            <th>Mail</th>
+                            <th ng-if="selectedRang === 'admin'">Activer</th>
                             <th>Visualiser</th>
                         </tr>
                     </thead>
@@ -239,12 +241,13 @@
                             <td><strong>{{ user.age }} ans</strong></td>
                             <td><strong>{{ user.genre }}</strong></td>
                             <td><strong>{{ user.type }}</strong></td>
-                            <!-- <td><div class="toggle-slider"
+                            <td><strong>{{ user.mail }}</strong></td>
+                            <td ng-if="selectedRang === 'admin'"><div class="toggle-slider"
+                                ng-if="(validite != 0 && validite != 1)"
                                 ng-class="{'active': user.validite === 1, 'inactive': user.validite === 0}" 
                                 ng-click="validateUser(user)">
                                <div class="toggle-knob"></div>
                                <span class="toggle-label">{{user.validite === 1 ? 'ON' : 'OFF'}}</span></td>
-                            <td><strong>{{ user.mail }}</strong></td> -->
                             <td ng-if="condVisualizeProfile(user.pseudo) || selectedRang === 'admin' " class="actions-cell"> <!-- Visible seulement si connecté -->
                                 <button ng-click="openModifProfile(user)" class="visualiser-btn"> <!-- nb-click-->
                                    <i class="fas fa-eye"></i> Visualiser
@@ -322,11 +325,6 @@
 						   </div>
 					    </div>
 					</td>
-                    <td ng-if="isLoggedIn" class="actions-cell"> <!-- Visible seulement si connecté -->
-                        <button ng-click="openAppareilPopup(objet, $event)" class="visualiser-btn">
-                           <i class="fas fa-eye"></i> Visualiser
-                        </button>
-                    </td>
                     </tr>
                     <tr>
                         <th>Type</th>
@@ -431,11 +429,24 @@
                 <img src="image.png" alt="Description de l'image">
             </div>
         </div>
-        <form ng-submit="updateProfile()">
-            <label>Mot de passe:</label>
-            <input type="password" ng-model="selectedUser.mdp" required /><br>
-            <button type="submit" class="update-profile-button">Mettre à jour</button>
+        <h2>Modification</h2>
+        <form ng-submit="updatePassword(selectedUser)">
+            <label>Nom :</label>
+            <input ng-model="selectedUser.nom" /><br>
+            <label>Prenom :</label>
+            <input ng-model="selectedUser.prenom" /><br>
+            <label>Genre :</label>
+            <select ng-model="selectedUser.genre">
+                <option value="M">M</option>
+                <option value="F">F</option>
+                <option value="Autres">Autres</option><br>
+            <label>Mot de passe :</label>
+            <input type="password" ng-model="selectedUser.mdp" />
+            <button type="submit" class="update-profile-button">Appliquer les modifications</button>
         </form>
+        <button class="btn-delete" ng-if="!(selectedUser.pseudo == 'admin') && selectedRang == 'admin'" ng-click="confirmDeleteUser(selectedUser)">
+            <i class="fas fa-trash-alt"></i> Supprimer l'utilisateur
+        </button>
         <p>{{ message }}</p>
     </div>
 

@@ -1,23 +1,32 @@
 angular.module('maisonConnecteeApp', [])
 
-.directive('fileModel', ['$parse', function ($parse) {
+.run(['$window', function($window) {
+    // Initialisation de jsPDF
+    $window.jsPDF = $window.jspdf ? $window.jspdf.jsPDF : null;
+    
+    // Autres configurations globales...
+    console.log('Application initialisée');
+}])
+
+.directive('fileModel', ['$parse', function($parse) {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
             var model = $parse(attrs.fileModel);
             var modelSetter = model.assign;
             
-            element.bind('change', function(){
+            element.on('change', function(event){
                 scope.$apply(function(){
-                    var file = element[0].files[0];
+                    var file = event.target.files[0];
                     modelSetter(scope, file);
                     
                     if (file && file.type.match('image.*')) {
                         var reader = new FileReader();
                         reader.onload = function(e) {
-                            scope.imagePreviewUrl = e.target.result;
-                            scope.$apply();
-                        }
+                            scope.$apply(function(){
+                                scope.imagePreviewUrl = e.target.result;
+                            });
+                        };
                         reader.readAsDataURL(file);
                     }
                 });
@@ -27,9 +36,16 @@ angular.module('maisonConnecteeApp', [])
 }])
 
 
-.controller('MainController', ['$scope', '$http', '$window', '$interval', '$timeout', 
-function($scope, $http, $window, $interval, $timeout) {
+.controller('MainController', ['$scope','$q', '$http', '$window', '$interval', '$timeout', 
+function($scope, $q, $http, $window, $interval, $timeout) {
     
+	$scope.rapportData = null;
+	$scope.rapportGlobalData = null;
+	$scope.rapportDateDebut = new Date();
+	$scope.rapportDateFin = new Date();
+	$scope.rapportGlobalDateDebut = new Date();
+	$scope.rapportGlobalDateFin = new Date();
+
 
 
 $scope.showLoginPopup = false;
@@ -343,6 +359,11 @@ function getWeather(lat, lon) {
 	    
 	    
 	};
+
+	$scope.closePopup = function() {
+	    $scope.showAppareilPopup = false;
+	    $scope.selectedAppareil = null;
+	};
 	
 // ---- pour modifier dans popup
      // ETAT
@@ -529,6 +550,8 @@ function getWeather(lat, lon) {
 	    });
 	};
 
+	// -------------- Liste des users et modification du profil --------------
+
     function affichageProfile(){
         var urlParams = new URLSearchParams(window.location.search);
         var pseudostr = urlParams.get('pseudo');
@@ -599,11 +622,6 @@ function getWeather(lat, lon) {
 	$scope.condVisualizeProfile = function(user){
 		return user == localStorage.getItem('user_pseudo');
 	}
-    
-    $scope.closePopup = function() {
-	    $scope.showAppareilPopup = false;
-	    $scope.selectedAppareil = null;
-	};
 	
 //------- SUPPRIMER MATERIEL ----
 
@@ -662,8 +680,79 @@ function getWeather(lat, lon) {
         	    alert("Erreur serveur lors de la suppression. Voir la console pour plus de détails.");
     });
 };
+
+// -------------- RAPPORT --------------
+$scope.RapportMsg = '';
+	$scope.creerRapport = function(){
+		console.log("tetst")
+		$scope.calculateRapport();
+		var ladate=new Date()
+		const doc = new jsPDF();
+
+		n=47;
+
+		doc.text("Rapport de l'objet/ID : "+$scope.selectedAppareil.nom+" / "+$scope.selectedAppareil.id_objet, 10, 10);
+		doc.text("Redigé le : "+ladate.getDate()+"/"+(ladate.getMonth()+1)+"/"+ladate.getFullYear(),10,16);
+		doc.text("Infos sur l'objet :", 10, 25);
+		doc.text("Type d'objet : "+$scope.selectedAppareil.type ,14,35);
+		doc.text("Etat : "+$scope.selectedAppareil.etat,14,41);
+		doc.text("Emplacement : "+$scope.selectedAppareil.lieu,14,47);
+		if(!($scope.selectedAppareil.temperature===null)){
+			doc.text("Température : "+$scope.selectedAppareil.temperature,14,n=n+6);
+		}
+		if(!($scope.selectedAppareil.consigne===null)){
+			doc.text("Consigne : "+$scope.selectedAppareil.consigne,14,n=n+6);
+			doc.text("Limite (min/max): "+$scope.selectedAppareil.lim_basse + "/"+$scope.selectedAppareil.lim_haute ,14,n=n+6);
+		}
+		if(!($scope.rapportData === null)){
+			doc.text("Conso/Durée Totale : "+$scope.rapportData.consoTotale + " / " + $scope.rapportData.dureeTotale,14,n=n+6);
+			doc.text("Conso Moy : "+ $scope.rapportData.consoMoyenne,14,n=n+6);
+		}
+
+
+		//doc.addPage(); //si on veut ajouter des pages
+		/*
+		var img = new Image()
+		img.src = 'assets/sample.png'
+		doc.addImage(img, 'png', 10, 78, 12, 15)
+		*/
+		doc.save("Rapport_"+$scope.selectedAppareil.id_objet+"_"+ladate.getDate()+"_"+(ladate.getMonth()+1)+"_"+ladate.getFullYear()+".pdf");
+		$scope.RapportMsg = "success";  
+	}
+
+	$scope.RapportMsgG = ''; 
+	$scope.creerRapportGlobal = function(){
+		$scope.calculateRapportGlobal();
+		var ladate=new Date()
+		const doc = new jsPDF();
+
+		doc.text("Rapport Global : ",10, 10);
+		doc.text("Redigé le : "+ladate.getDate()+"/"+(ladate.getMonth()+1)+"/"+ladate.getFullYear(),10,16);
+		doc.text("Infos :", 10, 25);
+
+		n=35;
+
+		if(!($scope.rapportGlobalData === null)){
+			doc.text("Conso Totale : "+$scope.rapportGlobalData.consoTotale,14,n=n+6);
+			doc.text("AppareilPlusConsomateur : "+ $scope.rapportGlobalData.appareilPlusConsommateur,14,n=n+6);
+			doc.text("detailsAppareils : "+ $scope.rapportGlobalData.detailsAppareils,14,n=n+6)
+		}
+
+
+
+		//doc.addPage(); //si on veut ajouter des pages
+		/*
+		var img = new Image()
+		img.src = 'assets/sample.png'
+		doc.addImage(img, 'png', 10, 78, 12, 15)
+		*/
+		doc.save("Rapport_"+$scope.selectedAppareil.id_objet+"_"+ladate.getDate()+"_"+(ladate.getMonth()+1)+"_"+ladate.getFullYear()+".pdf");
+		$scope.RapportMsgG = "success";  
+	}
+
 $scope.openRapportPopup = function(objet) {
     $scope.selectedAppareil = objet;
+	console.log(objet);
     $scope.showRapportPopup = true;
     $scope.rapportDateDebut = new Date(new Date().setDate(new Date().getDate() - 7)); // 7 derniers jours par défaut
     $scope.rapportDateFin = new Date();
@@ -755,9 +844,9 @@ $scope.calculateRapportGlobal = function() {
             let detailsAppareils = [];
             let appareilPlusConsommateur = { nom: '', conso: 0 };
             
-            // Pour chaque appareil, calculer sa consommation
-            async.each(appareils, function(appareil, callback) {
-                $http.get('api/journal.php?objet=' + appareil.id_objet)
+            // Créer un tableau de promesses pour chaque appareil
+            var promises = appareils.map(function(appareil) {
+                return $http.get('api/journal.php?objet=' + appareil.id_objet)
                     .then(function(journalResponse) {
                         const events = journalResponse.data;
                         let consoAppareil = 0;
@@ -790,26 +879,35 @@ $scope.calculateRapportGlobal = function() {
                         }
                         
                         consoAppareil = consoAppareil / 1000; // Convertir en kWh
-                        consoTotale += consoAppareil;
                         
-                        detailsAppareils.push({
-                            nom: appareil.nom,
-                            type: appareil.type,
+                        return {
+                            appareil: appareil,
                             conso: consoAppareil,
                             duree: dureeAppareil
-                        });
-                        
-                        if (consoAppareil > appareilPlusConsommateur.conso) {
-                            appareilPlusConsommateur = {
-                                nom: appareil.nom,
-                                conso: consoAppareil
-                            };
-                        }
-                        
-                        callback();
+                        };
                     });
-            }, function() {
-                // Une fois tous les appareils traités
+            });
+            
+            // Quand toutes les promesses sont résolues
+            $q.all(promises).then(function(results) {
+                results.forEach(function(result) {
+                    consoTotale += result.conso;
+                    
+                    detailsAppareils.push({
+                        nom: result.appareil.nom,
+                        type: result.appareil.type,
+                        conso: result.conso,
+                        duree: result.duree
+                    });
+                    
+                    if (result.conso > appareilPlusConsommateur.conso) {
+                        appareilPlusConsommateur = {
+                            nom: result.appareil.nom,
+                            conso: result.conso
+                        };
+                    }
+                });
+                
                 $scope.rapportGlobalData = {
                     consoTotale: consoTotale,
                     appareilPlusConsommateur: appareilPlusConsommateur,

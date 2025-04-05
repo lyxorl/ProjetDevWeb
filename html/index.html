@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Maison Connectée</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -410,7 +411,7 @@
         <button class="visualiser-btn" ng-click="openRapportGlobalPopup()">
            <i class="fas fa-chart-bar"></i> Rapport global
         </button>
-        <button ng-click="openRapportPopup(objet)" class="visualiser-btn">
+        <button ng-click="openRapportPopup(selectedAppareil)" class="visualiser-btn">
             <i class="fas fa-file-alt"></i> Rapport
          </button>
         <button class="btn-delete" ng-click="confirmDelete()">
@@ -433,7 +434,7 @@
                   <label>Période :</label>
                   <input type="date" ng-model="rapportDateDebut">
                   <input type="date" ng-model="rapportDateFin">
-                  <button ng-click="calculateRapport()">Générer</button>
+                  <button ng-click="creerRapport()">Générer</button>
               </div>
               
               <!-- Résultats -->
@@ -486,7 +487,7 @@
                   <label>Période :</label>
                   <input type="date" ng-model="rapportGlobalDateDebut">
                   <input type="date" ng-model="rapportGlobalDateFin">
-                  <button ng-click="calculateRapportGlobal()">Générer</button>
+                  <button ng-click="creerRapportGlobal()">Générer</button>
               </div>
               
               <!-- Résultats -->

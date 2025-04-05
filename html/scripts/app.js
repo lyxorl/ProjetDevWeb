@@ -40,7 +40,7 @@ $scope.popupPosition = { top: 0, left: 0 };
   
     // Initialisations
     $scope.showLoginPopup = false;
-    $scope.typeOptions = ["Thermostat", "Caméra", "Lumière", "Prise"];
+    $scope.typeOptions = ["Alarme", "Caméra", "Capteur","Lumière", "Prise","Serrure","Thermostat","Volet"];
     $scope.isLoggedIn = false;
     $scope.selectedAppareil = null;
     $scope.selectedRang = 'simple';
@@ -78,9 +78,9 @@ $scope.popupPosition = { top: 0, left: 0 };
 	$scope.rapportDateFin = new Date();
 	$scope.rapportGlobalDateDebut = new Date();
 	$scope.rapportGlobalDateFin = new Date();
-		
+	$scope.newType = '';
 	
-    
+   
 // ----- GESTION DU MENU DÉROULANT POUR LES NIVEAUX
 
 	// Niveaux d'accès
@@ -251,12 +251,7 @@ $scope.popupPosition = { top: 0, left: 0 };
                 $scope.loginError = 'Erreur de connexion au serveur';
             	});
     };
-/*
-// ----- GESTION INSCRIPTION
-    $scope.redirectToInscription = function() {
-        $window.location.href = 'inscription.html';
-    };
-*/
+
 // ------ Météo
 
 const apiKey = '0042905619163fc9e31183aef7b25ae5';
@@ -852,175 +847,89 @@ function getWeather(lat, lon) {
 	};
     
     // Pour l'admin seulement
-		$scope.addNewType = function() {
-		    if ($scope.newType && !$scope.typeOptions.includes($scope.newType)) {
-			   $scope.typeOptions.push($scope.newType);
-			   $scope.nouvelObjet.type = $scope.newType; // Sélectionne automatiquement
-			   $scope.newType = ''; // Vide le champ
+	/*	$scope.addNewType = function(event) {
+    // Empêche la soumission du formulaire
+		    if (event) {
+			   event.preventDefault();
+			   event.stopPropagation();
 		    }
+
+		    var newType = $scope.newType && $scope.newType.trim();
+
+		    if (!newType) return false;
+		    if ($scope.typeOptions.indexOf(newType) !== -1) return false;
+
+		    // Ajoute le nouveau type à la liste
+		    $scope.typeOptions.push(newType);
+
+		    // Sélectionne automatiquement le nouveau type dans le modèle
+		    $scope.nouvelObjet.type = newType;
+
+		    // Réinitialise le champ
+		    $scope.newType = '';
+		    
+		    return false;
+		};
+		    
+    */
+    
+    $scope.typeExists = function() {
+		    if (!$scope.newType || !$scope.typeOptions) return false;
+		    return $scope.typeOptions.some(function(t) {
+			   return t.toLowerCase() === $scope.newType.toLowerCase();
+		    });
+		};
+
+
+
+
+	// Fonction de formatage avancée
+		$scope.formatTypeName = function(value) {
+		    if (!value) return '';
+		    return value
+			   .trim() // Supprime les espaces avant/après
+			   .replace(/\s+/g, ' ') // Réduit les espaces multiples
+			   .replace(/(?:^|\s)\S/g, function(char) { 
+				  return char.toUpperCase(); // Capitalise chaque mot
+			   });
+		};
+
+		// Fonction d'ajout avec vérification
+		$scope.addNewType = function() {
+		    console.log('--- DEBUT addNewType ---');
+		    
+		    // Récupération sécurisée de la valeur
+		    var inputEl = document.getElementById('typeInputField');
+		    var actualValue = inputEl ? inputEl.value : '';
+		    
+		    if (!actualValue) {
+			   console.warn('Champ vide');
+			   return;
+		    }
+			var actualValue = $scope.formatTypeName(actualValue);
+
+		    // Vérification existence
+		    if ($scope.typeExists(actualValue)) {
+			   console.warn('Type existe déjà:', actualValue);
+			   return;
+		    }
+		    
+		    // Mise à jour sans déclencher $apply si inutile
+		    $timeout(function() {
+			   $scope.typeOptions.push(actualValue);
+			   $scope.nouvelObjet.type = actualValue;
+			   $scope.newType = '';
+			   inputEl.value = ''; // Réinitialisation DOM
+			   
+			   console.log('Type ajouté avec succès:', actualValue);
+		    });
+		    
+		    console.log('--- FIN addNewType ---');
 		};
     
+		  
     
-//----------popup raport    
-    // Ouvrir le rapport d'un appareil
-$scope.openRapportPopup = function(objet) {
-    $scope.selectedAppareil = objet;
-    $scope.showRapportPopup = true;
-    $scope.rapportDateDebut = new Date(new Date().setDate(new Date().getDate() - 7)); // 7 derniers jours par défaut
-    $scope.rapportDateFin = new Date();
-    $scope.calculateRapport();
-};
 
-// Fermer le rapport
-$scope.closeRapportPopup = function() {
-    $scope.showRapportPopup = false;
-    $scope.rapportData = null;
-};
-
-// Ouvrir le rapport global
-$scope.openRapportGlobalPopup = function() {
-    $scope.showRapportGlobalPopup = true;
-    $scope.rapportGlobalDateDebut = new Date(new Date().setMonth(new Date().getMonth() - 1)); // 1 mois par défaut
-    $scope.rapportGlobalDateFin = new Date();
-    $scope.calculateRapportGlobal();
-};
-
-// Fermer le rapport global
-$scope.closeRapportGlobalPopup = function() {
-    $scope.showRapportGlobalPopup = false;
-    $scope.rapportGlobalData = null;
-};
-
-// Calculer le rapport pour un appareil
-$scope.calculateRapport = function() {
-    if (!$scope.selectedAppareil) return;
-    
-    $http.get('api/journal.php?objet=' + $scope.selectedAppareil.id_objet)
-        .then(function(response) {
-            const events = response.data;
-            let consoTotale = 0;
-            let dureeTotale = 0;
-            let currentState = null;
-            let startTime = null;
-            
-            const dateDebut = new Date($scope.rapportDateDebut);
-            const dateFin = new Date($scope.rapportDateFin);
-            
-            // Filtrer les événements dans la période
-            const filteredEvents = events.filter(event => {
-                const eventDate = new Date(event.date_);
-                return eventDate >= dateDebut && eventDate <= dateFin;
-            });
-            
-            // Calculer la consommation
-            filteredEvents.forEach(event => {
-                const eventDate = new Date(event.date_);
-                const details = JSON.parse(event.details);
-                
-                if (details.etat === 'ON') {
-                    currentState = 'ON';
-                    startTime = eventDate;
-                } else if (details.etat === 'OFF' && currentState === 'ON' && startTime) {
-                    const durationHours = (eventDate - startTime) / (1000 * 60 * 60);
-                    dureeTotale += durationHours;
-                    consoTotale += durationHours * (details.conso || $scope.selectedAppareil.conso || 0);
-                    currentState = 'OFF';
-                }
-            });
-            
-            // Si l'appareil est toujours ON à la fin de la période
-            if (currentState === 'ON' && startTime) {
-                const durationHours = (dateFin - startTime) / (1000 * 60 * 60);
-                dureeTotale += durationHours;
-                consoTotale += durationHours * ($scope.selectedAppareil.conso || 0);
-            }
-            
-            $scope.rapportData = {
-                consoTotale: consoTotale / 1000, // Convertir en kWh
-                dureeTotale: dureeTotale,
-                consoMoyenne: (consoTotale / dureeTotale) || 0,
-                evenements: filteredEvents
-            };
-        });
-};
-
-// Calculer le rapport global
-$scope.calculateRapportGlobal = function() {
-    $http.get('api/materiels.php')
-        .then(function(response) {
-            const appareils = response.data.materiels;
-            const dateDebut = new Date($scope.rapportGlobalDateDebut);
-            const dateFin = new Date($scope.rapportGlobalDateFin);
-            
-            let consoTotale = 0;
-            let detailsAppareils = [];
-            let appareilPlusConsommateur = { nom: '', conso: 0 };
-            
-            // Pour chaque appareil, calculer sa consommation
-            async.each(appareils, function(appareil, callback) {
-                $http.get('api/journal.php?objet=' + appareil.id_objet)
-                    .then(function(journalResponse) {
-                        const events = journalResponse.data;
-                        let consoAppareil = 0;
-                        let dureeAppareil = 0;
-                        let currentState = null;
-                        let startTime = null;
-                        
-                        events.forEach(event => {
-                            const eventDate = new Date(event.date_);
-                            if (eventDate >= dateDebut && eventDate <= dateFin) {
-                                const details = JSON.parse(event.details);
-                                
-                                if (details.etat === 'ON') {
-                                    currentState = 'ON';
-                                    startTime = eventDate;
-                                } else if (details.etat === 'OFF' && currentState === 'ON' && startTime) {
-                                    const durationHours = (eventDate - startTime) / (1000 * 60 * 60);
-                                    dureeAppareil += durationHours;
-                                    consoAppareil += durationHours * (details.conso || appareil.conso || 0);
-                                    currentState = 'OFF';
-                                }
-                            }
-                        });
-                        
-                        // Si l'appareil est toujours ON à la fin de la période
-                        if (currentState === 'ON' && startTime) {
-                            const durationHours = (dateFin - startTime) / (1000 * 60 * 60);
-                            dureeAppareil += durationHours;
-                            consoAppareil += durationHours * (appareil.conso || 0);
-                        }
-                        
-                        consoAppareil = consoAppareil / 1000; // Convertir en kWh
-                        consoTotale += consoAppareil;
-                        
-                        detailsAppareils.push({
-                            nom: appareil.nom,
-                            type: appareil.type,
-                            conso: consoAppareil,
-                            duree: dureeAppareil
-                        });
-                        
-                        if (consoAppareil > appareilPlusConsommateur.conso) {
-                            appareilPlusConsommateur = {
-                                nom: appareil.nom,
-                                conso: consoAppareil
-                            };
-                        }
-                        
-                        callback();
-                    });
-            }, function() {
-                // Une fois tous les appareils traités
-                $scope.rapportGlobalData = {
-                    consoTotale: consoTotale,
-                    appareilPlusConsommateur: appareilPlusConsommateur,
-                    detailsAppareils: detailsAppareils
-                };
-            });
-        });
-};
-    
-    
 //------------------------------------------------------    
 }])
 

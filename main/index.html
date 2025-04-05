@@ -6,77 +6,599 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body ng-controller="MainController">
 	<!-- En-tête avec boutons -->
     <!-- Remplacez toute la section header par : -->
 <div class="header">
     <!-- Non connecté -->
     <div ng-if="!isLoggedIn">
-        <button ng-click="openInscript()">
+        
+        <button ng-click="openLogin()">
+            <i class="fas fa-sign-in-alt"></i> Se connecter
+        </button>
+        <button ng-click="openInscriptionPopup()">
             <i class="fas fa-user-plus"></i> S'inscrire
         </button>
     </div>
-    <button ng-click="openRapport()">
-        <i class="fas fa-user-plus"></i> Creer rapport
-    </button>
+    
+    <!-- Connecté -->
+    <div ng-if="isLoggedIn" class="user-header">
+	    <div class="user-info">
+		   <span>Identifié en tant que : {{currentUser.pseudo}}</span>
+		   <button ng-click="logout()" class="logout-btn">
+		       <i class="fas fa-sign-out-alt"></i> Déconnexion
+		   </button>
+	    </div>
+	    
+	    <div class="rang-selector">
+		   <span class="rang-label">Choix du profil :</span>
+		   <select ng-model="selectedRang" 
+			   ng-change="updateAccessLevel()"
+			   ng-options="rang as rang for rang in availableRangs track by rang"
+			   ng-value="selectedRang">
+			</select>
+		    
+	    </div>
+	</div>
 </div>
 
-<div class="popup-overlay" ng-show="showInscriptPopup" ng-click="closeInscript()">
-    <div class="inscript-popup" ng-click="$event.stopPropagation()">
-        <button class="popup-close-btn" ng-click="closeInscript()">
-            <i class="fas fa-times"></i>
-        </button>
-            <h2><i class="fas fa-key"></i> Inscription</h2>
-            <form ng-submit="inscript()">
-                <table class="centertable">
-                    <tr><td><h3>Rubrique publique : </h3></td></tr>
-            
-                    <tr><td>Pseudonyme : <input type ="text" name="pseudo" ng-model="creation.pseudo" required> </td></tr>
-                    <tr><td>Date de naissance: <input type ="date" name="date" ng-model="creation.date" required> </td></tr>
-                    <tr><td >Genre :<select name="genre" ng-model="creation.genre" required>
-                        <option value='M'>M</option>
-                        <option value='F'>F</option>
-                        <option value='Autre'>Autre</option>
 
-                    </select></td></tr>
-                    <tr><td><input class="button" type="file" name="img" accept="image/*" file-model="creation.image" required></td></tr>
-                    <tr><td >Role/Fonction :<select name="type" ng-model="creation.type" required>
-                        <option value='parent'>parent</option>
-                        <option value='enfant'>enfant</option>
-                        <option value='invité'>invité</option>
-                    </select></td></tr>
-            
-                    <tr><td><h3>Rubrique personelle :</h3></td></tr>
-            
-                    <tr><td>Nom :<input type ="text" name="nom" ng-model="creation.nom" required> </td></tr>
-                    <tr><td>Prenom :<input type ="text" name="prenom" ng-model="creation.prenom" required> </td></tr>
-                    <tr><td>Adresse mail :<input type ="text" name="adresse" ng-model="creation.adresse" required> </td></tr>
-                    <tr><td>Mot de passe :<input type ="password" name="mdp" ng-model="creation.mdp" required> </td></tr>
-                    <tr><td><button type="submit" class="login-btn">
-                        <i class="fas fa-sign-in-alt"></i> Envoyer
-                    </button>
-                    <div class="error-message" ng-if="InscriptMsg">
-                        <i class="fas fa-exclamation-circle"></i> {{ InscriptMsg }}
-                    </div></td></tr>
-                </table>
-            </form>
+    <!-- Contenu principal -->
+    <div class="main-container">
+        <!-- Section Météo -->
+        <div class="weather-section">
+            <h1 class="welcome-title">Bienvenue dans votre Maison Connectée</h1>
+            <div class="weather-card" ng-if="weatherData">
+                <h2><i class="fas fa-cloud-sun"></i> Météo</h2>
+                <p>{{ weatherData.city }}</p>
+                <img ng-src="{{ weatherData.iconUrl }}" class="weather-icon" alt="Conditions météo">
+                <div class="temperature">{{ weatherData.temperature }}°C</div>
+                <p>{{ weatherData.description }}</p>
+                <div class="weather-details">
+                    <p><i class="fas fa-wind"></i> Vent: {{ weatherData.windSpeed }} km/h</p>
+                    <p><i class="fas fa-tint"></i> Humidité: {{ weatherData.humidity }}%</p>
+                </div>
+            </div>
+            <div class="weather-card" ng-if="!weatherData">
+                <h2><i class="fas fa-cloud-sun"></i> Météo</h2>
+                <p>Chargement en cours...</p>
+            </div>
         </div>
-    </div>
 
-    <div class="popup-overlay" ng-show="showRapportPopup" ng-click="closeRapport()">
-        <div class="rapport-popup" ng-click="$event.stopPropagation()">
-            <button class="popup-close-btn" ng-click="closeRapport()">
-                <i class="fas fa-times"></i>
-            </button>
+        <!-- Section Inventaire -->
+        <div class="inventory-section">
+            <h2 class="inventory-title"><i class="fas fa-laptop"></i> Inventaire des Matériels</h2>
+            
+            <!-- Barre de recherche avancée -->
+            <div class="filtres-container">
+                <!-- Filtre Lieu -->
+                <div class="filtre-group">
+                    <label for="lieu">Lieu</label>
+                    <select id="lieu" ng-model="filters.lieu" ng-options="lieu for lieu in filtres.lieux">
+                        <option value="">Tous les lieux</option>
+                    </select>
+                    <span ng-if="filters.lieu" class="active-filter">
+                        {{filters.lieu}} <i class="fas fa-times" ng-click="filters.lieu=''"></i>
+                    </span>
+                </div>
+                
+                <!-- Filtre Type -->
+                <div class="filtre-group">
+                    <label for="type">Type</label>
+                    <select id="type" ng-model="filters.type" ng-options="type for type in filtres.types">
+                        <option value="">Tous les types</option>
+                    </select>
+                    <span ng-if="filters.type" class="active-filter">
+                        {{filters.type}} <i class="fas fa-times" ng-click="filters.type=''"></i>
+                    </span>
+                </div>
+                
+                <!-- Filtre État -->
+                <div class="filtre-group">
+                    <label for="etat">État</label>
+                    <select id="etat" ng-model="filters.etat" ng-options="etat for etat in filtres.etats">
+                        <option value="">Tous les états</option>
+                    </select>
+                    <span ng-if="filters.etat" class="active-filter">
+                        {{filters.etat}} <i class="fas fa-times" ng-click="filters.etat=''"></i>
+                    </span>
+                </div>
+                
+                <!-- Filtre Mots-clés -->
+                <div class="filtre-group">
+                    <label for="motsCles">Recherche texte</label>
+                    <input id="motsCles" type="text" ng-model="filters.motsCles" placeholder="Nom, description ou mots-clés...">
+                    <span ng-if="filters.motsCles" class="active-filter">
+                        {{filters.motsCles}} <i class="fas fa-times" ng-click="filters.motsCles=''"></i>
+                    </span>
+                </div>
+                
+                <!-- Bouton Réinitialiser -->
+                <button class="btn-reset" ng-click="resetFilters()">
+                    <i class="fas fa-times"></i> Réinitialiser
+                </button>
+            </div>
 
-            <button ng-click="creerRapport()">Rapport PDF</button>
-            <div class="error-message" ng-if="RapportMsg">
-                <i class="fas fa-exclamation-circle"></i> {{ RapportMsg }}
+            <!-- Message de chargement -->
+            <div class="loading" ng-show="loading">
+                <i class="fas fa-spinner fa-spin fa-2x"></i><br>
+                Chargement de l'inventaire...
+            </div>
+
+            <!-- Tableau des objets -->
+            <table ng-hide="loading">
+                <thead>
+                    <tr>
+                        <th ng-click="sortBy('nom')">
+                            Nom 
+                            <i class="fas sort-icon" 
+                               ng-class="{'fa-sort': sortField != 'nom', 
+                                         'fa-sort-up': sortField == 'nom' && !reverse, 
+                                         'fa-sort-down': sortField == 'nom' && reverse}"></i>
+                        </th>
+                        <th ng-click="sortBy('description')">
+                            Description
+                            <i class="fas sort-icon" 
+                               ng-class="{'fa-sort': sortField != 'description', 
+                                         'fa-sort-up': sortField == 'description' && !reverse, 
+                                         'fa-sort-down': sortField == 'description' && reverse}"></i>
+                        </th>
+                        <th ng-click="sortBy('type')">
+                            Type
+                            <i class="fas sort-icon" 
+                               ng-class="{'fa-sort': sortField != 'type', 
+                                         'fa-sort-up': sortField == 'type' && !reverse, 
+                                         'fa-sort-down': sortField == 'type' && reverse}"></i>
+                        </th>
+                        <th ng-click="sortBy('etat')">
+                            État 
+                            <i class="fas sort-icon" 
+                               ng-class="{'fa-sort': sortField != 'etat', 
+                                         'fa-sort-up': sortField == 'etat' && !reverse, 
+                                         'fa-sort-down': sortField == 'etat' && reverse}"></i>
+                        </th>
+                        <th ng-click="sortBy('lieu')">
+                            Lieu 
+                            <i class="fas sort-icon" 
+                               ng-class="{'fa-sort': sortField != 'lieu', 
+                                         'fa-sort-up': sortField == 'lieu' && !reverse, 
+                                         'fa-sort-down': sortField == 'lieu' && reverse}"></i>
+                        </th>
+                        <th ng-click="sortBy('temperature')">
+                            Température 
+                            <i class="fas sort-icon" 
+                               ng-class="{'fa-sort': sortField != 'temperature', 
+                                         'fa-sort-up': sortField == 'temperature' && !reverse, 
+                                         'fa-sort-down': sortField == 'temperature' && reverse}"></i>
+                        </th>
+                        					   <!-- Nouvelle colonne Actions -->
+					<th ng-if="isLoggedIn" style="display: flex; justify-content: center; align-items: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="objet in filteredObjets = (objets | filter:customFilter | orderBy:sortField:reverse) | startFrom:currentPage*pageSize | limitTo:pageSize">
+                        <td><strong>{{ objet.nom }}</strong></td>
+                        <td class="description-cell" title="{{ objet.description }}">{{ objet.description }}</td>
+                        <td>{{ objet.type }}</td>
+                        <td>
+                            <span ng-class="{
+                                'status-active': objet.etat === 'Fonctionnel',
+                                'status-inactive': objet.etat === 'Hors service',
+                                'status-maintenance': objet.etat === 'En maintenance'
+                            }">
+                                <i class="fas fa-circle" style="font-size: 0.7em;"></i> {{ objet.etat }}
+                            </span>
+                        </td>
+                        <td>{{ objet.lieu }}</td>
+                        <td>{{ objet.temperature != null ? (objet.temperature + '°C') : 'N/A' }}</td>
+					<td ng-if="isLoggedIn" class="actions-cell"> <!-- Visible seulement si connecté -->
+						  <button ng-click="openAppareilPopup(objet, $event)" class="visualiser-btn">
+							 <i class="fas fa-eye"></i> Visualiser
+						  </button>
+					</td>
+                    </tr>
+                    <tr ng-if="filteredObjets.length === 0">
+                        <td colspan="5" style="text-align: center; padding: 20px; color: #7f8c8d;">
+                            <i class="fas fa-search" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                            Aucun matériel ne correspond à vos critères de recherche
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination" ng-hide="loading || filteredObjets.length <= pageSize">
+                <button ng-disabled="currentPage == 0" ng-click="currentPage = currentPage - 1">
+                    <i class="fas fa-chevron-left"></i> Précédent
+                </button>
+                <span class="pagination-info">Page {{ currentPage + 1 }} sur {{ numberOfPages() }}</span>
+                <button ng-disabled="currentPage >= filteredObjets.length/pageSize - 1" ng-click="currentPage = currentPage + 1">
+                    Suivant <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <script src="scripts/app.js"></script>
+    <!-- Popup de connexion -->
+    <div class="popup-overlay" ng-show="showLoginPopup" ng-click="closeLogin()">
+        <div class="login-popup" ng-click="$event.stopPropagation()">
+            <button class="popup-close-btn" ng-click="closeLogin()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2><i class="fas fa-key"></i> Connexion</h2>
+            <form ng-submit="login()">
+                <div class="form-group">
+                    <label for="pseudo"><i class="fas fa-user"></i> Pseudo :</label>
+                    <input type="text" id="pseudo" ng-model="user.pseudo" required placeholder="Votre pseudo">
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Mot de passe :</label>
+                    <input type="password" id="password" ng-model="user.password" required placeholder="Votre mot de passe">
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> Se connecter
+                </button>
+                <div class="error-message" ng-if="loginError">
+                    <i class="fas fa-exclamation-circle"></i> {{ loginError }}
+                </div>
+            </form>
+        </div>
+    </div>
+
+<!-- Popup d'appareil -->
+<div class="popup-overlay" ng-show="showAppareilPopup" ng-click="closePopup()">
+    <div class="appareil-popup" ng-click="$event.stopPropagation()">
+        <button class="popup-close-btn" ng-click="closePopup()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <h2>{{selectedAppareil.nom}}</h2>
+        
+        <div class="popup-body">
+            <table class="popup-table">
+                <tbody>
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{selectedAppareil.nom}}</td>
+                        <td class="action-cell"></td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{selectedAppareil.description}}</td>
+                        <td class="action-cell"></td>
+                    </tr>
+                    <tr>
+                        <th>État</th>
+                        <td>{{selectedAppareil.etat}}</td>
+                        <td class="action-cell" ng-if="selectedRang === 'complexe' || selectedRang === 'admin'">
+					    <div class="toggle-container">
+						   <div class="toggle-slider" 
+							   ng-class="{'active': selectedAppareil.etat === 'actif', 'inactive': selectedAppareil.etat === 'inactif'}" 
+							   ng-click="toggleEtat()">
+							  <div class="toggle-knob"></div>
+							  <span class="toggle-label">{{selectedAppareil.etat === 'actif' ? 'ON' : 'OFF'}}</span>
+						   </div>
+					    </div>
+					</td>
+                    </tr>
+                    <tr>
+                        <th>Type</th>
+                        <td>{{selectedAppareil.type}}</td>
+                        <td class="action-cell"></td>
+                    </tr>
+                    <tr>
+                        <th>Lieu</th>
+                        <td>{{selectedAppareil.lieu}}</td>
+                        <td class="action-cell"></td>
+                    </tr>
+                    <tr ng-if="selectedAppareil.temperature !== null">
+                        <th>Température</th>
+                        <td>{{selectedAppareil.temperature}}°C</td>
+                        <td class="action-cell"></td>
+                    </tr>
+                    <tr ng-if="selectedAppareil.consigne !== null">
+                        <th>Consigne</th>
+                        <td>{{selectedAppareil.consigne}}°C</td>
+                        <td class="action-cell">
+                            <div class="consigne-control">
+						    <input type="number"
+								  ng-model="selectedAppareil.newConsigne"
+								  min="{{selectedAppareil.lim_basse}}"
+								  max="{{selectedAppareil.lim_haute}}"
+								  step="0.5"
+								  required
+								  name="consigne"
+								  placeholder="Ex: 19.5">
+						    <button class="btn-validate" ng-click="updateConsigne()">
+							   <i class="fas fa-check"></i>
+						    </button>
+						</div>
+                        </td>
+                    </tr>
+                    <tr ng-if="(selectedRang === 'complexe' || selectedRang === 'admin') && selectedAppareil.type === 'thermostat'">
+                        <th>Limite haute</th>
+                        <td>{{selectedAppareil.lim_haute}}°C</td>
+                        <td class="action-cell">
+                        		<div class="consigne-control">
+						    <input type="number"
+								  ng-model="selectedAppareil.newLimHaute"
+								  min="{{selectedAppareil.lim_basse}}"  
+								  max="27"
+								  step="0.5"
+								  required
+								  name="lim_haute"
+								  placeholder="Nouvelle limite haute">
+						    <button class="btn-validate" ng-click="updateLimHaute()">
+							   <i class="fas fa-check"></i>
+						    </button>
+						</div>
+                        </td>
+                    </tr>
+                    <tr ng-if="(selectedRang === 'complexe' || selectedRang === 'admin') && selectedAppareil.type === 'thermostat'">
+                        <th>Limite basse</th>
+                        <td>{{selectedAppareil.lim_basse}}°C</td>
+                        <td class="action-cell">
+                        		<div class="consigne-control">
+						    <input type="number"
+								  ng-model="selectedAppareil.newLimBasse"
+								  min="16"  
+								  max="{{selectedAppareil.lim_haute}}"
+								  step="0.5"
+								  required
+								  name="lim_basse"
+								  placeholder="Nouvelle limite basse">
+						    <button class="btn-validate" ng-click="updateLimBasse()">
+							   <i class="fas fa-check"></i>
+						    </button>
+						</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Dans la section popup-footer du popup d'appareil -->
+		<div class="popup-footer" ng-if="selectedRang === 'admin'">
+		    <button class="btn-report" ng-click="openRapportGlobalPopup()">
+			   <i class="fas fa-chart-bar"></i> Rapport global
+		    </button>
+		    <button class="btn-delete" ng-click="confirmDelete()">
+			   <i class="fas fa-trash-alt"></i> Supprimer
+		    </button>
+		</div>
+
+		<!-- Ajoutez aussi un bouton à côté de Visualiser dans le tableau -->
+		<td ng-if="isLoggedIn" class="actions-cell">
+		    <button ng-click="openAppareilPopup(objet, $event)" class="visualiser-btn">
+			   <i class="fas fa-eye"></i> Visualiser
+		    </button>
+		    <button ng-click="openRapportPopup(selectedAppareil)" class="report-btn">
+			   <i class="fas fa-file-alt"></i> Rapport
+		    </button>
+		</td>
+
+		<!-- Ajoutez ce nouveau popup pour les rapports -->
+		<div class="popup-overlay" ng-show="showRapportPopup" ng-click="closeRapportPopup()">
+		    <div class="rapport-popup" ng-click="$event.stopPropagation()">
+			   <button class="popup-close-btn" ng-click="closeRapportPopup()">
+				  <i class="fas fa-times"></i>
+			   </button>
+			   
+			   <h2>Rapport pour {{selectedAppareil.nom}}</h2>
+			   
+			   <div class="rapport-content">
+				  <!-- Période de sélection -->
+				  <div class="period-selector">
+				      <label>Période :</label>
+				      <input type="date" ng-model="rapportDateDebut">
+				      <input type="date" ng-model="rapportDateFin">
+				      <button ng-click="creerRapport()">Générer</button>
+				  </div>
+				  
+				  <!-- Résultats -->
+				  <div ng-if="rapportData" class="rapport-stats">
+				      <h3>Statistiques</h3>
+				      <div class="stat-item">
+				          <span>Consommation totale :</span>
+				          <strong>{{rapportData.consoTotale | number:2}} kWh</strong>
+				      </div>
+				      <div class="stat-item">
+				          <span>Durée totale ON :</span>
+				          <strong>{{rapportData.dureeTotale | number:2}} heures</strong>
+				      </div>
+				      <div class="stat-item">
+				          <span>Consommation moyenne :</span>
+				          <strong>{{rapportData.consoMoyenne | number:2}} W/h</strong>
+				      </div>
+				      
+				      <!-- Historique des événements -->
+				      <h3>Historique des événements</h3>
+				      <table class="rapport-table">
+				          <tr>
+				              <th>Date</th>
+				              <th>Action</th>
+				              <th>État</th>
+				          </tr>
+				          <tr ng-repeat="event in rapportData.evenements">
+				              <td>{{event.date_ | date:'dd/MM HH:mm'}}</td>
+				              <td>{{event.type_action}}</td>
+				              <td>{{JSON.parse(event.details).etat}}</td>
+				          </tr>
+				      </table>
+				  </div>
+			   </div>
+		    </div>
+		</div>
+
+		<!-- Popup pour le rapport global -->
+		<div class="popup-overlay" ng-show="showRapportGlobalPopup" ng-click="closeRapportGlobalPopup()">
+		    <div class="rapport-popup" ng-click="$event.stopPropagation()" style="width: 80%; max-width: 900px;">
+			   <button class="popup-close-btn" ng-click="closeRapportGlobalPopup()">
+				  <i class="fas fa-times"></i>
+			   </button>
+			   
+			   <h2>Rapport global</h2>
+			   
+			   <div class="rapport-content">
+				  <!-- Période de sélection -->
+				  <div class="period-selector">
+				      <label>Période :</label>
+				      <input type="date" ng-model="rapportGlobalDateDebut">
+				      <input type="date" ng-model="rapportGlobalDateFin">
+				      <button ng-click="calculateRapportGlobal()">Générer</button>
+				  </div>
+				  
+				  <!-- Résultats -->
+				  <div ng-if="rapportGlobalData" class="rapport-stats">
+				      <h3>Statistiques globales</h3>
+				      <div class="stat-item">
+				          <span>Consommation totale :</span>
+				          <strong>{{rapportGlobalData.consoTotale | number:2}} kWh</strong>
+				      </div>
+				      <div class="stat-item">
+				          <span>Appareil le plus consommateur :</span>
+				          <strong>{{rapportGlobalData.appareilPlusConsommateur.nom}} ({{rapportGlobalData.appareilPlusConsommateur.conso | number:2}} kWh)</strong>
+				      </div>
+				      
+				      <!-- Détails par appareil -->
+				      <h3>Détails par appareil</h3>
+				      <table class="rapport-table">
+				          <tr>
+				              <th>Appareil</th>
+				              <th>Type</th>
+				              <th>Consommation (kWh)</th>
+				              <th>Durée ON (h)</th>
+				          </tr>
+				          <tr ng-repeat="item in rapportGlobalData.detailsAppareils">
+				              <td>{{item.nom}}</td>
+				              <td>{{item.type}}</td>
+				              <td>{{item.conso | number:2}}</td>
+				              <td>{{item.duree | number:2}}</td>
+				          </tr>
+				      </table>
+				  </div>
+			   </div>
+		    </div>
+		</div>
+
+        <!--
+       <div class="popup-footer" ng-if="selectedRang === 'admin' || selectedRang === 'complexe' ">
+        <button class="btn-rapport" ng-click="creerRapport()">
+            <i class="fas fa-check"></i> rapport
+        </button>
+        <div class="error-message" ng-if="RapportMsg">
+            <i class="fas fa-exclamation-circle"></i> {{ RapportMsg }}
+        </div>
+        -->
+        </div>
+    </div>
+</div>
+
+<!-- Popup d'inscription -->
+<div class="popup-overlay" ng-show="showInscriptionPopup" ng-click="closeInscriptionPopup()">
+    <div class="inscription-popup" ng-click="$event.stopPropagation()">
+        <button class="popup-close-btn" ng-click="closeInscriptionPopup()">
+            <i class="fas fa-times"></i>
+        </button>
+        <h2><i class="fas fa-user-plus"></i> Inscription Utilisateur</h2>
+        
+        <form name="userForm" ng-submit="submitInscriptionForm()" novalidate>
+            <!-- Section Identifiants -->
+            <div class="form-group">
+                <label for="pseudo">Pseudo *</label>
+                <input type="text" id="pseudo" name="pseudo" ng-model="inscriptionData.pseudo" 
+                       required ng-pattern="/^[a-zA-Z0-9_]{3,50}$/" ng-trim="true">
+                <span class="error" ng-show="userForm.pseudo.$error.required">Requis</span>
+                <span class="error" ng-show="userForm.pseudo.$error.pattern">3-50 caractères alphanumériques</span>
+            </div>
+
+            <div class="form-group">
+                <label for="mdp">Mot de passe *</label>
+                <input type="password" id="mdp" name="mdp" ng-model="inscriptionData.mdp" 
+                       required ng-minlength="8" ng-change="updatePasswordStrength()">
+                <div class="password-strength">
+                    <div class="password-strength-bar" ng-style="{'width': passwordStrength + '%', 'background-color': passwordStrengthColor}"></div>
+                </div>
+                <span class="error" ng-show="userForm.mdp.$error.required">Requis</span>
+                <span class="error" ng-show="userForm.mdp.$error.minlength">8 caractères minimum</span>
+            </div>
+
+            <!-- Section Informations personnelles -->
+            <div class="form-group">
+                <label for="nom">Nom *</label>
+                <input type="text" id="nom" name="nom" ng-model="inscriptionData.nom" required>
+            </div>
+
+            <div class="form-group">
+                <label for="prenom">Prénom *</label>
+                <input type="text" id="prenom" name="prenom" ng-model="inscriptionData.prenom" 
+                       required ng-change="normalizePrenom()">
+            </div>
+
+            <div class="form-group">
+                <label for="age">Âge</label>
+                <input type="number" id="age" name="age" ng-model="inscriptionData.age" 
+                       min="0" max="120">
+            </div>
+
+            <div class="form-group">
+                <label for="genre">Genre *</label>
+                <select id="genre" name="genre" ng-model="inscriptionData.genre" required>
+                    <option value="M">Masculin</option>
+                    <option value="F">Féminin</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="mail">Email *</label>
+                <input type="email" id="mail" name="mail" ng-model="inscriptionData.mail" required>
+                <span class="error" ng-show="userForm.mail.$error.email">Email invalide</span>
+            </div>
+
+            <div class="form-group">
+                <label for="type">Type de compte *</label>
+                <select id="type" name="type" ng-model="inscriptionData.type" required>
+                    <option value="parent">Parent</option>
+                    <option value="enfant">Enfant</option>
+                    <option value="invité">Invité</option>
+                </select>
+            </div>
+
+            <!-- Section Photo -->
+            <div class="form-group">
+                <label for="photo">Photo</label>
+                <input type="file" id="photo" name="photo" file-model="inscriptionData.photo" 
+                       accept="image/*" ngf-max-size="2MB">
+                <img id="imagePreview" ng-src="{{imagePreviewUrl}}" ng-show="imagePreviewUrl" 
+                     style="max-width: 200px; margin-top: 10px;"/>
+                <span class="error" ng-show="userForm.photo.$error.maxSize">Fichier trop volumineux (max 2MB)</span>
+            </div>
+
+            <button type="submit" ng-disabled="userForm.$invalid">S'inscrire</button>
+        </form>
+
+        <div ng-show="inscriptionMessage" style="margin-top: 20px; padding: 10px; 
+                    background-color: {{inscriptionMessageType === 'success' ? '#dff0d8' : '#f2dede' }};
+                    border: 1px solid {{inscriptionMessageType === 'success' ? '#d6e9c6' : '#ebccd1' }};
+                    color: {{inscriptionMessageType === 'success' ? '#3c763d' : '#a94442' }};">
+            {{inscriptionMessage}}
+        </div>
+        <div ng-if="inscriptionMessageType === 'success'" class="form-group">
+		    <p>Si vous n'avez pas reçu l'email :</p>
+		    <button ng-click="resendValidationEmail()" 
+				  class="login-btn">
+			   <i class="fas fa-redo"></i> Renvoyer l'email de validation
+		    </button>
+		    <small style="display: block; margin-top: 5px; color: #666;">
+			   Vérifiez aussi vos spams/courriers indésirables
+		    </small>
+	   </div>
+    </div>
+</div>
+
+   <script src="scripts/app.js"></script>
 </body>
+</html>

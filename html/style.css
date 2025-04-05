@@ -677,6 +677,51 @@ tr:hover { background-color: #f0f8ff; }
     transform: translateY(0);
 }
 
+/*----- AJOUT MATERIEL ----*/
+
+/* Bouton Ajouter */
+.btn-ajouter {
+    background: #2ecc71;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-ajouter:hover {
+    background: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Styles spécifiques au formulaire d'ajout */
+.appareil-popup input[type="text"],
+.appareil-popup input[type="number"],
+.appareil-popup select,
+.appareil-popup textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.appareil-popup textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+
+
+
+
+
 /* ----Popup inscription ----*/
 
 .inscription-popup {

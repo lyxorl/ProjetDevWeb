@@ -746,6 +746,36 @@ function getWeather(lat, lon) {
 		doc.save("Rapport_"+$scope.selectedAppareil.id_objet+"_"+ladate.getDate()+"_"+(ladate.getMonth()+1)+"_"+ladate.getFullYear()+".pdf");
 		$scope.RapportMsg = "success";  
 	}
+
+	$scope.RapportMsgG = ''; 
+	$scope.creerRapportGlobal = function(){
+		$scope.calculateRapportGlobal();
+		var ladate=new Date()
+		const doc = new jsPDF();
+
+		doc.text("Rapport Global : ",10, 10);
+		doc.text("Redigé le : "+ladate.getDate()+"/"+(ladate.getMonth()+1)+"/"+ladate.getFullYear(),10,16);
+		doc.text("Infos :", 10, 25);
+
+		n=35;
+
+		if(!($scope.rapportGlobalData === null)){
+			doc.text("Conso Totale : "+$scope.rapportGlobalData.consoTotale,14,n=n+6);
+			doc.text("AppareilPlusConsomateur : "+ $scope.rapportGlobalData.appareilPlusConsommateur,14,n=n+6);
+			doc.text("detailsAppareils : "+ $scope.rapportGlobalData.detailsAppareils,14,n=n+6)
+		}
+
+
+
+		//doc.addPage(); //si on veut ajouter des pages
+		/*
+		var img = new Image()
+		img.src = 'assets/sample.png'
+		doc.addImage(img, 'png', 10, 78, 12, 15)
+		*/
+		doc.save("Rapport_"+$scope.selectedAppareil.id_objet+"_"+ladate.getDate()+"_"+(ladate.getMonth()+1)+"_"+ladate.getFullYear()+".pdf");
+		$scope.RapportMsgG = "success";  
+	}
     
 
 

@@ -220,6 +220,11 @@
                     Suivant <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
+            <div class="pagination" ng-if="isLoggedIn && (selectedRang === 'complexe' || selectedRang === 'admin')">
+                <button ng-click="openAjoutObjetPopup()" class="btn-ajouter">
+                    <i class="fas fa-plus"></i> Ajouter un matériel
+                </button>
+            </div>
         </div>
 
         <!-- Session profile-->
@@ -323,10 +328,10 @@
                         <td class="action-cell" ng-if="selectedRang === 'complexe' || selectedRang === 'admin'">
 					    <div class="toggle-container">
 						   <div class="toggle-slider" 
-							   ng-class="{'active': selectedAppareil.etat === 'actif', 'inactive': selectedAppareil.etat === 'inactif'}" 
-							   ng-click="toggleEtat()">
+                                ng-class="{'active': selectedAppareil.etat === 'Actif', 'inactive': selectedAppareil.etat === 'Inactif'}" 
+                                ng-click="toggleEtat()">
 							  <div class="toggle-knob"></div>
-							  <span class="toggle-label">{{selectedAppareil.etat === 'actif' ? 'ON' : 'OFF'}}</span>
+                              <span class="toggle-label">{{selectedAppareil.etat === 'Actif' ? 'ON' : 'OFF'}}</span>
 						   </div>
 					    </div>
 					</td>
@@ -359,7 +364,7 @@
 								  required
 								  name="consigne"
 								  placeholder="Ex: 19.5">
-						    <button class="btn-validate" ng-click="updateConsigne()">
+                                  <button class="btn-validate" ng-click="updateConsigne(); addPoints(1)">
 							   <i class="fas fa-check"></i>
 						    </button>
 						</div>
@@ -378,7 +383,7 @@
 								  required
 								  name="lim_haute"
 								  placeholder="Nouvelle limite haute">
-						    <button class="btn-validate" ng-click="updateLimHaute()">
+                                  <button class="btn-validate" ng-click="updateLimHaute(); addPoints(2)">
 							   <i class="fas fa-check"></i>
 						    </button>
 						</div>
@@ -397,8 +402,8 @@
 								    required
 								    name="lim_basse"
 								    placeholder="Nouvelle limite basse">
-						    <button class="btn-validate" ng-click="updateLimBasse()">
-							    <i class="fas fa-check"></i>
+                                    <button class="btn-validate" ng-click="updateLimBasse(); addPoints(2)">
+                                        <i class="fas fa-check"></i>
 						    </button>
 						</div>
                         </td>
@@ -680,6 +685,241 @@
 	    </div>
     </div>
 </div>
+
+<!-- Popup Rank UP -->
+<div class="popup-overlay" ng-show="showRankUpPopup">
+    <div class="inscription-popup">
+      <h3>Félicitations !</h3>
+      <p>Vous avez atteint le rang <strong>{{newRank}}</strong> !</p>
+      <p>Il est maintenant disponible dans le menu des rangs.</p>
+    </div>
+  </div>
+  
+  
+  
+  <!-- Popup d'ajout d'objet -->
+  <div class="popup-overlay" ng-show="showAjoutObjetPopup" ng-click="closeAjoutObjetPopup()">
+      <div class="appareil-popup" ng-click="$event.stopPropagation()">
+          <button class="popup-close-btn" ng-click="closeAjoutObjetPopup()">
+              <i class="fas fa-times"></i>
+          </button>
+          
+          <h2>Ajouter un nouvel objet connecté</h2>
+          
+          <form ng-submit="ajouterNouvelObjet()">
+              <table class="popup-table">
+                  <tbody>
+                      <tr>
+                          <th>Nom *</th>
+                          <td><input type="text" ng-model="nouvelObjet.nom" required></td>
+                      </tr>
+                      <tr>
+                          <th>Description</th>
+                          <td><textarea ng-model="nouvelObjet.description"></textarea></td>
+                      </tr>
+                      <tr>
+                      <th>Type *</th>
+                      <td>
+                         <!-- Menu déroulant pour tous les rangs -->
+                         <select ng-model="nouvelObjet.type" required>
+                            <option value="">-- Sélectionnez --</option>
+                            <option ng-repeat="type in typeOptions" value="{{type}}">
+                               {{type}}
+                            </option>
+                         </select>
+  
+                         <!-- Champ d'ajout visible seulement pour l'admin -->
+                         <div ng-if="selectedRang === 'admin'" style="margin-top: 10px;">
+                            <input type="text" ng-model="newType" placeholder="Nouveau type">
+                            <button ng-click="addNewType()" 
+                                  ng-disabled="!newType || typeOptions.includes(newType)">
+                               Ajouter
+                            </button>
+                         </div>
+                      </td>
+                  </tr>
+                      <tr>
+                          <th>Lieu *</th>
+                          <td>
+                              <select ng-model="nouvelObjet.lieu" required>
+                                  <option value="">-- Sélectionnez --</option>
+                                  <option ng-repeat="lieu in filtres.lieux" value="{{lieu}}">{{lieu}}</option>
+                              </select>
+                          </td>
+                      </tr>
+                      <tr>
+                          <th>État</th>
+                          <td>
+                              <select ng-model="nouvelObjet.etat">
+                                  <option value="Actif">Actif</option>
+                                  <option value="Inactif">Inactif</option>
+                              </select>
+                          </td>
+                      </tr>
+                      <tr ng-if="nouvelObjet.type === 'Thermostat'">
+                          <th>Température initiale</th>
+                          <td><input type="number" step="0.1" ng-model="nouvelObjet.temperature"></td>
+                      </tr>
+                      <tr ng-if="nouvelObjet.type === 'Thermostat'">
+                          <th>Consigne initiale</th>
+                          <td><input type="number" step="0.5" ng-model="nouvelObjet.consigne"></td>
+                      </tr>
+                      <tr ng-if="nouvelObjet.type === 'Thermostat'">
+                          <th>Limite haute</th>
+                          <td><input type="number" step="0.5" ng-model="nouvelObjet.lim_haute" value="25.0"></td>
+                      </tr>
+                      <tr ng-if="nouvelObjet.type === 'Thermostat'">
+                          <th>Limite basse</th>
+                          <td><input type="number" step="0.5" ng-model="nouvelObjet.lim_basse" value="18.0"></td>
+                      </tr>
+                      <tr>
+                      <th>Consommation (Wh)</th>
+                      <td><input type="number" step="1" ng-model="nouvelObjet.conso"></td>
+                  </tr>
+                      <tr>
+                          <th>Mots-clés</th>
+                          <td><input type="text" ng-model="nouvelObjet.mots_cles" placeholder="Séparés par des virgules"></td>
+                      </tr>
+                  </tbody>
+              </table>
+              
+              <div class="popup-footer">
+                  <button type="submit" class="visualiser-btn">
+                      <i class="fas fa-check"></i> Ajouter
+                  </button>
+                 <!-- <button type="button" class="btn-delete" ng-click="closeAjoutObjetPopup()">
+                      <i class="fas fa-times"></i> Annuler
+                  </button>-->
+              </div>
+          </form>
+      </div>
+  </div>
+  
+  <!-- Popup RAPPORT -->
+  
+  <!-- Dans la section popup-footer du popup d'appareil -->
+          <div class="popup-footer" ng-if="selectedRang === 'admin'">
+              <button class="btn-report" ng-click="openRapportGlobalPopup()">
+                 <i class="fas fa-chart-bar"></i> Rapport global
+              </button>
+              <button class="btn-delete" ng-click="confirmDelete()">
+                 <i class="fas fa-trash-alt"></i> Supprimer
+              </button>
+          </div>
+  
+          <!-- Ajoutez aussi un bouton à côté de Visualiser dans le tableau -->
+          <td ng-if="isLoggedIn" class="actions-cell">
+              <button ng-click="openAppareilPopup(objet, $event)" class="visualiser-btn">
+                 <i class="fas fa-eye"></i> Visualiser
+              </button>
+              <button ng-click="openRapportPopup(objet)" class="report-btn">
+                 <i class="fas fa-file-alt"></i> Rapport
+              </button>
+          </td>
+  
+          <!-- Ajoutez ce nouveau popup pour les rapports -->
+          <div class="popup-overlay" ng-show="showRapportPopup" ng-click="closeRapportPopup()">
+              <div class="rapport-popup" ng-click="$event.stopPropagation()">
+                 <button class="popup-close-btn" ng-click="closeRapportPopup()">
+                    <i class="fas fa-times"></i>
+                 </button>
+                 
+                 <h2>Rapport pour {{selectedAppareil.nom}}</h2>
+                 
+                 <div class="rapport-content">
+                    <!-- Période de sélection -->
+                    <div class="period-selector">
+                        <label>Période :</label>
+                        <input type="date" ng-model="rapportDateDebut">
+                        <input type="date" ng-model="rapportDateFin">
+                        <button ng-click="calculateRapport()">Générer</button>
+                    </div>
+                    
+                    <!-- Résultats -->
+                    <div ng-if="rapportData" class="rapport-stats">
+                        <h3>Statistiques</h3>
+                        <div class="stat-item">
+                            <span>Consommation totale :</span>
+                            <strong>{{rapportData.consoTotale | number:2}} kWh</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Durée totale ON :</span>
+                            <strong>{{rapportData.dureeTotale | number:2}} heures</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Consommation moyenne :</span>
+                            <strong>{{rapportData.consoMoyenne | number:2}} W/h</strong>
+                        </div>
+                        
+                        <!-- Historique des événements -->
+                        <h3>Historique des événements</h3>
+                        <table class="rapport-table">
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>État</th>
+                            </tr>
+                            <tr ng-repeat="event in rapportData.evenements">
+                                <td>{{event.date_ | date:'dd/MM HH:mm'}}</td>
+                                <td>{{event.type_action}}</td>
+                                <td>{{JSON.parse(event.details).etat}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                 </div>
+              </div>
+          </div>
+  
+          <!-- Popup pour le rapport global -->
+          <div class="popup-overlay" ng-show="showRapportGlobalPopup" ng-click="closeRapportGlobalPopup()">
+              <div class="rapport-popup" ng-click="$event.stopPropagation()" style="width: 80%; max-width: 900px;">
+                 <button class="popup-close-btn" ng-click="closeRapportGlobalPopup()">
+                    <i class="fas fa-times"></i>
+                 </button>
+                 
+                 <h2>Rapport global</h2>
+                 
+                 <div class="rapport-content">
+                    <!-- Période de sélection -->
+                    <div class="period-selector">
+                        <label>Période :</label>
+                        <input type="date" ng-model="rapportGlobalDateDebut">
+                        <input type="date" ng-model="rapportGlobalDateFin">
+                        <button ng-click="calculateRapportGlobal()">Générer</button>
+                    </div>
+                    
+                    <!-- Résultats -->
+                    <div ng-if="rapportGlobalData" class="rapport-stats">
+                        <h3>Statistiques globales</h3>
+                        <div class="stat-item">
+                            <span>Consommation totale :</span>
+                            <strong>{{rapportGlobalData.consoTotale | number:2}} kWh</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Appareil le plus consommateur :</span>
+                            <strong>{{rapportGlobalData.appareilPlusConsommateur.nom}} ({{rapportGlobalData.appareilPlusConsommateur.conso | number:2}} kWh)</strong>
+                        </div>
+                        
+                        <!-- Détails par appareil -->
+                        <h3>Détails par appareil</h3>
+                        <table class="rapport-table">
+                            <tr>
+                                <th>Appareil</th>
+                                <th>Type</th>
+                                <th>Consommation (kWh)</th>
+                                <th>Durée ON (h)</th>
+                            </tr>
+                            <tr ng-repeat="item in rapportGlobalData.detailsAppareils">
+                                <td>{{item.nom}}</td>
+                                <td>{{item.type}}</td>
+                                <td>{{item.conso | number:2}}</td>
+                                <td>{{item.duree | number:2}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                 </div>
+              </div>
+          </div>
 
 <script src="scripts/app.js"></script>
 </body>

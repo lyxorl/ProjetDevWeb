@@ -10,7 +10,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 // Validation
 if (!isset($data['id_objet']) || !is_string($data['id_objet']) || 
-    !isset($data['etat']) || !in_array($data['etat'], ['actif', 'inactif'])) {
+    !isset($data['etat']) || !in_array($data['etat'], ['Actif', 'Inactif'])) {
     http_response_code(400);
     die(json_encode([
         'success' => false,

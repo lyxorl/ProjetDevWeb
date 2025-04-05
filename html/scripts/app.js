@@ -8,25 +8,24 @@ angular.module('maisonConnecteeApp', [])
     console.log('Application initialisée');
 }])
 
-.directive('fileModel', ['$parse', function($parse) {
+.directive('fileModel', ['$parse', function ($parse) {
     return {
         restrict: 'A',
         link: function(scope, element, attrs) {
             var model = $parse(attrs.fileModel);
             var modelSetter = model.assign;
             
-            element.on('change', function(event){
+            element.bind('change', function(){
                 scope.$apply(function(){
-                    var file = event.target.files[0];
+                    var file = element[0].files[0];
                     modelSetter(scope, file);
                     
                     if (file && file.type.match('image.*')) {
                         var reader = new FileReader();
                         reader.onload = function(e) {
-                            scope.$apply(function(){
-                                scope.imagePreviewUrl = e.target.result;
-                            });
-                        };
+                            scope.imagePreviewUrl = e.target.result;
+                            scope.$apply();
+                        }
                         reader.readAsDataURL(file);
                     }
                 });
@@ -36,17 +35,9 @@ angular.module('maisonConnecteeApp', [])
 }])
 
 
+
 .controller('MainController', ['$scope','$q', '$http', '$window', '$interval', '$timeout', 
 function($scope, $q, $http, $window, $interval, $timeout) {
-    
-	$scope.rapportData = null;
-	$scope.rapportGlobalData = null;
-	$scope.rapportDateDebut = new Date();
-	$scope.rapportDateFin = new Date();
-	$scope.rapportGlobalDateDebut = new Date();
-	$scope.rapportGlobalDateFin = new Date();
-
-
 
 $scope.showLoginPopup = false;
 $scope.showAppareilPopup = false;
@@ -83,7 +74,17 @@ $scope.popupPosition = { top: 0, left: 0 };
 	$scope.imagePreviewUrl = null;
 	$scope.inscriptionMessage = '';
 	$scope.inscriptionMessageType = '';
-
+	$scope.showRankUpPopup = false;
+	$scope.newRank = '';
+	$scope.showAjoutObjetPopup = false;
+	$scope.showRapportPopup = false;
+	$scope.showRapportGlobalPopup = false;
+	$scope.rapportData = null;
+	$scope.rapportGlobalData = null;
+	$scope.rapportDateDebut = new Date();
+	$scope.rapportDateFin = new Date();
+	$scope.rapportGlobalDateDebut = new Date();
+	$scope.rapportGlobalDateFin = new Date();
 
     $scope.userslist = [];
     $scope.popupShowModifUser = false;
@@ -237,6 +238,20 @@ $scope.popupPosition = { top: 0, left: 0 };
                     $scope.showLoginPopup = false;
                     localStorage.setItem('user_pseudo', response.data.pseudo);
                 	localStorage.setItem('user_rang', response.data.rang);
+					$scope.currentUser = {
+						pseudo: response.data.pseudo,
+						rang: response.data.rang
+					};
+					
+					// 1. Fermer le popup immédiatement
+					$scope.showLoginPopup = false;
+					
+					// 2. Ajouter les points après la connexion (délai de 500ms)
+					$timeout(function() {
+						$scope.addPoints(1).catch(function(error) {
+							console.error("Erreur ajout points:", error);
+						});
+					}, 500);
                     checkAuth();
                 } else {
                     $scope.loginError = response.data.message || 'Identifiants incorrects';
@@ -373,7 +388,7 @@ function getWeather(lat, lon) {
 		   return;
 	    }
 
-	    var nouvelEtat = $scope.selectedAppareil.etat === 'actif' ? 'inactif' : 'actif';
+		var nouvelEtat = $scope.selectedAppareil.etat === 'Actif' ? 'Inactif' : 'Actif';
 	    
 	    $http.post('api/update_etat.php', {
 		   id_objet: $scope.selectedAppareil.id_objet,  // On envoie tel quel sans conversion
@@ -1026,6 +1041,134 @@ $scope.calculateRapportGlobal = function() {
 	    });
 	};
 
+	// ----------- AJOUT POINTS ET NIVEAUX --------------
+
+	$scope.addPoints = function(pointsToAdd) {
+		$http.post('api/update_points.php', {
+		  pseudo: $scope.currentUser.pseudo,
+		  points: pointsToAdd
+		}).then(function(response) {
+		  if (response.data.newRank) {
+		   $scope.currentUser.rang = response.data.newRank;
+		   $scope.updateAvailableRangs();
+		   
+		   // Affiche la notification de changement de rang
+		   $scope.showRankUpNotification(response.data.newRank);
+		  }
+		}).catch(function(error) {
+		  console.error("Erreur:", error);
+		});
+  };
+
+  // POPUP changement rang
+
+  $scope.showRankUpNotification = function(rank) {
+		$scope.newRank = rank;
+		$scope.showRankUpPopup = true;
+		
+		// Ferme automatiquement après 5 secondes
+		$timeout(function() {
+		  $scope.showRankUpPopup = false;
+		}, 4000);
+  };
+  
+
+
+// --------------------- AJOUT MATERIEL ------------------
+  
+  // Gestion du popup d'ajout
+  $scope.showAjoutObjetPopup = false;
+  $scope.nouvelObjet = {
+	  etat: 'Actif'
+  };
+
+  $scope.openAjoutObjetPopup = function() {
+	  $scope.showAjoutObjetPopup = true;
+	  $scope.nouvelObjet = {
+		 etat: 'Actif'
+	  };
+  };
+
+  $scope.closeAjoutObjetPopup = function() {
+	  $scope.showAjoutObjetPopup = false;
+  };
+
+  $scope.ajouterNouvelObjet = function() {
+	  if (!$scope.currentUser) {
+		 alert("Vous devez être connecté pour ajouter un objet");
+		 return;
+	  }
+	  
+	  if (!$scope.nouvelObjet.nom || !$scope.nouvelObjet.type || !$scope.nouvelObjet.lieu) {
+		 alert("Veuillez remplir tous les champs obligatoires (Nom, Type, Lieu)");
+		 return;
+	  }
+
+	  // Préparation des données
+	  const objetData = {
+		 nom: $scope.nouvelObjet.nom,
+		 description: $scope.nouvelObjet.description || '',
+		 type: $scope.nouvelObjet.type,
+		 lieu: $scope.nouvelObjet.lieu,
+		 etat: $scope.nouvelObjet.etat || 'Inactif',
+		 mots_cles: $scope.nouvelObjet.mots_cles || ''
+	  };
+
+	  // Ajout des spécificités thermostat si nécessaire
+	  if ($scope.nouvelObjet.type === 'Thermostat') {
+		 objetData.temperature = parseFloat($scope.nouvelObjet.temperature) || 20.0;
+		 objetData.consigne = parseFloat($scope.nouvelObjet.consigne) || 20.0;
+		 objetData.lim_haute = parseFloat($scope.nouvelObjet.lim_haute) || 25.0;
+		 objetData.lim_basse = parseFloat($scope.nouvelObjet.lim_basse) || 18.0;
+	  }
+
+	  // Envoi au serveur
+	  $http.post('api/ajout-objet.php', objetData)
+		 .then(function(response) {
+			 if (response.data.success) {
+				 // Ajoute le nouvel objet à la liste
+				 $scope.objets.push(response.data.objet);
+				 $scope.closeAjoutObjetPopup();
+				 alert("Objet ajouté avec succès!");
+				 $scope.addPoints(3);
+				 
+				 // Recharge la liste complète pour être sûr
+				 $http.get('api/materiels.php')
+					 .then(function(res) {
+						 $scope.objets = res.data.materiels;
+					 });
+			 } else {
+				 alert("Erreur lors de l'ajout: " + (response.data.message || 'Erreur inconnue'));
+			 }
+		 })
+		 .catch(function(error) {
+			 console.error("Erreur complète:", error);
+			 let errorMsg = "Erreur serveur lors de l'ajout";
+			 
+			 if (error.data) {
+				 console.error("Détails erreur:", error.data);
+				 if (error.data.error) {
+					 errorMsg += "\n" + error.data.error;
+				 }
+				 if (error.data.query) {
+					 console.log("Requête SQL:", error.data.query);
+				 }
+			 }
+			 
+			 alert(errorMsg);
+		 });
+  };
+  
+  // Pour l'admin seulement
+	  $scope.addNewType = function() {
+		  if ($scope.newType && !$scope.typeOptions.includes($scope.newType)) {
+			 $scope.typeOptions.push($scope.newType);
+			 $scope.nouvelObjet.type = $scope.newType; // Sélectionne automatiquement
+			 $scope.newType = ''; // Vide le champ
+		  }
+	  };
+  
+
 	// Ajout d'une fonction pour renvoyer l'email de validation
 	$scope.resendValidationEmail = function() {
 	    if (!$scope.inscriptionData.mail) {
@@ -1055,6 +1198,8 @@ $scope.calculateRapportGlobal = function() {
 	}
     
 }])
+
+
 
 
 

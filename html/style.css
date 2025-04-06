@@ -1,0 +1,998 @@
+/* style.css */
+/* Styles généraux */
+html {
+    margin: 0;
+    padding: 0;
+    border : none;
+
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    border : none;
+}
+
+/* Style pour le header utilisateur */
+.header {
+    position: fixed; /* Pour que la barre reste en haut même en scrollant */
+    top: 0;          /* Collée en haut */
+    left: 0;         /* Collée à gauche */
+    width: 100%;     /* Prend toute la largeur */
+    height: 90px;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    margin: 0; /* Supprime les marges résiduelles */
+    padding: 0; /* Supprime les paddings */
+    box-sizing: border-box; /* Inclut border/padding dans la largeur/hauteur */
+}
+
+.unlogged-header {
+    font-weight: bold;
+    margin-left: auto;
+    transform: translateX(-15px);
+}
+
+.user-header {
+    transform: translateX(-15px);
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    margin-left: auto;
+    
+}
+
+.user-header span {
+    font-weight: bold;
+    margin-left: auto;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.rang-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.rang-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.rang-selector select {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background: white;
+    
+}
+
+/*config pour le bouton visualiser */
+
+/* Style de la colonne Actions */
+.actions-cell {
+    width: 120px;
+    text-align: center;
+}
+
+
+
+.visualiser-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.update-profile-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.visualiser-btn i {
+    margin-right: 5px;
+}
+
+/*fin visualiser*/
+
+
+[ng-cloak] {
+    display: none !important;
+}
+/* Style du bouton */
+.visualiser-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.update-profile-button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+
+.logout-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+}
+
+.rang-menu select {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    background: white;
+}
+
+/*-------------*/
+
+.header {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.header button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.header button:hover {
+    background-color: #3367d6;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.main-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 20px 20px;
+}
+
+/* ------METEO --------- */
+
+.weather-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Scroll fluide sur iOS */
+    /*margin-bottom: 1rem;*/
+    border: 1px solid #ddd; /* Optionnel - pour visualiser le conteneur */
+}
+
+
+
+.welcome-title {
+    font-size: 3rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.weather-card {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.weather-icon {
+    width: 80px;
+    height: 80px;
+    margin: 10px auto;
+}
+
+.temperature {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.weather-details {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 15px;
+}
+
+/* ------ MATERIEL ---------- */
+.inventory-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.inventory-section table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Scroll fluide sur iOS */
+    margin-bottom: 1rem;
+    border: 1px solid #ddd; /* Optionnel - pour visualiser le conteneur */
+}
+
+.inventory-title {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+.filtres-container {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    align-items: end;
+}
+
+.filtre-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filtre-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.filtre-group select, 
+.filtre-group input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.btn-reset {
+    padding: 8px 15px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+    align-self: end;
+    margin-bottom: 1px;
+}
+
+.btn-reset:hover {
+    background: #c0392b;
+}
+
+.active-filter {
+    background-color: #3498db;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+th, td { 
+    padding: 15px; 
+    text-align: left; 
+    border-bottom: 1px solid #e0e0e0;
+}
+
+th { 
+    background-color: #3498db;
+    color: white;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+}
+
+tr:hover { background-color: #f0f8ff; }
+
+/* Profile section*/
+
+.profile-section {
+    margin-top: 25px;
+    padding: 25px;
+    background: rgb(255, 255, 255);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.pagination { 
+    margin-top: 25px; 
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination button { 
+    padding: 8px 16px; 
+    margin: 0 5px; 
+    cursor: pointer;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #2980b9;
+}
+
+.pagination button:disabled { 
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.pagination-info { 
+    margin: 0 15px; 
+    color: #7f8c8d;
+}
+
+.status-active { 
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.status-inactive { 
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.status-maintenance { 
+    color: #f39c12;
+    font-weight: bold;
+}
+
+.sort-icon { margin-left: 8px; }
+
+.loading { 
+    text-align: center; 
+    padding: 30px; 
+    color: #3498db;
+}
+
+.description-cell {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* -------- POPUP --------- */
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s;
+    overflow-y: auto;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.login-popup {
+    background: white;
+    padding: 1.8rem;
+    border-radius: 15px;
+    width: 320px;
+    position: relative;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    animation: slideDown 0.4s;
+    border-top: 5px solid #4285f4;
+    overflow-y: auto;
+}
+
+.modifuser-popup {
+    background: white;
+    padding: 1.8rem;
+    border-radius: 15px;
+    width: 320px;
+    position: relative;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    animation: slideDown 0.4s;
+    border-top: 5px solid #4285f4;
+    overflow-y: auto;
+    
+}
+
+.listeuser-section {
+    margin-top: 25px;
+    padding: 25px;
+    background: rgb(255, 255, 255);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+}
+.table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Scroll fluide sur iOS */
+    margin-bottom: 1rem;
+    border: 1px solid #ddd; /* Optionnel - pour visualiser le conteneur */
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.popup-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.popup-close-btn:hover {
+    background: #cc0000;
+    transform: rotate(90deg);
+}
+
+.popup h2 {
+    color: #4285f4;
+    text-align: center;
+    margin-bottom: 1.2rem;
+    font-size: 1.6rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #555;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.form-group input {
+    width: 90%;
+    padding: 11px 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #4285f4;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.2);
+    outline: none;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 11px;
+    background: linear-gradient(135deg, #4285f4, #34a853);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, #3367d6, #2d924d);
+}
+
+.error-message {
+    color: #ff4444;
+    margin-top: 0.8rem;
+    text-align: center;
+    font-size: 0.8rem;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* ---- Styles spécifiques au popup d'appareil */
+.appareil-popup {
+    width: 600px; /* Légèrement plus large si nécessaire */
+    max-width: 90vw; /* Limite la largeur sur petits écrans */
+    background: white;
+    padding: 1.8rem;
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    animation: slideDown 0.4s;
+    border-top: 5px solid #4285f4;
+    overflow-y: auto;
+}
+
+.appareil-popup-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.appareil-popup-table th, 
+.appareil-popup-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.appareil-popup-table th {
+    width: 35%;
+    color: #555;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Popup d'appareil spécifique */
+
+
+.appareil-popup-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.appareil-popup-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.appareil-popup-table th, 
+.appareil-popup-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.appareil-popup-table th {
+    width: 35%;
+    color: #555;
+    font-weight: bold;
+    font-size: 0.9rem;
+    background-color: transparent;
+}
+
+.appareil-popup-table tr:last-child td {
+    border-bottom: none;
+}
+/* ---- modif popup */
+/* Styles pour le tableau du popup */
+.popup-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.popup-table th {
+    text-align: left;
+    padding: 10px;
+    width: 30%;
+    color: #555;
+}
+
+.popup-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.action-cell {
+    width: 200px;
+    padding-left: 20px !important;
+    text-align: right;
+}
+
+/* Toggle switch pour l'état */
+.toggle-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.toggle-slider {
+     width: 80px;
+    height: 30px;
+    background: #e74c3c; /* Rouge pour inactif */
+    border-radius: 15px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.toggle-slider.active {
+    background: #2ecc71;
+}
+
+.toggle-slider.inactive {
+    background: #e74c3c; /* Rouge pour inactif */
+}
+
+.toggle-knob {
+    width: 26px;
+    height: 26px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s;
+}
+
+.toggle-slider.active .toggle-knob {
+    left: calc(100% - 28px);
+}
+
+.toggle-label {
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 50%;
+    margin-left: -10px;
+    text-transform: uppercase;
+}
+
+/* Contrôle de consigne */
+.consigne-control {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 5px;
+    margin-left: auto;
+    width: 100%;
+}
+
+.consigne-input {
+    width: 70px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.btn-validate {
+    background: #3498db;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.btn-validate:hover {
+    background: #2980b9;
+}
+
+.consigne-input:invalid {
+    border-color: #e74c3c;
+    animation: shake 0.5s;
+}
+
+#id_profile_title {
+    text-align: center;
+}
+
+#id_profile_pseudoprenom {
+    text-align: center;
+}
+
+
+#id_profile_info {
+    display: flex; /* Active Flexbox */
+    align-items: center; /* Aligne verticalement les éléments */
+    gap: 20px; /* Espace entre le texte et l'image */
+}
+
+#id_profile_info-text {
+    flex: 1; /* Prend l'espace disponible */
+}
+
+#id_profile_info-pp {
+    flex: 1; /* Prend l'espace disponible */
+}
+
+#image-id_profile_info-pp img {
+    width: 100px;  /* Largeur fixe */
+    height: 100px; /* Hauteur fixe */
+    object-fit: cover;
+}
+
+#id_profile_info-pp img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Conteneur principal du formulaire */
+.modif_profil {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Deux colonnes - 1/3 pour les labels, 2/3 pour les inputs */
+    gap: 15px;
+    align-items: center;
+  }
+  
+  /* Labels - colonne de gauche */
+  .modif_profil label {
+    text-align: right;
+    padding-right: 15px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Inputs et selects - colonne de droite */
+  .modif_profil input[type="text"],
+  .modif_profil input[type="password"],
+  .modif_profil input[type="number"],
+  .modif_profil select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+.modif_profil input.ng-pristine,
+.modif_profil input.ng-valid,
+.modif_profil input.ng-dirty {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+  
+  /* Style spécifique pour le select */
+  .modif_profil select {
+    height: 36px;
+  }
+  
+  /* Style pour le champ number */
+  .modif_profil input[type="number"] {
+    width: 80px;
+  }
+  
+  /* Bouton de soumission - positionné sur toute la largeur */
+  .modif_profil button[type="submit"] {
+    grid-column: 1 / -1; /* Prend les deux colonnes */
+    justify-self: center; /* Centre le bouton */
+    margin-top: 20px;
+    /* Styles existants du bouton (à adapter selon vos besoins) */
+    padding: 10px 25px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+
+  
+  /* Responsive - sur petits écrans on passe en une colonne */
+  @media (max-width: 600px) {
+    .modif_profil {
+      grid-template-columns: 1fr;
+    }
+    
+    .modif_profil label {
+      text-align: left;
+      padding-right: 0;
+    }
+  }
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+
+
+/* Centrage uniquement pour le bouton du popup de profil */
+.modifuser-popup footer {
+    text-align: center; /* Centre le bouton inline/inline-block */
+    margin-top: 20px;
+}
+
+.modifuser-popup footer .btn-delete {
+    display: inline-block; /* Remplace inline-flex SEULEMENT ici */
+    margin: 0; /* Réinitialise la marge si nécessaire */
+}
+
+.modifuser-popup footer .btn-delete i {
+    margin-right: 8px; /* Compense le "gap: 8px" perdu */
+}
+
+/* ----- bouton supprimer popup matériel */
+
+/* Styles pour le footer du popup */
+.popup-footer {
+    margin-top: 25px;
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+/* Style du bouton Supprimer */
+.btn-delete {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn-delete:active {
+    transform: translateY(0);
+}
+
+.rapport-popup {
+    width: 500px;
+    max-width: 90vw;
+    background: white;
+    padding: 1.8rem;
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    animation: slideDown 0.4s;
+    border-top: 5px solid #4285f4;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* ----Popup inscription ----*/
+
+.inscription-popup {
+    width: 500px;
+    max-width: 90vw;
+    background: white;
+    padding: 1.8rem;
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    animation: slideDown 0.4s;
+    border-top: 5px solid #4285f4;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.inscription-popup .form-group {
+    margin-bottom: 1rem;
+}
+
+.inscription-popup label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #555;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.inscription-popup input,
+.inscription-popup select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.password-strength {
+    height: 5px;
+    background-color: #eee;
+    margin-top: 5px;
+}
+
+.password-strength-bar {
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.error {
+    color: red;
+    font-size: 0.8em;
+}
+
+
+table {
+    width: 100%;
+    min-width: 600px; /* Largeur minimale avant d'activer le scroll */
+    /* Vos styles de tableau existants */ 
+}
+
+/* --------------------*/
+
+/* *** fin modif*/
+.form-group {
+    /* Styles spécifiques au formulaire de login */
+}

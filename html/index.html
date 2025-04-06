@@ -372,7 +372,7 @@
 						</div>
                         </td>
                     </tr>
-                    <tr ng-if="(selectedRang === 'complexe' || selectedRang === 'admin') && selectedAppareil.type === 'thermostat'">
+                    <tr ng-if="(selectedRang === 'complexe' || selectedRang === 'admin') && selectedAppareil.type === 'Thermostat'">
                         <th>Limite haute</th>
                         <td>{{selectedAppareil.lim_haute}}°C</td>
                         <td class="action-cell">
@@ -391,7 +391,7 @@
 						</div>
                         </td>
                     </tr>
-                    <tr ng-if="(selectedRang === 'complexe' || selectedRang === 'admin') && selectedAppareil.type === 'thermostat'">
+                    <tr ng-if="(selectedRang === 'complexe' || selectedRang === 'admin') && selectedAppareil.type === 'Thermostat'">
                         <th>Limite basse</th>
                         <td>{{selectedAppareil.lim_basse}}°C</td>
                         <td class="action-cell">
@@ -414,8 +414,11 @@
             </table>
         </div>
         
-        <div class="popup-footer" ng-if="selectedRang === 'admin'">
-		    <button class="btn-delete" ng-click="confirmDelete()">
+        <div class="popup-footer" ng-if="(selectedRang === 'complexe' || selectedRang === 'admin')">
+            <button ng-click="openRapportPopup(selectedAppareil)" class="visualiser-btn">
+                <i class="fas fa-file-alt"></i> Rapport
+             </button>
+		    <button class="btn-delete" ng-click="confirmDelete()" ng-if="selectedRang === 'admin'">
 			   <i class="fas fa-trash-alt"></i> Supprimer le matériel
 		    </button>
 	   </div>

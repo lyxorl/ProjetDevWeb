@@ -1,0 +1,41 @@
+27/03
+répartition de tâches ==> 
+Lucas: MCD + page d'accueil avec apparition des appareils + page de connexion
+Evan: page de création/connexion compte
+Orlan: PHP (fct)
+Loric: création d'une page profile puis modifier le profile
+
+
+
+nombre de réunion? 
+cours apres qcm javascript -> 07/03 (rien fait)
+pause cours                -> 18/03 (parler vite fait de bdd)
+appel discord 		   -> 20/03 (parler + en détail de bdd)
+appel discord 		   -> 27/03 (répartition des tâches)
+
+const communication 28/03 - 05/04 rdv irl/ig (page d'accueil avec obj connectés + s'inscrire/connecter
+météo + validation profile par envoie mail)
+
+
+
+27/03 - 01/04 page d'accueil: Lucas
+27/03 - 01/04  pop-up de profile: Loric + Evan + Orlan
+27/03 - 28/03 page de connexion: Lucas + Evan
+29/03 - 04/04 histoire de rang: Lucas
+27/03 - 03/04 inscription + validation par admin par mail: Evan + Lucas
+
+29/03 - 30/03 fonction hachage: Lucas
+28/03 - 02/04 implant objets + modifier: Lucas
+
+
+nouveau problème: rapport matériels & systeme de points
+03/04 - 05/04 rapport: Evan + Lucas
+
+
+pour le rapport à rendre
+profile modifiable??
+différence générée par rang????
+condition de modification de valeur des objets connectés
+rapport ds le site??
+
+nb de fin "comment on aurait pu améliorer le site si on avait plus de temps"?

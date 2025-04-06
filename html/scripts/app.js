@@ -1338,11 +1338,15 @@ $scope.calculateRapportGlobal = function() {
 	$scope.updateProfileInfo = function(user){
 		console.log(user);
 		$http.post('api/modifyuser.php', user).then(function(response) {
-			$scope.popupShowModifUser = false;
-        }, function(error) {
-            $scope.message = "Erreur lors de la mise à jour de l'utilisateur";
-        });
-	}
+				// Mettre à jour l'utilisateur dans la liste
+			   return $http.get('api/users.php');
+			    }).then(function(response) {
+				   $scope.userslist = response.data.users;
+			   $scope.popupShowModifUser = false;
+		    }, function(error) {
+		   $scope.message = "Erreur lors de la mise à jour de l'utilisateur";
+	    });
+};
     
 }])
 

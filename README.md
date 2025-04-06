@@ -11,9 +11,9 @@ Et enfin avoir une connexion internet pour faire charger le framework AngularJS 
 ## Login ( achanger de votre cote si vous l'utiliser
 
 ### Administrateur
-pseudo : admin
+pseudo : admin \
 mdp    : admin123
 
 ### Utilisateur test
-pseudo : user1
+pseudo : user1 \
 mdp    : user123

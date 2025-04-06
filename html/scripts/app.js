@@ -1,11 +1,11 @@
 angular.module('maisonConnecteeApp', [])
 
 .run(['$window', function($window) {
-    // Initialisation de jsPDF
+    // Initialisation correcte pour jsPDF 2.5.1
     $window.jsPDF = $window.jspdf ? $window.jspdf.jsPDF : null;
     
-    // Autres configurations globales...
-    console.log('Application initialisée');
+    // Pour debug - vérifiez que jsPDF est bien disponible
+    console.log('jsPDF disponible:', !!$window.jsPDF);
 }])
 
 .directive('fileModel', ['$parse', function ($parse) {
@@ -702,87 +702,182 @@ function getWeather(lat, lon) {
 
 // -------------- RAPPORT --------------
 $scope.RapportMsg = '';
-	$scope.creerRapport = function(){
-		console.log("tetst")
-		$scope.calculateRapport();
-		var ladate=new Date()
-		const doc = new jsPDF();
+	$scope.creerRapport = function() {
+    try {
+        // 1. Vérification des prérequis
+        if (!$scope.selectedAppareil) {
+            throw new Error("Aucun appareil sélectionné");
+        }
+        
+       // Vérification plus robuste de la disponibilité de jsPDF
+        const jsPDF = window.jspdf ? window.jspdf.jsPDF : null;
+        if (!jsPDF) {
+            throw new Error("La bibliothèque jsPDF n'est pas chargée correctement");
+        }
 
-		n=47;
+        // 2. Initialisation
+        const doc = new jsPDF();
+        const ladate = new Date();
+        let positionY = 20; // Position verticale initiale
 
-		doc.text("Rapport de l'objet/ID : "+$scope.selectedAppareil.nom+" / "+$scope.selectedAppareil.id_objet, 10, 10);
-		doc.text("Redigé le : "+ladate.getDate()+"/"+(ladate.getMonth()+1)+"/"+ladate.getFullYear(),10,16);
-		doc.text("Infos sur l'objet :", 10, 25);
-		doc.text("Type d'objet : "+$scope.selectedAppareil.type ,14,35);
-		doc.text("Etat : "+$scope.selectedAppareil.etat,14,41);
-		doc.text("Emplacement : "+$scope.selectedAppareil.lieu,14,47);
-		if(!($scope.selectedAppareil.temperature===null)){
-			doc.text("Température : "+$scope.selectedAppareil.temperature,14,n=n+6);
-		}
-		if(!($scope.selectedAppareil.consigne===null)){
-			doc.text("Consigne : "+$scope.selectedAppareil.consigne,14,n=n+6);
-			doc.text("Limite (min/max): "+$scope.selectedAppareil.lim_basse + "/"+$scope.selectedAppareil.lim_haute ,14,n=n+6);
-		}
-		if(!($scope.rapportData === null)){
-			doc.text("Conso/Durée Totale : "+$scope.rapportData.consoTotale + " / " + $scope.rapportData.dureeTotale,14,n=n+6);
-			doc.text("Conso Moy : "+ $scope.rapportData.consoMoyenne,14,n=n+6);
-		}
+        // 3. En-tête du document
+        doc.setFontSize(16);
+        doc.setTextColor(40);
+        doc.text(`Rapport pour ${$scope.selectedAppareil.nom} (ID: ${$scope.selectedAppareil.id_objet})`, 10, 15);
+        
+        doc.setFontSize(10);
+        doc.text(`Généré le ${ladate.toLocaleDateString()} à ${ladate.toLocaleTimeString()}`, 10, positionY);
+        positionY += 10;
 
+        // 4. Section Informations de base
+        doc.setFontSize(14);
+        doc.text("Informations de l'appareil :", 10, positionY);
+        positionY += 8;
+        
+        doc.setFontSize(12);
+        const infosBase = [
+            `Type: ${$scope.selectedAppareil.type}`,
+            `État: ${$scope.selectedAppareil.etat}`,
+            `Emplacement: ${$scope.selectedAppareil.lieu}`
+        ];
+        
+        infosBase.forEach(info => {
+            doc.text(info, 14, positionY);
+            positionY += 7;
+        });
 
-		//doc.addPage(); //si on veut ajouter des pages
-		/*
-		var img = new Image()
-		img.src = 'assets/sample.png'
-		doc.addImage(img, 'png', 10, 78, 12, 15)
-		*/
-		doc.save("Rapport_"+$scope.selectedAppareil.id_objet+"_"+ladate.getDate()+"_"+(ladate.getMonth()+1)+"_"+ladate.getFullYear()+".pdf");
-		$scope.RapportMsg = "success";  
-	}
+        // 5. Section spécifique pour les thermostats
+        if ($scope.selectedAppareil.type === 'Thermostat') {
+            positionY += 3;
+            doc.text("Paramètres thermiques :", 14, positionY);
+            positionY += 7;
+            
+            const infosThermo = [
+                `Température actuelle: ${$scope.selectedAppareil.temperature || 'N/A'}°C`,
+                `Consigne: ${$scope.selectedAppareil.consigne || 'N/A'}°C`,
+                `Plage: ${$scope.selectedAppareil.lim_basse || 'N/A'}°C - ${$scope.selectedAppareil.lim_haute || 'N/A'}°C`
+            ];
+            
+            infosThermo.forEach(info => {
+                doc.text(info, 18, positionY);
+                positionY += 7;
+            });
+        }
+
+        // 6. Section Statistiques (si rapportData existe)
+        if ($scope.rapportData) {
+            positionY += 5;
+            doc.setFontSize(14);
+            doc.text("Statistiques d'utilisation :", 10, positionY);
+            positionY += 8;
+            
+            doc.setFontSize(12);
+            const stats = [
+                `Consommation totale: ${$scope.rapportData.consoTotale.toFixed(2)} kWh`,
+                `Durée totale ON: ${$scope.rapportData.dureeTotale.toFixed(2)} heures`,
+                `Consommation moyenne: ${$scope.rapportData.consoMoyenne.toFixed(2)} W/h`
+            ];
+            
+            stats.forEach(stat => {
+                doc.text(stat, 14, positionY);
+                positionY += 7;
+            });
+        }
+
+        // 7. Génération du fichier
+        const fileName = `Rapport_${$scope.selectedAppareil.id_objet}_${ladate.getFullYear()}${(ladate.getMonth()+1).toString().padStart(2, '0')}${ladate.getDate().toString().padStart(2, '0')}.pdf`;
+        doc.save(fileName);
+        
+        $scope.RapportMsg = "success";
+        console.log("PDF généré avec succès :", fileName);
+    } catch (error) {
+        console.error("Erreur lors de la génération du PDF :", error);
+        alert(`Erreur lors de la génération du PDF : ${error.message}`);
+        $scope.RapportMsg = "error";
+    }
+};
 
 	$scope.RapportMsgG = ''; 
-	$scope.creerRapportGlobal = function(){
-		$scope.calculateRapportGlobal();
-		var ladate=new Date()
-		const doc = new jsPDF();
+	$scope.creerRapportGlobal = function() {
+    try {
+        // 1. Calculer les données si nécessaire
+        if (!$scope.rapportGlobalData) {
+            $scope.calculateRapportGlobal();
+            return; // La fonction sera rappelée après le calcul
+        }
 
-		doc.text("Rapport Global : ",10, 10);
-		doc.text("Redigé le : "+ladate.getDate()+"/"+(ladate.getMonth()+1)+"/"+ladate.getFullYear(),10,16);
-		doc.text("Infos :", 10, 25);
+        // 2. Initialisation PDF
+        const doc = new jsPDF();
+        const ladate = new Date();
+        let positionY = 20;
 
-		n=35;
+        // 3. En-tête
+        doc.setFontSize(16);
+        doc.text("Rapport Global", 10, 10);
+        doc.setFontSize(10);
+        doc.text(`Généré le ${ladate.getDate()}/${ladate.getMonth()+1}/${ladate.getFullYear()}`, 10, 16);
 
-		if(!($scope.rapportGlobalData === null)){
-			doc.text("Conso Totale : "+$scope.rapportGlobalData.consoTotale,14,n=n+6);
-			doc.text("AppareilPlusConsomateur : "+ $scope.rapportGlobalData.appareilPlusConsommateur,14,n=n+6);
-			doc.text("detailsAppareils : "+ $scope.rapportGlobalData.detailsAppareils,14,n=n+6)
-		}
+        // 4. Données principales
+        doc.setFontSize(12);
+        doc.text("Consommation totale: " + $scope.rapportGlobalData.consoTotale.toFixed(2) + " kWh", 10, positionY);
+        positionY += 8;
+        
+        if ($scope.rapportGlobalData.appareilPlusConsommateur) {
+            doc.text("Appareil le plus consommateur: " + 
+                   $scope.rapportGlobalData.appareilPlusConsommateur.nom + " (" + 
+                   $scope.rapportGlobalData.appareilPlusConsommateur.conso.toFixed(2) + " kWh)", 
+                   10, positionY);
+            positionY += 8;
+        }
 
+        // 5. Tableau des appareils
+        doc.setFontSize(14);
+        doc.text("Détails par appareil:", 10, positionY);
+        positionY += 10;
+        
+        $scope.rapportGlobalData.detailsAppareils.forEach(appareil => {
+            if (positionY > 280) { // Nouvelle page si nécessaire
+                doc.addPage();
+                positionY = 20;
+            }
+            
+            doc.text(`${appareil.nom} (${appareil.type}): ` +
+                    `${appareil.conso.toFixed(2)} kWh, ` +
+                    `${appareil.duree.toFixed(2)} heures`, 
+                    10, positionY);
+            positionY += 8;
+        });
 
-
-		//doc.addPage(); //si on veut ajouter des pages
-		/*
-		var img = new Image()
-		img.src = 'assets/sample.png'
-		doc.addImage(img, 'png', 10, 78, 12, 15)
-		*/
-		doc.save("Rapport_"+$scope.selectedAppareil.id_objet+"_"+ladate.getDate()+"_"+(ladate.getMonth()+1)+"_"+ladate.getFullYear()+".pdf");
-		$scope.RapportMsgG = "success";  
-	}
-
-$scope.openRapportPopup = function(objet) {
-    $scope.selectedAppareil = objet;
-	console.log(objet);
-    $scope.showRapportPopup = true;
-    $scope.rapportDateDebut = new Date(new Date().setDate(new Date().getDate() - 7)); // 7 derniers jours par défaut
-    $scope.rapportDateFin = new Date();
-    $scope.calculateRapport();
+        // 6. Sauvegarde
+        const fileName = `Rapport_Global_${ladate.getDate()}_${ladate.getMonth()+1}_${ladate.getFullYear()}.pdf`;
+        doc.save(fileName);
+        
+        $scope.RapportMsgG = "success";
+    } catch (error) {
+        console.error("Erreur génération PDF:", error);
+        $scope.RapportMsgG = "error";
+        alert("Erreur lors de la génération du PDF: " + error.message);
+    }
 };
 
-// Fermer le rapport
-$scope.closeRapportPopup = function() {
-    $scope.showRapportPopup = false;
-    $scope.rapportData = null;
-};
+	$scope.openRapportPopup = function(objet) {
+	    if (!window.jspdf) {
+		   alert("La bibliothèque PDF n'est pas encore chargée. Veuillez réessayer dans quelques secondes.");
+		   return;
+	    }
+	    $scope.selectedAppareil = objet;
+		console.log(objet);
+	    $scope.showRapportPopup = true;
+	    $scope.rapportDateDebut = new Date(new Date().setDate(new Date().getDate() - 7)); // 7 derniers jours par défaut
+	    $scope.rapportDateFin = new Date();
+	    $scope.calculateRapport();
+	};
+
+	// Fermer le rapport
+	$scope.closeRapportPopup = function() {
+	    $scope.showRapportPopup = false;
+	    $scope.rapportData = null;
+	};
 
 
 

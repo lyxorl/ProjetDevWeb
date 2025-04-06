@@ -46,7 +46,9 @@ $scope.popupPosition = { top: 0, left: 0 };
   
     // Initialisations
     $scope.showLoginPopup = false;
-    $scope.showAppareilModal = false;
+    $scope.showRapportPopup = false;
+    $scope.showRapportGlobalPopup = false;
+    $scope.typeOptions = ["Alarme", "Caméra", "Capteur","Lumière", "Prise","Serrure","Thermostat","Volet"];
     $scope.isLoggedIn = false;
     $scope.selectedAppareil = null;
     $scope.selectedRang = 'simple';
@@ -204,17 +206,7 @@ $scope.popupPosition = { top: 0, left: 0 };
             });
     };
 
-    // Gestion modals
-    $scope.openAppareilModal = function(objet) {
-        if (!$scope.isLoggedIn) return;
-        $scope.selectedAppareil = objet;
-        $scope.showAppareilModal = true;
-    };
-
-    $scope.closeModal = function() {
-        $scope.showAppareilModal = false;
-        $scope.selectedAppareil = null;
-    };
+    
 
 // ----- GESTION CONNEXION
 
@@ -262,10 +254,6 @@ $scope.popupPosition = { top: 0, left: 0 };
             	});
     };
 
-// ----- GESTION INSCRIPTION
-    $scope.redirectToInscription = function() {
-        $window.location.href = 'inscription.html';
-    };
 
 // ------ Météo
 
@@ -565,79 +553,6 @@ function getWeather(lat, lon) {
 	    });
 	};
 
-	// -------------- Liste des users et modification du profil --------------
-
-    function affichageProfile(){
-        var urlParams = new URLSearchParams(window.location.search);
-        var pseudostr = urlParams.get('pseudo');
-
-        if ($scope.isLoggedIn) {
-            // faire la recup de l'utilisateur
-            $http.post('api/getuser.php', {pseudo : localStorage.getItem('user_pseudo')}).then(function(response){
-                if (response.data.success) {
-                    $scope.user = response.data.data;
-                } else {
-					console.error("Erreur lors du chargement du profile :", error);
-                    //$window.location.href = 'index.html';
-                }
-            }, function(error) {
-                console.error("Erreur lors du chargement du profile :", error);
-                //$window.location.href = 'index.html';
-            });
-        }
-    }
-
-    $scope.loadProfile = function() {
-        affichageProfile();
-    };
-
-    $scope.updateProfile = function() {
-        // faire la recup de l'user
-        $http.post('api/modifyuser.php', $scope.user).then(function(response) {
-            $scope.message = "Profil mis à jour avec succès";
-        }, function(error) {
-            console.error("Erreur lors de la mise à jour du profil", error);
-            $scope.message = "Erreur lors de la mise à jour du profil";
-        });
-
-        $scope.popupShowModifUser = false; //ferme la page lors de la mis a jour
-    };
-
-    $scope.openModifProfile = function(user){
-        $scope.selectedUser = user;
-		$scope.popupShowModifUser = true;
-    }
-
-	$scope.closeModifUser = function() { // chuis trop con ya un nom different entre user et profile
-		// faudrat que je fasse le menage
-		$scope.popupShowModifUser = false;
-    };
-
-    $http.get('api/users.php')
-        .then(function(response) {
-            $scope.userslist = response.data.users;
-        })
-        .catch(function(error) {
-            
-            console.error('Erreur lors de la recuperation des users:', error);
-            $scope.loading = false;
-        });
-
-	$scope.validateUser = function(userselect) {
-		userselect.validite = 1-userselect.validite;
-		$http.post('api/modifyuser_validite.php', userselect).then(function(response) {
-
-            $scope.message = "Profil mis à jour avec succès";
-        }, function(error) {
-            console.error("Erreur lors de la mise à jour du profil", error);
-            $scope.message = "Erreur lors de la mise à jour du profil";
-        });
-	}
-
-	$scope.condVisualizeProfile = function(user){
-		return user == localStorage.getItem('user_pseudo');
-	}
-	
 //------- SUPPRIMER MATERIEL ----
 
 	// Fonction de confirmation de suppression
@@ -695,6 +610,89 @@ function getWeather(lat, lon) {
         	    alert("Erreur serveur lors de la suppression. Voir la console pour plus de détails.");
     });
 };
+
+
+
+	
+// ------- UTILISATEURS ----
+
+	// -------------- Liste des users et modification du profil --------------
+
+    function affichageProfile(){
+        var urlParams = new URLSearchParams(window.location.search);
+        var pseudostr = urlParams.get('pseudo');
+
+        if ($scope.isLoggedIn) {
+            // faire la recup de l'utilisateur
+            $http.post('api/getuser.php', {pseudo : localStorage.getItem('user_pseudo')}).then(function(response){
+                if (response.data.success) {
+                   
+                    $scope.user = response.data.data;
+                    $scope.user.photo='Users_img/'+$scope.user.photo;
+                } else {
+					console.error("Erreur lors du chargement du profile :", error);
+                    //$window.location.href = 'index.html';
+                }
+            }, function(error) {
+                console.error("Erreur lors du chargement du profile :", error);
+                //$window.location.href = 'index.html';
+            });
+        }
+    }
+
+    $scope.loadProfile = function() {
+        affichageProfile();
+    };
+
+    $scope.updateProfile = function() {
+        // faire la recup de l'user
+        $http.post('api/modifyuser.php', $scope.user).then(function(response) {
+            $scope.message = "Profil mis à jour avec succès";
+        }, function(error) {
+            console.error("Erreur lors de la mise à jour du profil", error);
+            $scope.message = "Erreur lors de la mise à jour du profil";
+        });
+
+        $scope.popupShowModifUser = false; //ferme la page lors de la mis a jour
+    };
+
+    $scope.openModifProfile = function(user){
+        $scope.user = user;
+        //$scope.selectedUser = user;
+		$scope.popupShowModifUser = true;
+    }
+
+	$scope.closeModifUser = function() { // chuis trop con ya un nom different entre user et profile
+		// faudrat que je fasse le menage
+		$scope.popupShowModifUser = false;
+    };
+
+    $http.get('api/users.php')
+        .then(function(response) {
+            $scope.userslist = response.data.users;
+        })
+        .catch(function(error) {
+            
+            console.error('Erreur lors de la recuperation des users:', error);
+            $scope.loading = false;
+        });
+
+	$scope.validateUser = function(userselect) {
+		userselect.validite = 1-userselect.validite;
+		$http.post('api/modifyuser_validite.php', userselect).then(function(response) {
+
+            $scope.message = "Profil mis à jour avec succès";
+        }, function(error) {
+            console.error("Erreur lors de la mise à jour du profil", error);
+            $scope.message = "Erreur lors de la mise à jour du profil";
+        });
+	}
+
+	$scope.condVisualizeProfile = function(user){
+		return user == localStorage.getItem('user_pseudo');
+	}
+	
+
 
 // -------------- RAPPORT --------------
 $scope.RapportMsg = '';
@@ -779,6 +777,8 @@ $scope.closeRapportPopup = function() {
     $scope.showRapportPopup = false;
     $scope.rapportData = null;
 };
+
+
 
 // Ouvrir le rapport global
 $scope.openRapportGlobalPopup = function() {
@@ -1075,100 +1075,146 @@ $scope.calculateRapportGlobal = function() {
 
 
 // --------------------- AJOUT MATERIEL ------------------
+    
+    // Gestion du popup d'ajout
+	$scope.showAjoutObjetPopup = false;
+	$scope.nouvelObjet = {
+	    etat: 'Actif'
+	};
+
+	$scope.openAjoutObjetPopup = function() {
+	    $scope.showAjoutObjetPopup = true;
+	    $scope.nouvelObjet = {
+		   etat: 'Actif'
+	    };
+	};
+
+	$scope.closeAjoutObjetPopup = function() {
+	    $scope.showAjoutObjetPopup = false;
+	};
+
+	$scope.ajouterNouvelObjet = function() {
+	    if (!$scope.currentUser) {
+		   alert("Vous devez être connecté pour ajouter un objet");
+		   return;
+	    }
+	    
+	    if (!$scope.nouvelObjet.nom || !$scope.nouvelObjet.type || !$scope.nouvelObjet.lieu) {
+		   alert("Veuillez remplir tous les champs obligatoires (Nom, Type, Lieu)");
+		   return;
+	    }
+
+	    // Préparation des données
+	    const objetData = {
+		   nom: $scope.nouvelObjet.nom,
+		   description: $scope.nouvelObjet.description || '',
+		   type: $scope.nouvelObjet.type,
+		   lieu: $scope.nouvelObjet.lieu,
+		   etat: $scope.nouvelObjet.etat || 'Inactif',
+		   mots_cles: $scope.nouvelObjet.mots_cles || ''
+	    };
+
+	    // Ajout des spécificités thermostat si nécessaire
+	    if ($scope.nouvelObjet.type === 'Thermostat') {
+		   objetData.temperature = parseFloat($scope.nouvelObjet.temperature) || 20.0;
+		   objetData.consigne = parseFloat($scope.nouvelObjet.consigne) || 20.0;
+		   objetData.lim_haute = parseFloat($scope.nouvelObjet.lim_haute) || 25.0;
+		   objetData.lim_basse = parseFloat($scope.nouvelObjet.lim_basse) || 18.0;
+	    }
+
+	    // Envoi au serveur
+	    $http.post('api/ajout-objet.php', objetData)
+		   .then(function(response) {
+		       if (response.data.success) {
+		           // Ajoute le nouvel objet à la liste
+		           $scope.objets.push(response.data.objet);
+		           $scope.closeAjoutObjetPopup();
+		           alert("Objet ajouté avec succès!");
+		           $scope.addPoints(3);
+		           
+		           // Recharge la liste complète pour être sûr
+		           $http.get('api/materiels.php')
+		               .then(function(res) {
+		                   $scope.objets = res.data.materiels;
+		               });
+		       } else {
+		           alert("Erreur lors de l'ajout: " + (response.data.message || 'Erreur inconnue'));
+		       }
+		   })
+		   .catch(function(error) {
+		       console.error("Erreur complète:", error);
+		       let errorMsg = "Erreur serveur lors de l'ajout";
+		       
+		       if (error.data) {
+		           console.error("Détails erreur:", error.data);
+		           if (error.data.error) {
+		               errorMsg += "\n" + error.data.error;
+		           }
+		           if (error.data.query) {
+		               console.log("Requête SQL:", error.data.query);
+		           }
+		       }
+		       
+		       alert(errorMsg);
+		   });
+	};
+    
+    
+    $scope.typeExists = function() {
+		    if (!$scope.newType || !$scope.typeOptions) return false;
+		    return $scope.typeOptions.some(function(t) {
+			   return t.toLowerCase() === $scope.newType.toLowerCase();
+		    });
+		};
+    
+    
+   
+	// Fonction de formatage avancée
+		$scope.formatTypeName = function(value) {
+		    if (!value) return '';
+		    return value
+			   .trim() // Supprime les espaces avant/après
+			   .replace(/\s+/g, ' ') // Réduit les espaces multiples
+			   .replace(/(?:^|\s)\S/g, function(char) { 
+				  return char.toUpperCase(); // Capitalise chaque mot
+			   });
+		};
+
+		// Fonction d'ajout avec vérification
+		$scope.addNewType = function() {
+		    console.log('--- DEBUT addNewType ---');
+		    
+		    // Récupération sécurisée de la valeur
+		    var inputEl = document.getElementById('typeInputField');
+		    var actualValue = inputEl ? inputEl.value : '';
+		    
+		    if (!actualValue) {
+			   console.warn('Champ vide');
+			   return;
+		    }
+			var actualValue = $scope.formatTypeName(actualValue);
+
+		    // Vérification existence
+		    if ($scope.typeExists(actualValue)) {
+			   console.warn('Type existe déjà:', actualValue);
+			   return;
+		    }
+		    
+		    // Mise à jour sans déclencher $apply si inutile
+		    $timeout(function() {
+			   $scope.typeOptions.push(actualValue);
+			   $scope.nouvelObjet.type = actualValue;
+			   $scope.newType = '';
+			   inputEl.value = ''; // Réinitialisation DOM
+			   
+			   console.log('Type ajouté avec succès:', actualValue);
+		    });
+		    
+		    console.log('--- FIN addNewType ---');
+		};
+    
   
-  // Gestion du popup d'ajout
-  $scope.showAjoutObjetPopup = false;
-  $scope.nouvelObjet = {
-	  etat: 'Actif'
-  };
-
-  $scope.openAjoutObjetPopup = function() {
-	  $scope.showAjoutObjetPopup = true;
-	  $scope.nouvelObjet = {
-		 etat: 'Actif'
-	  };
-  };
-
-  $scope.closeAjoutObjetPopup = function() {
-	  $scope.showAjoutObjetPopup = false;
-  };
-
-  $scope.ajouterNouvelObjet = function() {
-	  if (!$scope.currentUser) {
-		 alert("Vous devez être connecté pour ajouter un objet");
-		 return;
-	  }
-	  
-	  if (!$scope.nouvelObjet.nom || !$scope.nouvelObjet.type || !$scope.nouvelObjet.lieu) {
-		 alert("Veuillez remplir tous les champs obligatoires (Nom, Type, Lieu)");
-		 return;
-	  }
-
-	  // Préparation des données
-	  const objetData = {
-		 nom: $scope.nouvelObjet.nom,
-		 description: $scope.nouvelObjet.description || '',
-		 type: $scope.nouvelObjet.type,
-		 lieu: $scope.nouvelObjet.lieu,
-		 etat: $scope.nouvelObjet.etat || 'Inactif',
-		 mots_cles: $scope.nouvelObjet.mots_cles || ''
-	  };
-
-	  // Ajout des spécificités thermostat si nécessaire
-	  if ($scope.nouvelObjet.type === 'Thermostat') {
-		 objetData.temperature = parseFloat($scope.nouvelObjet.temperature) || 20.0;
-		 objetData.consigne = parseFloat($scope.nouvelObjet.consigne) || 20.0;
-		 objetData.lim_haute = parseFloat($scope.nouvelObjet.lim_haute) || 25.0;
-		 objetData.lim_basse = parseFloat($scope.nouvelObjet.lim_basse) || 18.0;
-	  }
-
-	  // Envoi au serveur
-	  $http.post('api/ajout-objet.php', objetData)
-		 .then(function(response) {
-			 if (response.data.success) {
-				 // Ajoute le nouvel objet à la liste
-				 $scope.objets.push(response.data.objet);
-				 $scope.closeAjoutObjetPopup();
-				 alert("Objet ajouté avec succès!");
-				 $scope.addPoints(3);
-				 
-				 // Recharge la liste complète pour être sûr
-				 $http.get('api/materiels.php')
-					 .then(function(res) {
-						 $scope.objets = res.data.materiels;
-					 });
-			 } else {
-				 alert("Erreur lors de l'ajout: " + (response.data.message || 'Erreur inconnue'));
-			 }
-		 })
-		 .catch(function(error) {
-			 console.error("Erreur complète:", error);
-			 let errorMsg = "Erreur serveur lors de l'ajout";
-			 
-			 if (error.data) {
-				 console.error("Détails erreur:", error.data);
-				 if (error.data.error) {
-					 errorMsg += "\n" + error.data.error;
-				 }
-				 if (error.data.query) {
-					 console.log("Requête SQL:", error.data.query);
-				 }
-			 }
-			 
-			 alert(errorMsg);
-		 });
-  };
-  
-  // Pour l'admin seulement
-	  $scope.addNewType = function() {
-		  if ($scope.newType && !$scope.typeOptions.includes($scope.newType)) {
-			 $scope.typeOptions.push($scope.newType);
-			 $scope.nouvelObjet.type = $scope.newType; // Sélectionne automatiquement
-			 $scope.newType = ''; // Vide le champ
-		  }
-	  };
-  
-
+// ------- SUIVI INSCRIPTION EMAIL
 	// Ajout d'une fonction pour renvoyer l'email de validation
 	$scope.resendValidationEmail = function() {
 	    if (!$scope.inscriptionData.mail) {

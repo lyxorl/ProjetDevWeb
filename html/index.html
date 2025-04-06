@@ -441,14 +441,10 @@
                 Mail: {{selectedUser.mail}}<br> </p>
             </div>
             <div id="id_profile_info-pp">
-                <img ng-src="{{user.photo || '/Users_img/default.jpg'}}" 
+                <img ng-src="{{selectedUser.photo || '/Users_img/default.jpg'}}" 
                     alt="Photo de profil" 
                     loading="lazy">
-                    <img ng-src="{{selectedUser.photo}}" 
-                        alt="Photo de profil" 
-                        loading="lazy"
-                        style="max-width: 150px; max-height: 150px; border-radius: 50%;"
-                        onerror="this.src='Users_img/default.jpg';this.onerror=null;">
+                    
             </div>
         </div>
         <h2>Modifications :</h2>
@@ -470,11 +466,14 @@
             <label>Mot de passe :</label>
             <input type="password" ng-model="selectedUser.mdp" />
             <button type="submit" class="update-profile-button">Appliquer les modifications</button>
+            
         </form>
-        <button class="btn-delete" ng-if="!(selectedUser.pseudo == 'admin') && selectedRang == 'admin'" ng-click="confirmDeleteUser(selectedUser)">
+        <footer ng-if="!(selectedUser.pseudo == 'admin') && selectedRang == 'admin'">
+            <button class="btn-delete footer-centered" ng-click="confirmDeleteUser(selectedUser)">
             <i class="fas fa-trash-alt"></i> Supprimer l'utilisateur
-        </button>
-        <p>{{ message }}</p>
+        </button></footer>
+        
+        <!--<p>{{ message }}</p>-->
     </div>
 
 </div>

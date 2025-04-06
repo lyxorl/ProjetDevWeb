@@ -447,6 +447,7 @@ tr:hover { background-color: #f0f8ff; }
     animation: slideDown 0.4s;
     border-top: 5px solid #4285f4;
     overflow-y: auto;
+    
 }
 
 .listeuser-section {
@@ -860,6 +861,23 @@ tr:hover { background-color: #f0f8ff; }
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-5px); }
     40%, 80% { transform: translateX(5px); }
+}
+
+
+
+/* Centrage uniquement pour le bouton du popup de profil */
+.modifuser-popup footer {
+    text-align: center; /* Centre le bouton inline/inline-block */
+    margin-top: 20px;
+}
+
+.modifuser-popup footer .btn-delete {
+    display: inline-block; /* Remplace inline-flex SEULEMENT ici */
+    margin: 0; /* Réinitialise la marge si nécessaire */
+}
+
+.modifuser-popup footer .btn-delete i {
+    margin-right: 8px; /* Compense le "gap: 8px" perdu */
 }
 
 /* ----- bouton supprimer popup matériel */

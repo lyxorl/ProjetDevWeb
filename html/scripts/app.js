@@ -562,22 +562,7 @@ function getWeather(lat, lon) {
 	    }
 	};
 
-	$scope.confirmDeleteUser = function(user) {
-	    if (confirm("Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ?")) {
-		    $http.post('api/delete_user.php', user).then (function(response) {
-			if (response.data.success) {
-				$scope.userslist = $scope.userslist.filter(function(obj) {
-					return obj.pseudo !== user.pseudo;
-				});
-				$scope.closeModifUser();
-				alert("Utilisateur supprimé avec succès");
-			}
-		    },function(error) {
-            console.error("Erreur lors de la supression de l'user", error);
-            $scope.message = "Erreur lors de la supression de l'user";
-        });
-	    }
-	};
+	
 
 	// Fonction de suppression effective
 	$scope.deleteMaterial = function() {
@@ -656,11 +641,15 @@ function getWeather(lat, lon) {
         $scope.popupShowModifUser = false; //ferme la page lors de la mis a jour
     };
 
-    $scope.openModifProfile = function(user){
-        $scope.user = user;
-        //$scope.selectedUser = user;
-		$scope.popupShowModifUser = true;
-    }
+    $scope.openModifProfile = function(user) {
+	    // Fait une copie profonde de l'utilisateur
+	    $scope.selectedUser = angular.copy(user);
+	    // Ajoute le chemin complet de la photo si elle existe
+	    if ($scope.selectedUser.photo) {
+		   $scope.selectedUser.photo = 'Users_img/' + $scope.selectedUser.photo;
+	    }
+	    $scope.popupShowModifUser = true;
+	};
 
 	$scope.closeModifUser = function() { // chuis trop con ya un nom different entre user et profile
 		// faudrat que je fasse le menage
@@ -692,6 +681,23 @@ function getWeather(lat, lon) {
 		return user == localStorage.getItem('user_pseudo');
 	}
 	
+	
+	$scope.confirmDeleteUser = function(user) {
+	    if (confirm("Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ?")) {
+		    $http.post('api/delete_user.php', user).then (function(response) {
+			if (response.data.success) {
+				$scope.userslist = $scope.userslist.filter(function(obj) {
+					return obj.pseudo !== user.pseudo;
+				});
+				$scope.closeModifUser();
+				alert("Utilisateur supprimé avec succès");
+			}
+		    },function(error) {
+            console.error("Erreur lors de la supression de l'user", error);
+            $scope.message = "Erreur lors de la supression de l'user";
+        });
+	    }
+	};
 
 
 // -------------- RAPPORT --------------

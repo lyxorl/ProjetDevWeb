@@ -739,7 +739,7 @@
                         <label>Période :</label>
                         <input type="date" ng-model="rapportDateDebut">
                         <input type="date" ng-model="rapportDateFin">
-                        <button ng-click="calculateRapport()">Générer</button>
+                        <button ng-click="creerRapport()">Générer</button>
                     </div>
                     
                     <!-- Résultats -->
@@ -792,7 +792,7 @@
                         <label>Période :</label>
                         <input type="date" ng-model="rapportGlobalDateDebut">
                         <input type="date" ng-model="rapportGlobalDateFin">
-                        <button ng-click="calculateRapportGlobal()">Générer</button>
+                        <button ng-click="creerRapportGlobal()">Générer PDF Global</button>
                     </div>
                     
                     <!-- Résultats -->
@@ -827,7 +827,7 @@
                  </div>
               </div>
           </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="scripts/app.js"></script>
 </body>
 </html>

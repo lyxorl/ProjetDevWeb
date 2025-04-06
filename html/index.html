@@ -570,9 +570,7 @@
             'color': inscriptionMessageType === 'success' ? '#3c763d' : '#a94442'}">
     {{ inscriptionMessage }}
 </div>
-            {{inscriptionMessage}}
-        </div>
-        <div ng-if="inscriptionMessageType === 'success'" class="form-group">
+            <div ng-if="inscriptionMessageType === 'success'" class="visualiser-btn">
 		    <p>Si vous n'avez pas reçu l'email :</p>
 		    <button ng-click="resendValidationEmail()" 
 			    class="login-btn">
@@ -582,6 +580,8 @@
 			    Vérifiez aussi vos spams/courriers indésirables
 		    </small>
 	    </div>
+        </div>
+        
     </div>
 </div>
 
